@@ -1,0 +1,204 @@
+export const resources = {
+  en: {
+    translation: {
+      app: {
+        title: 'Task Operations Board',
+        subtitle: 'Local-first productivity dashboard',
+      },
+      language: {
+        label: 'Language',
+        en: 'English',
+        it: 'Italian',
+      },
+      actions: {
+        create: 'Create',
+        save: 'Save',
+        cancel: 'Cancel',
+        delete: 'Delete',
+        edit: 'Edit',
+        close: 'Close',
+        export: 'Export',
+        import: 'Import',
+        clearFilters: 'Clear filters',
+      },
+      project: {
+        sectionTitle: 'Projects',
+        create: 'New Project',
+        edit: 'Edit Project',
+        delete: 'Delete Project',
+        empty: 'Create your first project to start managing tasks.',
+        form: {
+          name: 'Project name',
+          description: 'Description',
+        },
+        deleteConfirm: {
+          title: 'Delete project?',
+          description: 'This action permanently deletes all tasks in the project.',
+        },
+      },
+      task: {
+        create: 'New Task',
+        edit: 'Edit Task',
+        delete: 'Delete Task',
+        form: {
+          title: 'Title',
+          status: 'Status',
+          dueDate: 'Due date',
+          content: 'Markdown details',
+          markdownHint: 'Use markdown syntax for rich notes.',
+          noDueDate: 'No due date',
+        },
+        deleteConfirm: {
+          title: 'Delete task?',
+          description: 'The task will be removed from this project.',
+        },
+        preview: 'Preview',
+        editor: 'Editor',
+        quickStatus: 'Change status',
+        empty: 'No tasks match the current filters.',
+      },
+      view: {
+        list: 'List',
+        kanban: 'Kanban',
+      },
+      filters: {
+        search: 'Search by title or markdown...',
+        status: 'Status',
+        due: 'Due date',
+        dueOptions: {
+          all: 'Any date',
+          overdue: 'Overdue',
+          today: 'Today',
+          week: 'Next 7 days',
+          noDue: 'No due date',
+        },
+      },
+      kanban: {
+        addStatus: 'Add status',
+        editStatus: 'Edit status',
+        deleteStatus: 'Delete status',
+        emptyColumn: 'Drop tasks here',
+        statusForm: {
+          name: 'Status name',
+          color: 'Color',
+        },
+        deleteStatusConfirm: {
+          title: 'Delete status?',
+          description: 'Tasks in this status will move to the first column.',
+        },
+      },
+      messages: {
+        importSuccess: 'Projects imported successfully.',
+        importError: 'Import failed: invalid file structure.',
+        exportReady: 'Export file generated.',
+      },
+      validation: {
+        required: 'This field is required.',
+        minName: 'Use at least 2 characters.',
+        color: 'Use a valid hex color, e.g. #1677ff.',
+      },
+    },
+  },
+  it: {
+    translation: {
+      app: {
+        title: 'Task Operations Board',
+        subtitle: 'Dashboard produttiva locale',
+      },
+      language: {
+        label: 'Lingua',
+        en: 'Inglese',
+        it: 'Italiano',
+      },
+      actions: {
+        create: 'Crea',
+        save: 'Salva',
+        cancel: 'Annulla',
+        delete: 'Elimina',
+        edit: 'Modifica',
+        close: 'Chiudi',
+        export: 'Esporta',
+        import: 'Importa',
+        clearFilters: 'Reset filtri',
+      },
+      project: {
+        sectionTitle: 'Progetti',
+        create: 'Nuovo Progetto',
+        edit: 'Modifica Progetto',
+        delete: 'Elimina Progetto',
+        empty: 'Crea il primo progetto per iniziare a gestire task.',
+        form: {
+          name: 'Nome progetto',
+          description: 'Descrizione',
+        },
+        deleteConfirm: {
+          title: 'Eliminare il progetto?',
+          description: 'Questa azione elimina in modo permanente tutti i task del progetto.',
+        },
+      },
+      task: {
+        create: 'Nuovo Task',
+        edit: 'Modifica Task',
+        delete: 'Elimina Task',
+        form: {
+          title: 'Titolo',
+          status: 'Stato',
+          dueDate: 'Scadenza',
+          content: 'Dettagli markdown',
+          markdownHint: 'Usa la sintassi markdown per note ricche.',
+          noDueDate: 'Nessuna scadenza',
+        },
+        deleteConfirm: {
+          title: 'Eliminare il task?',
+          description: 'Il task verra rimosso da questo progetto.',
+        },
+        preview: 'Anteprima',
+        editor: 'Editor',
+        quickStatus: 'Cambia stato',
+        empty: 'Nessun task corrisponde ai filtri correnti.',
+      },
+      view: {
+        list: 'Lista',
+        kanban: 'Kanban',
+      },
+      filters: {
+        search: 'Cerca per titolo o markdown...',
+        status: 'Stato',
+        due: 'Scadenza',
+        dueOptions: {
+          all: 'Qualsiasi data',
+          overdue: 'Scaduti',
+          today: 'Oggi',
+          week: 'Prossimi 7 giorni',
+          noDue: 'Senza scadenza',
+        },
+      },
+      kanban: {
+        addStatus: 'Aggiungi stato',
+        editStatus: 'Modifica stato',
+        deleteStatus: 'Elimina stato',
+        emptyColumn: 'Trascina qui i task',
+        statusForm: {
+          name: 'Nome stato',
+          color: 'Colore',
+        },
+        deleteStatusConfirm: {
+          title: 'Eliminare lo stato?',
+          description: 'I task di questo stato verranno spostati nella prima colonna.',
+        },
+      },
+      messages: {
+        importSuccess: 'Progetti importati con successo.',
+        importError: 'Import fallito: struttura file non valida.',
+        exportReady: 'File export generato.',
+      },
+      validation: {
+        required: 'Campo obbligatorio.',
+        minName: 'Usa almeno 2 caratteri.',
+        color: 'Usa un colore hex valido, es. #1677ff.',
+      },
+    },
+  },
+} as const;
+
+export type AppLocale = keyof typeof resources;
