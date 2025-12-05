@@ -1,8 +1,18 @@
-import { closestCorners, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import {
+  closestCorners,
+  DndContext,
+  DragOverlay,
+  type DragEndEvent,
+  type DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import { Flex } from 'antd';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
 import { KanbanColumn } from './KanbanColumn';
+import { TaskCard } from '../../tasks/components/TaskCard';
 
 type KanbanBoardProps = {
   statuses: TaskStatus[];
@@ -27,6 +37,7 @@ export const KanbanBoard = ({
   onEditStatus,
   onDeleteStatus,
 }: KanbanBoardProps) => {
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -53,8 +64,22 @@ export const KanbanBoard = ({
     return map;
   }, [tasks]);
 
+  const activeTask = activeTaskId ? taskById.get(activeTaskId) : null;
+  const activeStatus = activeTask
+    ? statuses.find((status) => status.id === activeTask.statusId)
+    : null;
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveTaskId(String(event.active.id));
+  };
+
+  const handleDragCancel = () => {
+    setActiveTaskId(null);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveTaskId(null);
 
     if (!over) {
       return;
@@ -67,9 +92,9 @@ export const KanbanBoard = ({
       return;
     }
 
-    const activeTask = taskById.get(activeId);
+    const activeTaskLocal = taskById.get(activeId);
 
-    if (!activeTask) {
+    if (!activeTaskLocal) {
       return;
     }
 
@@ -79,7 +104,7 @@ export const KanbanBoard = ({
       const targetStatusId = overTask.statusId;
       const targetIndex = groupedTasks[targetStatusId]?.findIndex((task) => task.id === overId);
 
-      onMoveTask(activeTask.id, targetStatusId, targetIndex === -1 ? undefined : targetIndex);
+      onMoveTask(activeTaskLocal.id, targetStatusId, targetIndex === -1 ? undefined : targetIndex);
       return;
     }
 
@@ -90,12 +115,18 @@ export const KanbanBoard = ({
     }
 
     const targetIndex = groupedTasks[statusTarget.id]?.length ?? 0;
-    onMoveTask(activeTask.id, statusTarget.id, targetIndex);
+    onMoveTask(activeTaskLocal.id, statusTarget.id, targetIndex);
   };
 
   return (
     <Flex gap={12} vertical>
-      <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} sensors={sensors}>
+      <DndContext
+        collisionDetection={closestCorners}
+        onDragCancel={handleDragCancel}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+        sensors={sensors}
+      >
         <Flex gap={12} style={{ overflowX: 'auto', paddingBottom: 8 }}>
           {statuses.map((status) => (
             <KanbanColumn
@@ -113,6 +144,29 @@ export const KanbanBoard = ({
             />
           ))}
         </Flex>
+
+        <DragOverlay>
+          {activeTask && activeStatus ? (
+            <TaskCard
+              compact
+              isOverlay
+              language={language}
+              onDelete={() => {
+                return;
+              }}
+              onEdit={() => {
+                return;
+              }}
+              onStatusChange={() => {
+                return;
+              }}
+              status={activeStatus}
+              statuses={statuses}
+              task={activeTask}
+              showActions={false}
+            />
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </Flex>
   );

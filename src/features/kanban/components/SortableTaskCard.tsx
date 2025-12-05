@@ -22,20 +22,27 @@ export const SortableTaskCard = ({
   onDeleteTask,
   onStatusChange,
 }: SortableTaskCardProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: task.id,
   });
 
   return (
     <div
       ref={setNodeRef}
+      {...attributes}
+      {...(listeners ?? {})}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.65 : 1,
+        opacity: isDragging ? 0.75 : 1,
       }}
-      {...attributes}
-      {...listeners}
     >
       <TaskCard
         compact

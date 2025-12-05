@@ -7,7 +7,7 @@ import {
   RightOutlined,
   SettingOutlined,
 } from '@ant-design/icons';
-import { App as AntdApp, Button, Card, Empty, Flex, Layout, Modal, Space, Tooltip, Typography } from 'antd';
+import { App as AntdApp, Button, Card, Divider, Empty, Flex, Layout, Modal, Space, Tooltip, Typography, theme } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -96,6 +96,7 @@ export const DashboardPage = () => {
 
   const { message, modal } = AntdApp.useApp();
   const { t } = useTranslation();
+  const { token } = theme.useToken();
 
   const activeProject = useMemo(
     () => projects.find((project) => project.id === activeProjectId) ?? null,
@@ -598,20 +599,38 @@ export const DashboardPage = () => {
         onCancel={() => setThemeModalOpen(false)}
         open={isThemeModalOpen}
         footer={null}
+        styles={{
+          body: {
+            borderRadius: token.borderRadiusLG,
+            padding: 0,
+            overflow: 'hidden',
+            width: 'min(520px, 95vw)',
+          },
+        }}
         style={{ maxWidth: 520 }}
-        title={(
+      >
+        <div style={{ padding: '16px 18px', borderBottom: `1px solid ${token.colorBorder}` }}>
           <Space size={8}>
             <SettingOutlined />
-            <span>{t('theme.settings')}</span>
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              {t('theme.settings')}
+            </Typography.Title>
           </Space>
-        )}
-      >
+          <Typography.Text type="secondary">{t('theme.sectionDescription')}</Typography.Text>
+        </div>
+
         <ThemeSidebarCard
           onThemeColorsChange={setThemeColors}
           onThemeModeChange={setThemeMode}
           themeColors={themeColors}
           themeMode={themeMode}
         />
+
+        <Divider style={{ margin: 0 }} />
+
+        <Flex justify="end" style={{ padding: 14 }}>
+          <Button onClick={() => setThemeModalOpen(false)}>{t('actions.close')}</Button>
+        </Flex>
       </Modal>
     </div>
   );
