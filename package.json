@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "set:version": "node scripts/set-version.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
