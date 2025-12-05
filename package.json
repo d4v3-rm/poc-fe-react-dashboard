@@ -1,7 +1,21 @@
 {
   "name": "poc-fe-react-dashboard",
   "private": true,
+  "description": "Local-first React dashboard for project, task and kanban management.",
   "version": "0.0.0",
+  "author": "d4v3-rm",
+  "license": "UNLICENSED",
+  "keywords": [
+    "react",
+    "dashboard",
+    "kanban",
+    "task-management",
+    "project-management",
+    "antd",
+    "vite",
+    "zustand",
+    "typescript"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
