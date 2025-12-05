@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
+  Flex,
   Form,
   Input,
   Modal,
@@ -13,7 +14,14 @@ import {
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { DEFAULT_THEME_COLORS } from "../../../shared/utils/defaults";
+import {
+  getFallbackColor,
+  textColorFor,
+} from "../../../shared/theme/color-utils";
+import {
+  DEFAULT_THEME_COLORS,
+  THEME_COLOR_PRESETS,
+} from "../../../shared/utils/defaults";
 import { statusFormSchema, type StatusFormValues } from "../status.schema";
 
 type StatusFormModalProps = {
@@ -158,22 +166,47 @@ export const StatusFormModal = ({
               control={control}
               name="color"
               render={({ field }) => (
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <input
+                <Flex gap={12} vertical>
+                  <Flex gap={10} wrap>
+                    {THEME_COLOR_PRESETS.map((color) => {
+                      const safeColor = getFallbackColor(color);
+                      const isSelected =
+                        field.value.toLowerCase() === safeColor.toLowerCase();
+
+                      return (
+                        <Tooltip key={safeColor} title={safeColor}>
+                          <Button
+                            aria-label={`${t("kanban.statusForm.color")}: ${safeColor}`}
+                            onClick={() => field.onChange(safeColor)}
+                            onMouseDown={(event) => event.preventDefault()}
+                            shape="circle"
+                            size="small"
+                            style={{
+                              backgroundColor: safeColor,
+                              borderColor: isSelected
+                                ? token.colorPrimary
+                                : token.colorBorder,
+                              boxShadow: isSelected
+                                ? `0 0 0 2px ${token.colorBgContainer}, 0 2px 12px ${token.colorBgMask}`
+                                : "none",
+                              color: textColorFor(safeColor),
+                              height: 30,
+                              minWidth: 30,
+                              padding: 0,
+                              width: 30,
+                            }}
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                  </Flex>
+
+                  <Input
+                    readOnly
+                    value={getFallbackColor(field.value)}
                     aria-label={t("kanban.statusForm.color")}
-                    onChange={(event) => field.onChange(event.target.value)}
-                    style={{
-                      width: 48,
-                      height: 36,
-                      border: "none",
-                      background: "transparent",
-                      padding: 0,
-                    }}
-                    type="color"
-                    value={field.value}
                   />
-                  <Input {...field} />
-                </div>
+                </Flex>
               )}
             />
           </Form.Item>
