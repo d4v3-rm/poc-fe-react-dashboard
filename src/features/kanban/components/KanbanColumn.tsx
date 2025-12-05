@@ -141,7 +141,7 @@ export const KanbanColumn = ({
           type="secondary"
           style={{ fontSize: token.fontSizeSM }}
         >
-          {t("kanban.dragHint")}
+          {t("task.dragHint")}
         </Typography.Text>
 
         <SortableContext
