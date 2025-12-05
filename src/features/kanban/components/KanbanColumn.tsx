@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Button, Card, Dropdown, Empty, Flex, Space, Tag, Typography, theme } from 'antd';
+import { Button, Card, Dropdown, Empty, Flex, Space, Tag, Tooltip, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
@@ -86,7 +86,9 @@ export const KanbanColumn = ({
             }}
             trigger={['click']}
           >
-            <Button icon={<MoreOutlined />} size="small" type="text" />
+            <Tooltip title={t('actions.more')}>
+              <Button icon={<MoreOutlined />} size="small" type="text" />
+            </Tooltip>
           </Dropdown>
         </Flex>
       }

@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined, FlagOutlined, SwapOutlined } from '@ant-design/icons';
-import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
@@ -60,7 +60,9 @@ export const TaskCard = ({
             }}
             trigger={['click']}
           >
-            <Button icon={<SwapOutlined />} size="small" type="text" />
+            <Tooltip title={t('task.quickStatus')}>
+              <Button icon={<SwapOutlined />} size="small" type="text" />
+            </Tooltip>
           </Dropdown>
         )}
         </Flex>

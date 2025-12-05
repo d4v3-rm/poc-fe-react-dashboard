@@ -1,4 +1,5 @@
-import { App as AntdApp, Card, Col, Empty, Flex, Row, Space, Typography } from 'antd';
+import { DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
+import { App as AntdApp, Button, Card, Col, Empty, Flex, Row, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +104,7 @@ export const DashboardPage = () => {
   const [projectEditorMode, setProjectEditorMode] = useState<ProjectEditorMode>('create');
   const [isProjectModalOpen, setProjectModalOpen] = useState(false);
   const [projectDraft, setProjectDraft] = useState<ProjectItem | null>(null);
+  const [isProjectPanelCollapsed, setProjectPanelCollapsed] = useState(false);
 
   const [taskEditorMode, setTaskEditorMode] = useState<TaskEditorMode>('create');
   const [isTaskDrawerOpen, setTaskDrawerOpen] = useState(false);
@@ -255,15 +257,35 @@ export const DashboardPage = () => {
 
       <Row gutter={[14, 14]}>
         <Col lg={8} xl={7} xs={24}>
-          <Card>
-            <ProjectSidebar
-              activeProjectId={activeProjectId}
-              onCreateProject={openProjectCreate}
-              onDeleteProject={handleProjectDelete}
-              onEditProject={openProjectEdit}
-              onSelectProject={setActiveProject}
-              projects={projects}
-            />
+          <Card
+            extra={
+              <Space size={8}>
+                <Button icon={<PlusOutlined />} onClick={openProjectCreate} size="small" type="primary">
+                  {t('project.create')}
+                </Button>
+                <Tooltip title={isProjectPanelCollapsed ? t('project.expandPanel') : t('project.collapsePanel')}>
+                  <Button
+                    icon={isProjectPanelCollapsed ? <DownOutlined /> : <UpOutlined />}
+                    onClick={() => setProjectPanelCollapsed((value) => !value)}
+                    size="small"
+                    type="text"
+                  />
+                </Tooltip>
+              </Space>
+            }
+            title={t('project.sectionTitle')}
+          >
+            {!isProjectPanelCollapsed && (
+              <ProjectSidebar
+                activeProjectId={activeProjectId}
+                onCreateProject={openProjectCreate}
+                onDeleteProject={handleProjectDelete}
+                onEditProject={openProjectEdit}
+                onSelectProject={setActiveProject}
+                projects={projects}
+                showHeader={false}
+              />
+            )}
           </Card>
         </Col>
         <Col lg={16} xl={17} xs={24}>

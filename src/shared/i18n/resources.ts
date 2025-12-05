@@ -16,6 +16,7 @@ export const resources = {
         cancel: 'Cancel',
         delete: 'Delete',
         edit: 'Edit',
+        more: 'More actions',
         close: 'Close',
         export: 'Export',
         import: 'Import',
@@ -35,6 +36,8 @@ export const resources = {
           title: 'Delete project?',
           description: 'This action permanently deletes all tasks in the project.',
         },
+        collapsePanel: 'Collapse projects panel',
+        expandPanel: 'Expand projects panel',
       },
       task: {
         create: 'New Task',
@@ -125,6 +128,7 @@ export const resources = {
         cancel: 'Annulla',
         delete: 'Elimina',
         edit: 'Modifica',
+        more: 'Altre azioni',
         close: 'Chiudi',
         export: 'Esporta',
         import: 'Importa',
@@ -144,6 +148,8 @@ export const resources = {
           title: 'Eliminare il progetto?',
           description: 'Questa azione elimina in modo permanente tutti i task del progetto.',
         },
+        collapsePanel: 'Comprimi pannello progetti',
+        expandPanel: 'Espandi pannello progetti',
       },
       task: {
         create: 'Nuovo Task',
