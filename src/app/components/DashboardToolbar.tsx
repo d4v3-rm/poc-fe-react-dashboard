@@ -1,5 +1,5 @@
-import { DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, ColorPicker, Flex, Input, Segmented, Select, Space, Typography } from 'antd';
+import { ClearOutlined, DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, ColorPicker, Flex, Input, Segmented, Select, Space, Tooltip, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskStatus, ViewMode } from '../../features/tasks/task.types';
 import { THEME_COLOR_PRESETS } from '../../shared/utils/defaults';
@@ -101,7 +101,9 @@ export const DashboardToolbar = ({
           value={filters.due}
         />
 
-        <Button onClick={onClearFilters}>{t('actions.clearFilters')}</Button>
+        <Tooltip title={t('actions.clearFilters')}>
+          <Button aria-label={t('actions.clearFilters')} icon={<ClearOutlined />} onClick={onClearFilters} />
+        </Tooltip>
       </Flex>
 
       <Flex align="center" gap={10} style={{ flexWrap: 'wrap' }}>
@@ -166,15 +168,15 @@ export const DashboardToolbar = ({
         />
 
         <Space size={8}>
-          <Button icon={<UploadOutlined />} onClick={onImport}>
-            {t('actions.import')}
-          </Button>
-          <Button icon={<DownloadOutlined />} onClick={onExport}>
-            {t('actions.export')}
-          </Button>
-          <Button icon={<PlusOutlined />} onClick={onCreateTask} type="primary">
-            {t('task.create')}
-          </Button>
+          <Tooltip title={t('actions.import')}>
+            <Button aria-label={t('actions.import')} icon={<UploadOutlined />} onClick={onImport} />
+          </Tooltip>
+          <Tooltip title={t('actions.export')}>
+            <Button aria-label={t('actions.export')} icon={<DownloadOutlined />} onClick={onExport} />
+          </Tooltip>
+          <Tooltip title={t('task.create')}>
+            <Button aria-label={t('task.create')} icon={<PlusOutlined />} onClick={onCreateTask} type="primary" />
+          </Tooltip>
         </Space>
       </Flex>
     </Flex>

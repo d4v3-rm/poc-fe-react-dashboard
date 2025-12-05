@@ -15,6 +15,7 @@ import type {
 } from './dashboard-store.types';
 
 const STORAGE_KEY = 'task-dashboard-v1';
+const STORAGE_VERSION = 1;
 const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 const nowIso = (): string => new Date().toISOString();
@@ -197,6 +198,21 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
     },
     language,
     themeMode: snapshot.themeMode ?? 'light',
+    themeColors: normalizeThemeColors(snapshot.themeColors),
+  };
+};
+
+const hasTaskData = (projects: ProjectItem[]): boolean =>
+  projects.some((project) => project.tasks.length > 0);
+
+const createMockSnapshotFromPreferences = (snapshot: DashboardSnapshot): DashboardSnapshot => {
+  const seeded = createInitialSnapshot();
+
+  return {
+    ...seeded,
+    viewMode: snapshot.viewMode,
+    language: snapshot.language,
+    themeMode: snapshot.themeMode,
     themeColors: normalizeThemeColors(snapshot.themeColors),
   };
 };
@@ -670,7 +686,23 @@ export const useDashboardStore = create<DashboardStore>()(
     }),
     {
       name: STORAGE_KEY,
+      version: STORAGE_VERSION,
       storage: createJSONStorage(() => localStorage),
+      migrate: (persistedState, version) => {
+        const parsed = dashboardSnapshotSchema.safeParse(persistedState);
+
+        if (!parsed.success) {
+          return createInitialSnapshot();
+        }
+
+        const normalized = normalizeSnapshot(parsed.data);
+
+        if (version < STORAGE_VERSION && !hasTaskData(normalized.projects)) {
+          return createMockSnapshotFromPreferences(normalized);
+        }
+
+        return normalized;
+      },
       partialize: (state) => ({
         projects: state.projects,
         activeProjectId: state.activeProjectId,

@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, FlagOutlined, SwapOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, EditOutlined, FlagOutlined, SwapOutlined } from '@ant-design/icons';
 import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -52,19 +52,19 @@ export const TaskCard = ({
             {task.title}
           </Typography.Title>
 
-        {statusOptions.length > 0 && (
-          <Dropdown
-            menu={{
-              items: statusOptions,
-              onClick: ({ key }) => onStatusChange(task.id, String(key)),
-            }}
-            trigger={['click']}
-          >
-            <Tooltip title={t('task.quickStatus')}>
-              <Button icon={<SwapOutlined />} size="small" type="text" />
-            </Tooltip>
-          </Dropdown>
-        )}
+          {statusOptions.length > 0 && (
+            <Dropdown
+              menu={{
+                items: statusOptions,
+                onClick: ({ key }) => onStatusChange(task.id, String(key)),
+              }}
+              trigger={['click']}
+            >
+              <Tooltip title={t('task.quickStatus')}>
+                <Button aria-label={t('task.quickStatus')} icon={<SwapOutlined />} size="small" type="text" />
+              </Tooltip>
+            </Dropdown>
+          )}
         </Flex>
 
         <Space size={6} wrap>
@@ -81,20 +81,29 @@ export const TaskCard = ({
         </Card>
 
         <Space size={6}>
-          <Button icon={<EditOutlined />} onClick={() => onEdit(task.id)} size="small">
-            {t('actions.edit')}
-          </Button>
+          <Tooltip title={t('actions.edit')}>
+            <Button aria-label={t('actions.edit')} icon={<EditOutlined />} onClick={() => onEdit(task.id)} size="small" />
+          </Tooltip>
 
           <Popconfirm
             description={t('task.deleteConfirm.description')}
-            okText={t('actions.delete')}
+            cancelButtonProps={{
+              'aria-label': t('actions.cancel'),
+              icon: <CloseOutlined />,
+            }}
+            cancelText=""
+            okButtonProps={{
+              'aria-label': t('actions.delete'),
+              icon: <DeleteOutlined />,
+            }}
+            okText=""
             okType="danger"
             onConfirm={() => onDelete(task.id)}
             title={t('task.deleteConfirm.title')}
           >
-            <Button danger icon={<DeleteOutlined />} size="small">
-              {t('actions.delete')}
-            </Button>
+            <Tooltip title={t('actions.delete')}>
+              <Button aria-label={t('actions.delete')} danger icon={<DeleteOutlined />} size="small" />
+            </Tooltip>
           </Popconfirm>
         </Space>
       </Flex>

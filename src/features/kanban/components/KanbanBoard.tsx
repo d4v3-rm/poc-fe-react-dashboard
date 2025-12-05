@@ -1,6 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { closestCorners, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
-import { Button, Flex } from 'antd';
+import { Button, Flex, Tooltip } from 'antd';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
@@ -102,9 +102,9 @@ export const KanbanBoard = ({
   return (
     <Flex gap={12} vertical>
       <Flex justify="end">
-        <Button icon={<PlusOutlined />} onClick={onAddStatus} type="dashed">
-          {t('kanban.addStatus')}
-        </Button>
+        <Tooltip title={t('kanban.addStatus')}>
+          <Button aria-label={t('kanban.addStatus')} icon={<PlusOutlined />} onClick={onAddStatus} type="dashed" />
+        </Tooltip>
       </Flex>
 
       <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} sensors={sensors}>

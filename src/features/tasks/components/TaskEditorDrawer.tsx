@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Card, Col, DatePicker, Drawer, Flex, Form, Grid, Input, Row, Select, Space, Typography } from 'antd';
+import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Col, DatePicker, Drawer, Flex, Form, Grid, Input, Row, Select, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -72,21 +73,25 @@ export const TaskEditorDrawer = ({
       footer={
         <Flex justify="end">
           <Space>
-            <Button onClick={onClose}>{t('actions.cancel')}</Button>
-            <Button
-              loading={isSubmitting}
-              onClick={handleSubmit((values) => {
-                onSubmit({
-                  title: values.title,
-                  content: values.content,
-                  statusId: values.statusId,
-                  dueDate: values.dueDate ? values.dueDate.toISOString() : null,
-                });
-              })}
-              type="primary"
-            >
-              {mode === 'create' ? t('actions.create') : t('actions.save')}
-            </Button>
+            <Tooltip title={t('actions.cancel')}>
+              <Button aria-label={t('actions.cancel')} icon={<CloseOutlined />} onClick={onClose} />
+            </Tooltip>
+            <Tooltip title={mode === 'create' ? t('actions.create') : t('actions.save')}>
+              <Button
+                aria-label={mode === 'create' ? t('actions.create') : t('actions.save')}
+                icon={mode === 'create' ? <PlusOutlined /> : <CheckOutlined />}
+                loading={isSubmitting}
+                onClick={handleSubmit((values) => {
+                  onSubmit({
+                    title: values.title,
+                    content: values.content,
+                    statusId: values.statusId,
+                    dueDate: values.dueDate ? values.dueDate.toISOString() : null,
+                  });
+                })}
+                type="primary"
+              />
+            </Tooltip>
           </Space>
         </Flex>
       }
@@ -160,7 +165,7 @@ export const TaskEditorDrawer = ({
             <Form.Item
               help={errors.content?.message}
               label={
-                <Space direction="vertical" size={0}>
+                <Space orientation="vertical" size={0}>
                   <span>{t('task.form.content')}</span>
                   <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
                 </Space>

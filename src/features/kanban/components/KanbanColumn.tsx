@@ -87,7 +87,7 @@ export const KanbanColumn = ({
             trigger={['click']}
           >
             <Tooltip title={t('actions.more')}>
-              <Button icon={<MoreOutlined />} size="small" type="text" />
+              <Button aria-label={t('actions.more')} icon={<MoreOutlined />} size="small" type="text" />
             </Tooltip>
           </Dropdown>
         </Flex>

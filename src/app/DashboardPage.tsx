@@ -1,5 +1,5 @@
-import { DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons';
-import { App as AntdApp, Button, Card, Col, Empty, Flex, Row, Space, Tooltip, Typography } from 'antd';
+import { CloseOutlined, DeleteOutlined, FolderOpenOutlined, LeftOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
+import { App as AntdApp, Button, Card, Empty, Flex, Layout, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -165,9 +165,17 @@ export const DashboardPage = () => {
     modal.confirm({
       title: t('project.deleteConfirm.title'),
       content: t('project.deleteConfirm.description'),
-      okText: t('actions.delete'),
+      okText: '',
+      okButtonProps: {
+        'aria-label': t('actions.delete'),
+        icon: <DeleteOutlined />,
+      },
       okType: 'danger',
-      cancelText: t('actions.cancel'),
+      cancelText: '',
+      cancelButtonProps: {
+        'aria-label': t('actions.cancel'),
+        icon: <CloseOutlined />,
+      },
       onOk: () => removeProject(project.id),
     });
   };
@@ -180,9 +188,17 @@ export const DashboardPage = () => {
     modal.confirm({
       title: t('kanban.deleteStatusConfirm.title'),
       content: t('kanban.deleteStatusConfirm.description'),
-      okText: t('actions.delete'),
+      okText: '',
+      okButtonProps: {
+        'aria-label': t('actions.delete'),
+        icon: <DeleteOutlined />,
+      },
       okType: 'danger',
-      cancelText: t('actions.cancel'),
+      cancelText: '',
+      cancelButtonProps: {
+        'aria-label': t('actions.cancel'),
+        icon: <CloseOutlined />,
+      },
       onOk: () => removeStatus(activeProject.id, status.id),
     });
   };
@@ -255,27 +271,92 @@ export const DashboardPage = () => {
         type="file"
       />
 
-      <Row gutter={[14, 14]}>
-        <Col lg={8} xl={7} xs={24}>
-          <Card
-            extra={
-              <Space size={8}>
-                <Button icon={<PlusOutlined />} onClick={openProjectCreate} size="small" type="primary">
-                  {t('project.create')}
-                </Button>
-                <Tooltip title={isProjectPanelCollapsed ? t('project.expandPanel') : t('project.collapsePanel')}>
+      <Layout
+        hasSider
+        style={{
+          background: 'transparent',
+          minHeight: 'calc(100vh - 28px)',
+        }}
+      >
+        <Layout.Sider
+          collapsed={isProjectPanelCollapsed}
+          collapsedWidth={84}
+          style={{
+            background: 'transparent',
+            marginRight: 14,
+          }}
+          trigger={null}
+          width={340}
+        >
+          <Flex gap={12} style={{ height: '100%' }} vertical>
+            {!isProjectPanelCollapsed && (
+              <Flex align="center" justify="space-between">
+                <Typography.Title level={4} style={{ margin: 0 }}>
+                  {t('project.sectionTitle')}
+                </Typography.Title>
+                <Space size={8}>
+                  <Tooltip title={t('project.create')}>
+                    <Button
+                      aria-label={t('project.create')}
+                      icon={<PlusOutlined />}
+                      onClick={openProjectCreate}
+                      size="small"
+                      type="primary"
+                    />
+                  </Tooltip>
+                  <Tooltip title={t('project.collapsePanel')}>
+                    <Button
+                      aria-label={t('project.collapsePanel')}
+                      icon={<LeftOutlined />}
+                      onClick={() => setProjectPanelCollapsed(true)}
+                      size="small"
+                      type="text"
+                    />
+                  </Tooltip>
+                </Space>
+              </Flex>
+            )}
+
+            {isProjectPanelCollapsed && (
+              <Flex align="center" gap={8} vertical>
+                <Tooltip title={t('project.create')}>
                   <Button
-                    icon={isProjectPanelCollapsed ? <DownOutlined /> : <UpOutlined />}
-                    onClick={() => setProjectPanelCollapsed((value) => !value)}
-                    size="small"
+                    aria-label={t('project.create')}
+                    icon={<PlusOutlined />}
+                    onClick={openProjectCreate}
+                    shape="circle"
                     type="text"
                   />
                 </Tooltip>
-              </Space>
-            }
-            title={t('project.sectionTitle')}
-          >
-            {!isProjectPanelCollapsed && (
+                <Tooltip title={t('project.expandPanel')}>
+                  <Button
+                    aria-label={t('project.expandPanel')}
+                    icon={<RightOutlined />}
+                    onClick={() => setProjectPanelCollapsed(false)}
+                    shape="circle"
+                    type="text"
+                  />
+                </Tooltip>
+              </Flex>
+            )}
+
+            {isProjectPanelCollapsed ? (
+              <Flex align="center" gap={8} style={{ overflowY: 'auto', paddingBottom: 8 }} vertical>
+                {projects.map((project) => {
+                  return (
+                    <Tooltip key={project.id} placement="right" title={project.name}>
+                      <Button
+                        aria-label={project.name}
+                        icon={<FolderOpenOutlined />}
+                        onClick={() => setActiveProject(project.id)}
+                        shape="circle"
+                        type={activeProjectId === project.id ? 'primary' : 'default'}
+                      />
+                    </Tooltip>
+                  );
+                })}
+              </Flex>
+            ) : (
               <ProjectSidebar
                 activeProjectId={activeProjectId}
                 onCreateProject={openProjectCreate}
@@ -286,10 +367,10 @@ export const DashboardPage = () => {
                 showHeader={false}
               />
             )}
-          </Card>
-        </Col>
-        <Col lg={16} xl={17} xs={24}>
-          <Space direction="vertical" size={12} style={{ width: '100%' }}>
+          </Flex>
+        </Layout.Sider>
+        <Layout.Content style={{ minWidth: 0 }}>
+          <Space orientation="vertical" size={12} style={{ width: '100%' }}>
             <Card>
               <DashboardToolbar
                 filters={filters}
@@ -367,8 +448,8 @@ export const DashboardPage = () => {
               )}
             </Card>
           </Space>
-        </Col>
-      </Row>
+        </Layout.Content>
+      </Layout>
 
       <ProjectFormModal
         initialValues={

@@ -19,11 +19,9 @@ const antdLocales = {
 } as const;
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
-  const { language, themeMode, themeColors } = useDashboardStore((state) => ({
-    language: state.language,
-    themeMode: state.themeMode,
-    themeColors: state.themeColors,
-  }));
+  const language = useDashboardStore((state) => state.language);
+  const themeMode = useDashboardStore((state) => state.themeMode);
+  const themeColors = useDashboardStore((state) => state.themeColors);
   const appTheme = useMemo(
     () =>
       buildAppTheme({

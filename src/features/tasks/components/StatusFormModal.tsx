@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form, Input, Modal } from 'antd';
+import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, Tooltip } from 'antd';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -54,17 +55,18 @@ export const StatusFormModal = ({
       onCancel={onCancel}
       title={mode === 'create' ? t('kanban.addStatus') : t('kanban.editStatus')}
       footer={[
-        <Button key="cancel" onClick={onCancel}>
-          {t('actions.cancel')}
-        </Button>,
-        <Button
-          key="save"
-          loading={isSubmitting}
-          onClick={handleSubmit((values) => onSubmit(values))}
-          type="primary"
-        >
-          {mode === 'create' ? t('actions.create') : t('actions.save')}
-        </Button>,
+        <Tooltip key="cancel" title={t('actions.cancel')}>
+          <Button aria-label={t('actions.cancel')} icon={<CloseOutlined />} onClick={onCancel} />
+        </Tooltip>,
+        <Tooltip key="save" title={mode === 'create' ? t('actions.create') : t('actions.save')}>
+          <Button
+            aria-label={mode === 'create' ? t('actions.create') : t('actions.save')}
+            icon={mode === 'create' ? <PlusOutlined /> : <CheckOutlined />}
+            loading={isSubmitting}
+            onClick={handleSubmit((values) => onSubmit(values))}
+            type="primary"
+          />
+        </Tooltip>,
       ]}
     >
       <Form layout="vertical" onFinish={handleSubmit((values) => onSubmit(values))}>

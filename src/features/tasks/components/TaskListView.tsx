@@ -31,7 +31,7 @@ export const TaskListView = ({
   }
 
   return (
-    <Space direction="vertical" size={20} style={{ width: '100%' }}>
+    <Space orientation="vertical" size={20} style={{ width: '100%' }}>
       {statuses.map((status) => {
         const statusTasks = tasks
           .filter((task) => task.statusId === status.id)
