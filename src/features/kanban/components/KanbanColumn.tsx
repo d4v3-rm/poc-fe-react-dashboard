@@ -18,7 +18,7 @@ import {
 import type { MenuProps } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TaskItem, TaskStatus } from "../../tasks/task.types";
-import { semanticTagStyle } from "../../../shared/theme/color-utils";
+import { statusTagStyle } from "../../../shared/theme/color-utils";
 import { SortableTaskCard } from "./SortableTaskCard";
 
 type KanbanColumnProps = {
@@ -34,6 +34,8 @@ type KanbanColumnProps = {
   onEditStatus: (status: TaskStatus) => void;
   onDeleteStatus: (status: TaskStatus) => void;
 };
+
+const KANBAN_COLUMN_WIDTH = 332;
 
 export const KanbanColumn = ({
   status,
@@ -76,7 +78,7 @@ export const KanbanColumn = ({
       title={
         <Flex align="center" gap={8} justify="space-between">
           <Flex align="center" gap={8}>
-            <Tag style={semanticTagStyle(status.color, 0.15, 0.34)}>
+            <Tag style={statusTagStyle(status.color)}>
               {status.name}
             </Tag>
             <Typography.Text type="secondary">{tasks.length}</Typography.Text>
@@ -114,13 +116,21 @@ export const KanbanColumn = ({
         borderWidth: 1,
         borderStyle: "solid",
         borderRadius: token.borderRadiusLG,
-        flex: "0 0 328px",
+        width: KANBAN_COLUMN_WIDTH,
+        minWidth: KANBAN_COLUMN_WIDTH,
+        maxWidth: KANBAN_COLUMN_WIDTH,
+        flex: `0 0 ${KANBAN_COLUMN_WIDTH}px`,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
+        maxHeight: "100%",
         height: "100%",
       }}
       styles={{
         body: {
           display: "flex",
           flexDirection: "column",
+          flex: 1,
           minHeight: 0,
           overflow: "hidden",
         },
@@ -142,10 +152,13 @@ export const KanbanColumn = ({
             gap={10}
             style={{
               minHeight: 0,
-              paddingBottom: 4,
+              paddingBottom: 12,
+              paddingRight: 2,
               flex: 1,
               overflowY: "auto",
               overflowX: "hidden",
+              WebkitOverflowScrolling: "touch",
+              scrollbarGutter: "stable",
             }}
             vertical
           >

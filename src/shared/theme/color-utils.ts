@@ -87,3 +87,14 @@ export const semanticTagStyle = (
     color: textColorFor(safeHex),
   };
 };
+
+export const statusTagStyle = (hex: string): Record<string, string> => {
+  const safeHex = getFallbackColor(hex);
+
+  return {
+    backgroundColor: toRgba(safeHex, 0.84),
+    borderColor: toRgba(safeHex, 0.94),
+    color: textColorFor(safeHex),
+    fontWeight: "600",
+  };
+};
