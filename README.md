@@ -57,19 +57,19 @@ The current experience is intentionally centered around a dark-first operational
 
 ## 🧱 Tech stack
 
-| Area | Choice |
-| --- | --- |
-| Build tool | Vite |
-| UI | React 19 + Ant Design 6 |
-| Language | TypeScript |
-| State | Zustand |
-| Validation | React Hook Form + Zod |
-| Drag and drop | dnd-kit |
-| Markdown | react-markdown + remark-gfm |
-| Dates | dayjs |
-| Localization | i18next + react-i18next |
-| Formatting | Prettier |
-| Linting | ESLint |
+| Area          | Choice                      |
+| ------------- | --------------------------- |
+| Build tool    | Vite                        |
+| UI            | React 19 + Ant Design 6     |
+| Language      | TypeScript                  |
+| State         | Zustand                     |
+| Validation    | React Hook Form + Zod       |
+| Drag and drop | dnd-kit                     |
+| Markdown      | react-markdown + remark-gfm |
+| Dates         | dayjs                       |
+| Localization  | i18next + react-i18next     |
+| Formatting    | Prettier                    |
+| Linting       | ESLint                      |
 
 ## 🗂️ Project structure
 
@@ -166,12 +166,12 @@ npm run preview
 
 ## 🧪 Quality commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run lint` | Runs ESLint on the codebase |
-| `npm run format` | Formats the repository with Prettier |
-| `npm run format:check` | Verifies formatting without changing files |
-| `npm run build` | Executes TypeScript build and Vite production build |
+| Command                | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `npm run lint`         | Runs ESLint on the codebase                         |
+| `npm run format`       | Formats the repository with Prettier                |
+| `npm run format:check` | Verifies formatting without changing files          |
+| `npm run build`        | Executes TypeScript build and Vite production build |
 
 ## 🔁 Release and versioning
 
