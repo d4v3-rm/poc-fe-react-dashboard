@@ -78,7 +78,7 @@ export const KanbanColumn = ({
       title={
         <Flex align="center" gap={8} justify="space-between">
           <Flex align="center" gap={8}>
-            <Tag style={statusTagStyle(status.color)}>
+            <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
               {status.name}
             </Tag>
             <Typography.Text type="secondary">{tasks.length}</Typography.Text>

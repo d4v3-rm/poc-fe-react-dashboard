@@ -113,6 +113,10 @@ export const DashboardPage = () => {
   const { message, modal } = AntdApp.useApp();
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const overlayMaskStyle = {
+    backgroundColor: "rgba(12, 22, 38, 0.44)",
+    backdropFilter: "blur(2px)",
+  };
 
   const activeProject = useMemo(
     () => projects.find((project) => project.id === activeProjectId) ?? null,
@@ -124,13 +128,7 @@ export const DashboardPage = () => {
       return [];
     }
 
-    return Array.from(
-      new Set(
-        activeProject.tasks
-          .flatMap((task) => task.tags)
-          .filter((tag) => tag.length > 0),
-      ),
-    ).sort((a, b) => a.localeCompare(b));
+    return [...activeProject.tags];
   }, [activeProject]);
 
   const filteredTasks = useMemo(() => {
@@ -228,6 +226,7 @@ export const DashboardPage = () => {
     modal.confirm({
       centered: true,
       width: "min(460px, 95vw)",
+      maskStyle: overlayMaskStyle,
       style: {
         borderRadius: token.borderRadiusLG,
       },
@@ -258,6 +257,7 @@ export const DashboardPage = () => {
     modal.confirm({
       centered: true,
       width: "min(460px, 95vw)",
+      maskStyle: overlayMaskStyle,
       style: {
         borderRadius: token.borderRadiusLG,
       },
@@ -665,6 +665,7 @@ export const DashboardPage = () => {
             ? {
                 name: projectDraft.name,
                 description: projectDraft.description,
+                tags: projectDraft.tags,
               }
             : undefined
         }
@@ -678,6 +679,7 @@ export const DashboardPage = () => {
             createProject({
               name: values.name,
               description: values.description,
+              tags: values.tags,
               statuses: DEFAULT_STATUS_TEMPLATES[language],
             });
           } else if (projectDraft) {
@@ -782,15 +784,16 @@ export const DashboardPage = () => {
         open={isThemeModalOpen}
         footer={null}
         styles={{
-          wrapper: {
-            background: token.colorBgElevated,
+          mask: overlayMaskStyle,
+          container: {
+            background: token.colorBgContainer,
             border: `1px solid ${token.colorBorderSecondary}`,
             borderRadius: token.borderRadiusLG,
             boxShadow: token.boxShadowSecondary,
             overflow: "hidden",
           },
           body: {
-            background: token.colorBgElevated,
+            background: token.colorBgContainer,
             borderRadius: token.borderRadiusLG,
             padding: 0,
             overflow: "auto",

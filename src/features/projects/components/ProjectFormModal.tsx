@@ -4,6 +4,7 @@ import {
   Button,
   Form,
   Input,
+  Select,
   Modal,
   Space,
   Typography,
@@ -26,6 +27,7 @@ type ProjectFormModalProps = {
 const defaultValues: ProjectFormValues = {
   name: "",
   description: "",
+  tags: [],
 };
 
 export const ProjectFormModal = ({
@@ -37,6 +39,10 @@ export const ProjectFormModal = ({
 }: ProjectFormModalProps) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const modalMaskStyle = {
+    backgroundColor: "rgba(12, 22, 38, 0.44)",
+    backdropFilter: "blur(2px)",
+  };
   const {
     control,
     handleSubmit,
@@ -55,8 +61,9 @@ export const ProjectFormModal = ({
     reset({
       name: initialValues?.name ?? "",
       description: initialValues?.description ?? "",
+      tags: initialValues?.tags ?? [],
     });
-  }, [initialValues?.description, initialValues?.name, open, reset]);
+  }, [initialValues?.description, initialValues?.name, initialValues?.tags, open, reset]);
 
   return (
     <Modal
@@ -67,22 +74,24 @@ export const ProjectFormModal = ({
       width="min(560px, 95vw)"
       title={null}
       styles={{
-        wrapper: {
+        mask: modalMaskStyle,
+        container: {
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadiusLG,
           boxShadow: token.boxShadowSecondary,
-          background: token.colorBgElevated,
+          background: token.colorBgContainer,
           overflow: "hidden",
         },
         body: {
           borderRadius: token.borderRadiusLG,
-          background: token.colorBgElevated,
+          background: token.colorBgContainer,
           padding: 0,
           overflow: "visible",
         },
         footer: {
           borderTop: `1px solid ${token.colorBorderSecondary}`,
           padding: "12px 16px 14px",
+          background: token.colorBgContainer,
         },
       }}
       footer={[
@@ -156,6 +165,29 @@ export const ProjectFormModal = ({
                 {...field}
                 autoSize={{ minRows: 3, maxRows: 6 }}
                 placeholder={t("project.form.description")}
+              />
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={t("project.form.tags")}
+          validateStatus={errors.tags ? "error" : ""}
+          help={errors.tags?.message}
+        >
+          <Controller
+            control={control}
+            name="tags"
+            render={({ field }) => (
+              <Select
+                {...field}
+                allowClear
+                mode="tags"
+                options={(initialValues?.tags ?? []).map((tag) => ({
+                  label: tag,
+                  value: tag,
+                }))}
+                placeholder={t("project.form.tags")}
               />
             )}
           />

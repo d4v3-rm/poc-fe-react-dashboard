@@ -62,6 +62,53 @@ export const toRgba = (hex: string, alpha: number): string => {
   return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 };
 
+const srgbToLinear = (channel: number): number => {
+  const normalized = channel / 255;
+  return normalized <= 0.03928
+    ? normalized / 12.92
+    : ((normalized + 0.055) / 1.055) ** 2.4;
+};
+
+const relativeLuminance = (rgb: [number, number, number]): number =>
+  0.2126 * srgbToLinear(rgb[0]) +
+  0.7152 * srgbToLinear(rgb[1]) +
+  0.0722 * srgbToLinear(rgb[2]);
+
+const contrastRatio = (
+  first: [number, number, number],
+  second: [number, number, number],
+): number => {
+  const luminanceFirst = relativeLuminance(first);
+  const luminanceSecond = relativeLuminance(second);
+  const lighter = Math.max(luminanceFirst, luminanceSecond);
+  const darker = Math.min(luminanceFirst, luminanceSecond);
+  return (lighter + 0.05) / (darker + 0.05);
+};
+
+const blendColor = (
+  foreground: [number, number, number],
+  background: [number, number, number],
+  alpha: number,
+): [number, number, number] => {
+  const clampedAlpha = Math.max(0, Math.min(1, alpha));
+
+  return [
+    Math.round(foreground[0] * clampedAlpha + background[0] * (1 - clampedAlpha)),
+    Math.round(foreground[1] * clampedAlpha + background[1] * (1 - clampedAlpha)),
+    Math.round(foreground[2] * clampedAlpha + background[2] * (1 - clampedAlpha)),
+  ];
+};
+
+const BLACK_RGB: [number, number, number] = [22, 22, 22];
+const WHITE_RGB: [number, number, number] = [255, 255, 255];
+
+const pickReadableText = (background: [number, number, number]): string => {
+  const blackContrast = contrastRatio(background, BLACK_RGB);
+  const whiteContrast = contrastRatio(background, WHITE_RGB);
+
+  return blackContrast >= whiteContrast ? "#161616" : "#ffffff";
+};
+
 export const textColorFor = (hex: string): string => {
   const parsed = hexToRgb(hex);
 
@@ -69,32 +116,45 @@ export const textColorFor = (hex: string): string => {
     return "#ffffff";
   }
 
-  const [red, green, blue] = parsed;
-  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-  return luminance > 165 ? "#1f1f1f" : "#ffffff";
+  return pickReadableText(parsed);
 };
 
 export const semanticTagStyle = (
   hex: string,
   alphaBackground = 0.16,
   alphaBorder = 0.42,
+  surfaceHex = "#ffffff",
 ): Record<string, string> => {
   const safeHex = getFallbackColor(hex);
+  const safeSurface = getFallbackColor(surfaceHex);
+  const tagRgb = hexToRgb(safeHex) ?? [13, 139, 255];
+  const surfaceRgb = hexToRgb(safeSurface) ?? [255, 255, 255];
+  const blendedBackground = blendColor(tagRgb, surfaceRgb, alphaBackground);
 
   return {
     backgroundColor: toRgba(safeHex, alphaBackground),
     borderColor: toRgba(safeHex, alphaBorder),
-    color: textColorFor(safeHex),
+    color: pickReadableText(blendedBackground),
   };
 };
 
-export const statusTagStyle = (hex: string): Record<string, string> => {
+export const statusTagStyle = (
+  hex: string,
+  surfaceHex = "#ffffff",
+): Record<string, string> => {
   const safeHex = getFallbackColor(hex);
+  const safeSurface = getFallbackColor(surfaceHex);
+  const surfaceRgb = hexToRgb(safeSurface) ?? [255, 255, 255];
+  const darkSurface = relativeLuminance(surfaceRgb) < 0.2;
+  const alphaBackground = darkSurface ? 0.38 : 0.24;
+  const alphaBorder = darkSurface ? 0.62 : 0.52;
+  const tagRgb = hexToRgb(safeHex) ?? [13, 139, 255];
+  const blendedBackground = blendColor(tagRgb, surfaceRgb, alphaBackground);
 
   return {
-    backgroundColor: toRgba(safeHex, 0.84),
-    borderColor: toRgba(safeHex, 0.94),
-    color: textColorFor(safeHex),
+    backgroundColor: toRgba(safeHex, alphaBackground),
+    borderColor: toRgba(safeHex, alphaBorder),
+    color: pickReadableText(blendedBackground),
     fontWeight: "600",
   };
 };

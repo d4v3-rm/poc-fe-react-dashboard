@@ -38,6 +38,10 @@ export const StatusFormModal = ({
 }: StatusFormModalProps) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const modalMaskStyle = {
+    backgroundColor: "rgba(12, 22, 38, 0.44)",
+    backdropFilter: "blur(2px)",
+  };
   const {
     control,
     handleSubmit,
@@ -68,22 +72,24 @@ export const StatusFormModal = ({
       width="min(520px, 95vw)"
       title={null}
       styles={{
-        wrapper: {
+        mask: modalMaskStyle,
+        container: {
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadiusLG,
           boxShadow: token.boxShadowSecondary,
-          background: token.colorBgElevated,
+          background: token.colorBgContainer,
           overflow: "hidden",
         },
         body: {
           borderRadius: token.borderRadiusLG,
-          background: token.colorBgElevated,
+          background: token.colorBgContainer,
           padding: 0,
           overflow: "visible",
         },
         footer: {
           borderTop: `1px solid ${token.colorBorderSecondary}`,
           padding: "12px 16px 14px",
+          background: token.colorBgContainer,
         },
       }}
       footer={[

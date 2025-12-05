@@ -73,7 +73,18 @@ export const TaskCard = ({
   const [isHovering, setIsHovering] = useState(false);
   const dueIsOverdue = isOverdue(task.dueDate);
   const dueTagColor = dueIsOverdue ? token.colorError : token.colorInfo;
-  const dueTagStyle = semanticTagStyle(dueTagColor, 0.18, 0.42);
+  const dueTagStyle = semanticTagStyle(
+    dueTagColor,
+    0.18,
+    0.42,
+    token.colorBgContainer,
+  );
+  const taskTagStyle = semanticTagStyle(
+    token.colorPrimary,
+    0.14,
+    0.34,
+    token.colorBgContainer,
+  );
   const cardHeight = compact ? 172 : 172;
   const hoverBorder = isHovering
     ? toRgba(token.colorPrimary, 0.34)
@@ -131,7 +142,7 @@ export const TaskCard = ({
     >
       <Flex gap={10} style={{ height: "100%" }} vertical>
         <Flex align="center" gap={8} justify="space-between">
-          <Tag style={statusTagStyle(status.color)}>
+          <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
             {status.name}
           </Tag>
 
@@ -196,10 +207,12 @@ export const TaskCard = ({
         {task.tags.length > 0 ? (
           <Flex gap={6} wrap>
             {visibleTags.map((tag) => (
-              <Tag key={tag}>{tag}</Tag>
+              <Tag key={tag} style={taskTagStyle}>
+                {tag}
+              </Tag>
             ))}
             {hasExtraTags ? (
-              <Tag>{`+${task.tags.length - visibleTags.length}`}</Tag>
+              <Tag style={taskTagStyle}>{`+${task.tags.length - visibleTags.length}`}</Tag>
             ) : null}
           </Flex>
         ) : null}

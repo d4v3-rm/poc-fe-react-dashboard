@@ -126,7 +126,14 @@ export const ProjectSidebar = ({
                     {project.name}
                   </Typography.Text>
                 </Space>
-                <Tag style={semanticTagStyle(token.colorSuccess, 0.2, 0.5)}>
+                <Tag
+                  style={semanticTagStyle(
+                    token.colorSuccess,
+                    0.2,
+                    0.5,
+                    token.colorBgContainer,
+                  )}
+                >
                   {project.tasks.length}
                 </Tag>
               </Flex>

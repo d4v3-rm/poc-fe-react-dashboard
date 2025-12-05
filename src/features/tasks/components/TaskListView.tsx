@@ -1,4 +1,4 @@
-import { Card, Empty, Flex, Tag, Typography } from "antd";
+import { Card, Empty, Flex, Tag, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TaskItem, TaskStatus } from "../task.types";
 import { statusTagStyle } from "../../../shared/theme/color-utils";
@@ -24,6 +24,7 @@ export const TaskListView = ({
   onOpenTaskDetails,
 }: TaskListViewProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const groupedTasks = statuses
     .map((status) => ({
       status,
@@ -62,7 +63,7 @@ export const TaskListView = ({
           title={
             <Flex align="center" gap={10} justify="space-between">
               <Flex align="center" gap={8}>
-                <Tag style={statusTagStyle(status.color)}>
+                <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
                   {status.name}
                 </Tag>
                 <Typography.Text type="secondary">
