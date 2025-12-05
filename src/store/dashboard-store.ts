@@ -1,34 +1,47 @@
-import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
-import type { ProjectItem } from '../features/projects/project.types';
-import type { LanguageCode, TaskItem, TaskStatus } from '../features/tasks/task.types';
-import { DEFAULT_PROJECT_NAME, DEFAULT_STATUS_TEMPLATES, DEFAULT_THEME_COLORS } from '../shared/utils/defaults';
-import { createId } from '../shared/utils/id';
-import { buildMockProjects } from '../shared/utils/mock-data';
-import { dashboardSnapshotSchema } from './dashboard.schema';
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import type { ProjectItem } from "../features/projects/project.types";
+import type {
+  LanguageCode,
+  TaskItem,
+  TaskStatus,
+} from "../features/tasks/task.types";
+import {
+  DEFAULT_PROJECT_NAME,
+  DEFAULT_STATUS_TEMPLATES,
+  DEFAULT_THEME_COLORS,
+} from "../shared/utils/defaults";
+import { createId } from "../shared/utils/id";
+import { buildMockProjects } from "../shared/utils/mock-data";
+import { dashboardSnapshotSchema } from "./dashboard.schema";
 import type {
   CreateProjectInput,
   DashboardSnapshot,
   DashboardStore,
   ThemeColors,
   UpdateTaskInput,
-} from './dashboard-store.types';
+} from "./dashboard-store.types";
 
-const STORAGE_KEY = 'task-dashboard-v1';
+const STORAGE_KEY = "task-dashboard-v1";
 const STORAGE_VERSION = 1;
 const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 const nowIso = (): string => new Date().toISOString();
 
 const detectLanguage = (): LanguageCode => {
-  if (typeof navigator !== 'undefined' && navigator.language.toLowerCase().startsWith('it')) {
-    return 'it';
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.language.toLowerCase().startsWith("it")
+  ) {
+    return "it";
   }
 
-  return 'en';
+  return "en";
 };
 
-const normalizeThemeColors = (colors: Partial<ThemeColors> | undefined): ThemeColors => {
+const normalizeThemeColors = (
+  colors: Partial<ThemeColors> | undefined,
+): ThemeColors => {
   const primary =
     colors?.primary && HEX_COLOR_PATTERN.test(colors.primary)
       ? colors.primary
@@ -46,9 +59,11 @@ const normalizeThemeColors = (colors: Partial<ThemeColors> | undefined): ThemeCo
 
 const createStatuses = (
   language: LanguageCode,
-  templates?: Array<Pick<TaskStatus, 'name' | 'color'>>,
+  templates?: Array<Pick<TaskStatus, "name" | "color">>,
 ): TaskStatus[] => {
-  const source = templates?.length ? templates : DEFAULT_STATUS_TEMPLATES[language];
+  const source = templates?.length
+    ? templates
+    : DEFAULT_STATUS_TEMPLATES[language];
   const timestamp = nowIso();
 
   return source.map((template) => ({
@@ -60,7 +75,10 @@ const createStatuses = (
   }));
 };
 
-const normalizeTaskOrdering = (tasks: TaskItem[], statuses: TaskStatus[]): TaskItem[] => {
+const normalizeTaskOrdering = (
+  tasks: TaskItem[],
+  statuses: TaskStatus[],
+): TaskItem[] => {
   if (statuses.length === 0) {
     return [];
   }
@@ -72,7 +90,9 @@ const normalizeTaskOrdering = (tasks: TaskItem[], statuses: TaskStatus[]): TaskI
   statusIds.forEach((statusId) => grouped.set(statusId, []));
 
   tasks.forEach((task) => {
-    const safeStatusId = grouped.has(task.statusId) ? task.statusId : firstStatusId;
+    const safeStatusId = grouped.has(task.statusId)
+      ? task.statusId
+      : firstStatusId;
     const list = grouped.get(safeStatusId);
 
     if (list) {
@@ -105,7 +125,10 @@ const normalizeTaskOrdering = (tasks: TaskItem[], statuses: TaskStatus[]): TaskI
   return normalized;
 };
 
-const normalizeProject = (project: ProjectItem, fallbackLanguage: LanguageCode): ProjectItem => {
+const normalizeProject = (
+  project: ProjectItem,
+  fallbackLanguage: LanguageCode,
+): ProjectItem => {
   const timestamp = nowIso();
   const statuses =
     project.statuses.length > 0
@@ -118,9 +141,15 @@ const normalizeProject = (project: ProjectItem, fallbackLanguage: LanguageCode):
 
   return {
     ...project,
-    description: project.description ?? '',
+    description: project.description ?? "",
     statuses,
-    tasks: normalizeTaskOrdering(project.tasks, statuses),
+    tasks: normalizeTaskOrdering(
+      project.tasks.map((task) => ({
+        ...task,
+        tags: task.tags ?? [],
+      })),
+      statuses,
+    ),
   };
 };
 
@@ -133,7 +162,7 @@ const createProjectEntity = (
   return {
     id: createId(),
     name: input.name.trim(),
-    description: input.description?.trim() ?? '',
+    description: input.description?.trim() ?? "",
     createdAt: timestamp,
     updatedAt: timestamp,
     statuses: createStatuses(language, input.statuses),
@@ -148,27 +177,30 @@ const createInitialSnapshot = (): DashboardSnapshot => {
     projects[0] ??
     createProjectEntity(language, {
       name: DEFAULT_PROJECT_NAME[language],
-      description: '',
+      description: "",
     });
 
   return {
     projects: projects.length > 0 ? projects : [project],
     activeProjectId: project.id,
-    viewMode: 'kanban',
+    viewMode: "kanban",
     filters: {
-      query: '',
+      query: "",
       statusIds: [],
-      due: 'all',
+      tagIds: [],
+      due: "all",
     },
     language,
-    themeMode: 'light',
+    themeMode: "light",
     themeColors: DEFAULT_THEME_COLORS,
   };
 };
 
 const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
   const language = snapshot.language;
-  const projects = snapshot.projects.map((project) => normalizeProject(project, language));
+  const projects = snapshot.projects.map((project) =>
+    normalizeProject(project, language),
+  );
 
   if (projects.length === 0) {
     const initial = createInitialSnapshot();
@@ -179,13 +211,20 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
   }
 
   const activeProjectId =
-    snapshot.activeProjectId && projects.some((project) => project.id === snapshot.activeProjectId)
+    snapshot.activeProjectId &&
+    projects.some((project) => project.id === snapshot.activeProjectId)
       ? snapshot.activeProjectId
       : projects[0].id;
 
   const activeStatuses =
     projects.find((project) => project.id === activeProjectId)?.statuses ?? [];
   const validStatusIds = new Set(activeStatuses.map((status) => status.id));
+  const activeProject = projects.find(
+    (project) => project.id === activeProjectId,
+  );
+  const validTagIds = new Set(
+    (activeProject?.tasks ?? []).flatMap((task) => task.tags),
+  );
 
   return {
     projects,
@@ -193,11 +232,14 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
     viewMode: snapshot.viewMode,
     filters: {
       query: snapshot.filters.query,
-      statusIds: snapshot.filters.statusIds.filter((statusId) => validStatusIds.has(statusId)),
+      statusIds: snapshot.filters.statusIds.filter((statusId) =>
+        validStatusIds.has(statusId),
+      ),
+      tagIds: snapshot.filters.tagIds.filter((tagId) => validTagIds.has(tagId)),
       due: snapshot.filters.due,
     },
     language,
-    themeMode: snapshot.themeMode ?? 'light',
+    themeMode: snapshot.themeMode ?? "light",
     themeColors: normalizeThemeColors(snapshot.themeColors),
   };
 };
@@ -205,7 +247,9 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
 const hasTaskData = (projects: ProjectItem[]): boolean =>
   projects.some((project) => project.tasks.length > 0);
 
-const createMockSnapshotFromPreferences = (snapshot: DashboardSnapshot): DashboardSnapshot => {
+const createMockSnapshotFromPreferences = (
+  snapshot: DashboardSnapshot,
+): DashboardSnapshot => {
   const seeded = createInitialSnapshot();
 
   return {
@@ -261,7 +305,7 @@ const moveTaskInProject = (
 
   const destination = grouped.get(targetStatusId) ?? [];
   const safeIndex =
-    typeof targetIndex === 'number'
+    typeof targetIndex === "number"
       ? Math.min(Math.max(targetIndex, 0), destination.length)
       : destination.length;
 
@@ -308,7 +352,8 @@ const updateTaskDetails = (
 
   const fallbackStatusId = project.statuses[0]?.id;
   const safeStatusId =
-    project.statuses.some((status) => status.id === input.statusId) && input.statusId
+    project.statuses.some((status) => status.id === input.statusId) &&
+    input.statusId
       ? input.statusId
       : fallbackStatusId;
 
@@ -335,6 +380,7 @@ const updateTaskDetails = (
         ...task,
         title: input.title.trim(),
         content: input.content.trim(),
+        tags: input.tags,
         dueDate: input.dueDate,
         statusId: safeStatusId,
         updatedAt: timestamp,
@@ -349,19 +395,31 @@ export const useDashboardStore = create<DashboardStore>()(
       ...createInitialSnapshot(),
       setActiveProject: (projectId) => {
         set((state) => {
-          const targetProject = state.projects.find((project) => project.id === projectId);
+          const targetProject = state.projects.find(
+            (project) => project.id === projectId,
+          );
 
           if (!targetProject) {
             return state;
           }
 
-          const validStatusIds = new Set(targetProject.statuses.map((status) => status.id));
+          const validStatusIds = new Set(
+            targetProject.statuses.map((status) => status.id),
+          );
+          const validTagIds = new Set(
+            targetProject.tasks.flatMap((task) => task.tags),
+          );
 
           return {
             activeProjectId: projectId,
             filters: {
               ...state.filters,
-              statusIds: state.filters.statusIds.filter((statusId) => validStatusIds.has(statusId)),
+              statusIds: state.filters.statusIds.filter((statusId) =>
+                validStatusIds.has(statusId),
+              ),
+              tagIds: state.filters.tagIds.filter((tagId) =>
+                validTagIds.has(tagId),
+              ),
             },
           };
         });
@@ -385,6 +443,14 @@ export const useDashboardStore = create<DashboardStore>()(
           },
         }));
       },
+      setFilterTagIds: (tagIds) => {
+        set((state) => ({
+          filters: {
+            ...state.filters,
+            tagIds,
+          },
+        }));
+      },
       setDueFilter: (due) => {
         set((state) => ({
           filters: {
@@ -397,9 +463,10 @@ export const useDashboardStore = create<DashboardStore>()(
         set((state) => ({
           filters: {
             ...state.filters,
-            query: '',
+            query: "",
             statusIds: [],
-            due: 'all',
+            tagIds: [],
+            due: "all",
           },
         }));
       },
@@ -418,10 +485,10 @@ export const useDashboardStore = create<DashboardStore>()(
         const trimmedName = input.name.trim();
 
         if (!trimmedName) {
-          return '';
+          return "";
         }
 
-        let createdId = '';
+        let createdId = "";
 
         set((state) => {
           const project = createProjectEntity(state.language, {
@@ -437,6 +504,7 @@ export const useDashboardStore = create<DashboardStore>()(
             filters: {
               ...state.filters,
               statusIds: [],
+              tagIds: [],
             },
           };
         });
@@ -445,22 +513,28 @@ export const useDashboardStore = create<DashboardStore>()(
       },
       updateProject: (projectId, input) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => ({
-            ...project,
-            name: input.name.trim(),
-            description: input.description?.trim() ?? '',
-            updatedAt: nowIso(),
-          })),
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => ({
+              ...project,
+              name: input.name.trim(),
+              description: input.description?.trim() ?? "",
+              updatedAt: nowIso(),
+            }),
+          ),
         }));
       },
       removeProject: (projectId) => {
         set((state) => {
-          const remaining = state.projects.filter((project) => project.id !== projectId);
+          const remaining = state.projects.filter(
+            (project) => project.id !== projectId,
+          );
 
           if (remaining.length === 0) {
             const project = createProjectEntity(state.language, {
               name: DEFAULT_PROJECT_NAME[state.language],
-              description: '',
+              description: "",
             });
 
             return {
@@ -469,6 +543,7 @@ export const useDashboardStore = create<DashboardStore>()(
               filters: {
                 ...state.filters,
                 statusIds: [],
+                tagIds: [],
               },
             };
           }
@@ -479,164 +554,204 @@ export const useDashboardStore = create<DashboardStore>()(
               : state.activeProjectId;
 
           const activeProjectStatuses =
-            remaining.find((project) => project.id === nextActiveProjectId)?.statuses ?? [];
-          const statusIds = new Set(activeProjectStatuses.map((status) => status.id));
+            remaining.find((project) => project.id === nextActiveProjectId)
+              ?.statuses ?? [];
+          const statusIds = new Set(
+            activeProjectStatuses.map((status) => status.id),
+          );
 
           return {
             projects: remaining,
             activeProjectId: nextActiveProjectId,
             filters: {
               ...state.filters,
-              statusIds: state.filters.statusIds.filter((statusId) => statusIds.has(statusId)),
+              statusIds: state.filters.statusIds.filter((statusId) =>
+                statusIds.has(statusId),
+              ),
+              tagIds: [],
             },
           };
         });
       },
       createTask: (projectId, input) => {
-        let createdId = '';
+        let createdId = "";
 
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => {
-            const fallbackStatusId = project.statuses[0]?.id;
-            const safeStatusId =
-              project.statuses.some((status) => status.id === input.statusId) && input.statusId
-                ? input.statusId
-                : fallbackStatusId;
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => {
+              const fallbackStatusId = project.statuses[0]?.id;
+              const safeStatusId =
+                project.statuses.some(
+                  (status) => status.id === input.statusId,
+                ) && input.statusId
+                  ? input.statusId
+                  : fallbackStatusId;
 
-            if (!safeStatusId) {
-              return project;
-            }
+              if (!safeStatusId) {
+                return project;
+              }
 
-            const timestamp = nowIso();
-            const order = project.tasks.filter((task) => task.statusId === safeStatusId).length;
+              const timestamp = nowIso();
+              const order = project.tasks.filter(
+                (task) => task.statusId === safeStatusId,
+              ).length;
 
-            const task: TaskItem = {
-              id: createId(),
-              title: input.title.trim(),
-              content: input.content.trim(),
-              statusId: safeStatusId,
-              dueDate: input.dueDate,
-              order,
-              createdAt: timestamp,
-              updatedAt: timestamp,
-            };
+              const task: TaskItem = {
+                id: createId(),
+                title: input.title.trim(),
+                content: input.content.trim(),
+                tags: input.tags,
+                statusId: safeStatusId,
+                dueDate: input.dueDate,
+                order,
+                createdAt: timestamp,
+                updatedAt: timestamp,
+              };
 
-            createdId = task.id;
+              createdId = task.id;
 
-            return {
-              ...project,
-              updatedAt: timestamp,
-              tasks: [...project.tasks, task],
-            };
-          }),
+              return {
+                ...project,
+                updatedAt: timestamp,
+                tasks: [...project.tasks, task],
+              };
+            },
+          ),
         }));
 
         return createdId;
       },
       updateTask: (projectId, taskId, input) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) =>
-            updateTaskDetails(project, taskId, input),
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => updateTaskDetails(project, taskId, input),
           ),
         }));
       },
       removeTask: (projectId, taskId) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => {
-            const timestamp = nowIso();
-            const nextTasks = project.tasks.filter((task) => task.id !== taskId);
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => {
+              const timestamp = nowIso();
+              const nextTasks = project.tasks.filter(
+                (task) => task.id !== taskId,
+              );
 
-            return {
-              ...project,
-              updatedAt: timestamp,
-              tasks: normalizeTaskOrdering(nextTasks, project.statuses),
-            };
-          }),
+              return {
+                ...project,
+                updatedAt: timestamp,
+                tasks: normalizeTaskOrdering(nextTasks, project.statuses),
+              };
+            },
+          ),
         }));
       },
       moveTask: (projectId, taskId, targetStatusId, targetIndex) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) =>
-            moveTaskInProject(project, taskId, targetStatusId, targetIndex),
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) =>
+              moveTaskInProject(project, taskId, targetStatusId, targetIndex),
           ),
         }));
       },
       addStatus: (projectId, input) => {
-        let createdStatusId = '';
+        let createdStatusId = "";
 
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => {
-            const timestamp = nowIso();
-            const status: TaskStatus = {
-              id: createId(),
-              name: input.name.trim(),
-              color: input.color,
-              createdAt: timestamp,
-              updatedAt: timestamp,
-            };
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => {
+              const timestamp = nowIso();
+              const status: TaskStatus = {
+                id: createId(),
+                name: input.name.trim(),
+                color: input.color,
+                createdAt: timestamp,
+                updatedAt: timestamp,
+              };
 
-            createdStatusId = status.id;
+              createdStatusId = status.id;
 
-            return {
-              ...project,
-              updatedAt: timestamp,
-              statuses: [...project.statuses, status],
-            };
-          }),
+              return {
+                ...project,
+                updatedAt: timestamp,
+                statuses: [...project.statuses, status],
+              };
+            },
+          ),
         }));
 
         return createdStatusId;
       },
       updateStatus: (projectId, statusId, input) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => ({
-            ...project,
-            updatedAt: nowIso(),
-            statuses: project.statuses.map((status) => {
-              if (status.id !== statusId) {
-                return status;
-              }
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => ({
+              ...project,
+              updatedAt: nowIso(),
+              statuses: project.statuses.map((status) => {
+                if (status.id !== statusId) {
+                  return status;
+                }
 
-              return {
-                ...status,
-                name: input.name.trim(),
-                color: input.color,
-                updatedAt: nowIso(),
-              };
+                return {
+                  ...status,
+                  name: input.name.trim(),
+                  color: input.color,
+                  updatedAt: nowIso(),
+                };
+              }),
             }),
-          })),
+          ),
         }));
       },
       removeStatus: (projectId, statusId) => {
         set((state) => ({
-          projects: updateProjectCollection(state.projects, projectId, (project) => {
-            if (project.statuses.length <= 1) {
-              return project;
-            }
-
-            const remainingStatuses = project.statuses.filter((status) => status.id !== statusId);
-            const fallbackStatusId = remainingStatuses[0].id;
-            const timestamp = nowIso();
-
-            const reassigned = project.tasks.map((task) => {
-              if (task.statusId !== statusId) {
-                return task;
+          projects: updateProjectCollection(
+            state.projects,
+            projectId,
+            (project) => {
+              if (project.statuses.length <= 1) {
+                return project;
               }
 
-              return {
-                ...task,
-                statusId: fallbackStatusId,
-                updatedAt: timestamp,
-              };
-            });
+              const remainingStatuses = project.statuses.filter(
+                (status) => status.id !== statusId,
+              );
+              const fallbackStatusId = remainingStatuses[0].id;
+              const timestamp = nowIso();
 
-            return {
-              ...project,
-              updatedAt: timestamp,
-              statuses: remainingStatuses,
-              tasks: normalizeTaskOrdering(reassigned, remainingStatuses),
-            };
-          }),
+              const reassigned = project.tasks.map((task) => {
+                if (task.statusId !== statusId) {
+                  return task;
+                }
+
+                return {
+                  ...task,
+                  statusId: fallbackStatusId,
+                  updatedAt: timestamp,
+                };
+              });
+
+              return {
+                ...project,
+                updatedAt: timestamp,
+                statuses: remainingStatuses,
+                tasks: normalizeTaskOrdering(reassigned, remainingStatuses),
+              };
+            },
+          ),
           filters: {
             ...state.filters,
             statusIds: state.filters.statusIds.filter((id) => id !== statusId),
@@ -668,7 +783,11 @@ export const useDashboardStore = create<DashboardStore>()(
       },
       getActiveProject: () => {
         const state = get();
-        return state.projects.find((project) => project.id === state.activeProjectId) ?? null;
+        return (
+          state.projects.find(
+            (project) => project.id === state.activeProjectId,
+          ) ?? null
+        );
       },
       getTaskById: (taskId) => {
         const state = get();
