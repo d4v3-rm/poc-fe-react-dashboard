@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const hexColorSchema = z.string().regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/);
+const tagSchema = z.array(z.string().trim().min(1).max(36)).default([]);
 
 export const statusSnapshotSchema = z.object({
   id: z.string().min(1),
@@ -28,6 +29,7 @@ export const projectSnapshotSchema = z.object({
   description: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  tags: tagSchema,
   statuses: z.array(statusSnapshotSchema).min(1),
   tasks: z.array(taskSnapshotSchema),
 });

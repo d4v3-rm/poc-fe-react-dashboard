@@ -22,6 +22,7 @@ type MockTaskSeed = {
 type MockProjectSeed = {
   name: LocalizedText;
   description: LocalizedText;
+  tags?: string[];
   statuses: Array<{ name: LocalizedText; color: string }>;
   tasks: MockTaskSeed[];
 };
@@ -424,18 +425,30 @@ const createTaskList = (
   });
 };
 
+const collectProjectTags = (tasks: TaskItem[], seedTags: string[] = []) => {
+  const unique = new Set<string>([
+    ...seedTags.map((tag) => tag.trim()).filter((tag) => tag.length > 0),
+    ...tasks.flatMap((task) => task.tags),
+  ]);
+
+  return Array.from(unique).sort((a, b) => a.localeCompare(b));
+};
+
 export const buildMockProjects = (language: LanguageCode): ProjectItem[] =>
   mockSeeds.map((seed) => {
     const timestamp = nowIso();
     const statuses = createStatusList(language, seed.statuses, timestamp);
+    const tasks = createTaskList(language, statuses, seed.tasks);
+    const tags = collectProjectTags(tasks, seed.tags);
 
     return {
       id: createId(),
       name: seed.name[language],
       description: seed.description[language],
+      tags,
       createdAt: timestamp,
       updatedAt: timestamp,
       statuses,
-      tasks: createTaskList(language, statuses, seed.tasks),
+      tasks,
     };
   });

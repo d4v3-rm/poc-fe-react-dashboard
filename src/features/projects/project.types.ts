@@ -6,6 +6,7 @@ export type ProjectItem = {
   description: string;
   createdAt: string;
   updatedAt: string;
+  tags: string[];
   statuses: TaskStatus[];
   tasks: TaskItem[];
 };

@@ -35,11 +35,13 @@ export type CreateProjectInput = {
   name: string;
   description?: string;
   statuses?: Array<Pick<TaskStatus, "name" | "color">>;
+  tags?: string[];
 };
 
 export type UpdateProjectInput = {
   name: string;
   description?: string;
+  tags?: string[];
 };
 
 export type CreateTaskInput = {

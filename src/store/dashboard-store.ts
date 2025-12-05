@@ -28,6 +28,24 @@ const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 const nowIso = (): string => new Date().toISOString();
 
+const normalizeTagList = (tags: string[] = []): string[] =>
+  Array.from(
+    new Set(
+      tags
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0 && tag.length <= 36),
+    ),
+  ).sort((first, second) => first.localeCompare(second));
+
+const mergeProjectTags = (
+  storedTags: string[] = [],
+  tasks: TaskItem[] = [],
+): string[] =>
+  normalizeTagList([
+    ...storedTags,
+    ...tasks.flatMap((task) => task.tags ?? []),
+  ]);
+
 const detectLanguage = (): LanguageCode => {
   if (
     typeof navigator !== "undefined" &&
@@ -134,22 +152,24 @@ const normalizeProject = (
     project.statuses.length > 0
       ? project.statuses
       : createStatuses(fallbackLanguage).map((status) => ({
-          ...status,
-          createdAt: project.createdAt || timestamp,
-          updatedAt: project.updatedAt || timestamp,
-        }));
+        ...status,
+        createdAt: project.createdAt || timestamp,
+        updatedAt: project.updatedAt || timestamp,
+      }));
+  const normalizedTasks = normalizeTaskOrdering(
+    project.tasks.map((task) => ({
+      ...task,
+      tags: task.tags ?? [],
+    })),
+    statuses,
+  );
 
   return {
     ...project,
     description: project.description ?? "",
+    tags: mergeProjectTags(project.tags, normalizedTasks),
     statuses,
-    tasks: normalizeTaskOrdering(
-      project.tasks.map((task) => ({
-        ...task,
-        tags: task.tags ?? [],
-      })),
-      statuses,
-    ),
+    tasks: normalizedTasks,
   };
 };
 
@@ -165,6 +185,7 @@ const createProjectEntity = (
     description: input.description?.trim() ?? "",
     createdAt: timestamp,
     updatedAt: timestamp,
+    tags: normalizeTagList(input.tags),
     statuses: createStatuses(language, input.statuses),
     tasks: [],
   };
@@ -219,12 +240,8 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
   const activeStatuses =
     projects.find((project) => project.id === activeProjectId)?.statuses ?? [];
   const validStatusIds = new Set(activeStatuses.map((status) => status.id));
-  const activeProject = projects.find(
-    (project) => project.id === activeProjectId,
-  );
-  const validTagIds = new Set(
-    (activeProject?.tasks ?? []).flatMap((task) => task.tags),
-  );
+  const activeProject = projects.find((project) => project.id === activeProjectId);
+  const validTagIds = new Set(activeProject?.tags ?? []);
 
   return {
     projects,
@@ -367,25 +384,31 @@ const updateTaskDetails = (
       : project;
 
   const timestamp = nowIso();
+  const normalizedTags = normalizeTagList(input.tags);
+  const updatedTasks = baseProject.tasks.map((task) => {
+    if (task.id !== taskId) {
+      return task;
+    }
+
+    return {
+      ...task,
+      title: input.title.trim(),
+      content: input.content.trim(),
+      tags: normalizedTags,
+      dueDate: input.dueDate,
+      statusId: safeStatusId,
+      updatedAt: timestamp,
+    };
+  });
 
   return {
     ...baseProject,
     updatedAt: timestamp,
-    tasks: baseProject.tasks.map((task) => {
-      if (task.id !== taskId) {
-        return task;
-      }
-
-      return {
-        ...task,
-        title: input.title.trim(),
-        content: input.content.trim(),
-        tags: input.tags,
-        dueDate: input.dueDate,
-        statusId: safeStatusId,
-        updatedAt: timestamp,
-      };
-    }),
+    tasks: updatedTasks,
+    tags: mergeProjectTags(
+      baseProject.tags,
+      updatedTasks,
+    ),
   };
 };
 
@@ -406,9 +429,7 @@ export const useDashboardStore = create<DashboardStore>()(
           const validStatusIds = new Set(
             targetProject.statuses.map((status) => status.id),
           );
-          const validTagIds = new Set(
-            targetProject.tasks.flatMap((task) => task.tags),
-          );
+          const validTagIds = new Set(targetProject.tags);
 
           return {
             activeProjectId: projectId,
@@ -444,12 +465,19 @@ export const useDashboardStore = create<DashboardStore>()(
         }));
       },
       setFilterTagIds: (tagIds) => {
-        set((state) => ({
-          filters: {
-            ...state.filters,
-            tagIds,
-          },
-        }));
+        set((state) => {
+          const activeProject = state.projects.find(
+            (project) => project.id === state.activeProjectId,
+          );
+          const validTagIds = new Set(activeProject?.tags ?? []);
+
+          return {
+            filters: {
+              ...state.filters,
+              tagIds: tagIds.filter((tagId) => validTagIds.has(tagId)),
+            },
+          };
+        });
       },
       setDueFilter: (due) => {
         set((state) => ({
@@ -520,6 +548,7 @@ export const useDashboardStore = create<DashboardStore>()(
               ...project,
               name: input.name.trim(),
               description: input.description?.trim() ?? "",
+              tags: mergeProjectTags(input.tags ?? project.tags, project.tasks),
               updatedAt: nowIso(),
             }),
           ),
@@ -597,12 +626,13 @@ export const useDashboardStore = create<DashboardStore>()(
               const order = project.tasks.filter(
                 (task) => task.statusId === safeStatusId,
               ).length;
+              const normalizedTags = normalizeTagList(input.tags);
 
               const task: TaskItem = {
                 id: createId(),
                 title: input.title.trim(),
                 content: input.content.trim(),
-                tags: input.tags,
+                tags: normalizedTags,
                 statusId: safeStatusId,
                 dueDate: input.dueDate,
                 order,
@@ -611,11 +641,16 @@ export const useDashboardStore = create<DashboardStore>()(
               };
 
               createdId = task.id;
+              const nextTasks = normalizeTaskOrdering(
+                [...project.tasks, task],
+                project.statuses,
+              );
 
               return {
                 ...project,
                 updatedAt: timestamp,
-                tasks: [...project.tasks, task],
+                tasks: nextTasks,
+                tags: mergeProjectTags(project.tags, nextTasks),
               };
             },
           ),
@@ -639,14 +674,16 @@ export const useDashboardStore = create<DashboardStore>()(
             projectId,
             (project) => {
               const timestamp = nowIso();
-              const nextTasks = project.tasks.filter(
-                (task) => task.id !== taskId,
+              const nextTasks = normalizeTaskOrdering(
+                project.tasks.filter((task) => task.id !== taskId),
+                project.statuses,
               );
 
               return {
                 ...project,
                 updatedAt: timestamp,
-                tasks: normalizeTaskOrdering(nextTasks, project.statuses),
+                tasks: nextTasks,
+                tags: mergeProjectTags(project.tags, nextTasks),
               };
             },
           ),
