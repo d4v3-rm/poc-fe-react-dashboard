@@ -1,7 +1,7 @@
 import { Card, Empty, Flex, Tag, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import type { TaskItem, TaskStatus } from "../task.types";
-import { semanticTagStyle } from "../../../shared/theme/color-utils";
+import { statusTagStyle } from "../../../shared/theme/color-utils";
 import { TaskCard } from "./TaskCard";
 
 type TaskListViewProps = {
@@ -62,7 +62,7 @@ export const TaskListView = ({
           title={
             <Flex align="center" gap={10} justify="space-between">
               <Flex align="center" gap={8}>
-                <Tag style={semanticTagStyle(status.color, 0.16, 0.35)}>
+                <Tag style={statusTagStyle(status.color)}>
                   {status.name}
                 </Tag>
                 <Typography.Text type="secondary">

@@ -25,7 +25,11 @@ import type {
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import { useTranslation } from "react-i18next";
-import { semanticTagStyle, toRgba } from "../../../shared/theme/color-utils";
+import {
+  semanticTagStyle,
+  statusTagStyle,
+  toRgba,
+} from "../../../shared/theme/color-utils";
 import { formatDueDate, isOverdue } from "../../../shared/utils/date";
 import type { TaskItem, TaskStatus } from "../task.types";
 
@@ -127,7 +131,7 @@ export const TaskCard = ({
     >
       <Flex gap={10} style={{ height: "100%" }} vertical>
         <Flex align="center" gap={8} justify="space-between">
-          <Tag style={semanticTagStyle(status.color, 0.14, 0.38)}>
+          <Tag style={statusTagStyle(status.color)}>
             {status.name}
           </Tag>
 
