@@ -1,8 +1,6 @@
-import { PlusOutlined } from '@ant-design/icons';
 import { closestCorners, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
-import { Button, Flex, Tooltip } from 'antd';
+import { Flex } from 'antd';
 import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
 import { KanbanColumn } from './KanbanColumn';
 
@@ -14,7 +12,6 @@ type KanbanBoardProps = {
   onEditTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, statusId: string) => void;
-  onAddStatus: () => void;
   onEditStatus: (status: TaskStatus) => void;
   onDeleteStatus: (status: TaskStatus) => void;
 };
@@ -27,12 +24,9 @@ export const KanbanBoard = ({
   onEditTask,
   onDeleteTask,
   onStatusChange,
-  onAddStatus,
   onEditStatus,
   onDeleteStatus,
 }: KanbanBoardProps) => {
-  const { t } = useTranslation();
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -101,12 +95,6 @@ export const KanbanBoard = ({
 
   return (
     <Flex gap={12} vertical>
-      <Flex justify="end">
-        <Tooltip title={t('kanban.addStatus')}>
-          <Button aria-label={t('kanban.addStatus')} icon={<PlusOutlined />} onClick={onAddStatus} type="dashed" />
-        </Tooltip>
-      </Flex>
-
       <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} sensors={sensors}>
         <Flex gap={12} style={{ overflowX: 'auto', paddingBottom: 8 }}>
           {statuses.map((status) => (

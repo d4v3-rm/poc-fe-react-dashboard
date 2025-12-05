@@ -1,26 +1,32 @@
-import { ClearOutlined, DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, ColorPicker, Flex, Input, Segmented, Select, Space, Tooltip, Typography } from 'antd';
+import {
+  AppstoreAddOutlined,
+  AppstoreOutlined,
+  ClearOutlined,
+  DownloadOutlined,
+  GlobalOutlined,
+  PlusOutlined,
+  UnorderedListOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
+import { Button, Flex, Input, Segmented, Select, Space, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskStatus, ViewMode } from '../../features/tasks/task.types';
-import { THEME_COLOR_PRESETS } from '../../shared/utils/defaults';
-import type { TaskFilters, ThemeColors, ThemeMode } from '../../store/dashboard-store.types';
+import type { TaskFilters } from '../../store/dashboard-store.types';
 
 type DashboardToolbarProps = {
   viewMode: ViewMode;
   filters: TaskFilters;
   statuses: TaskStatus[];
   language: 'en' | 'it';
-  themeMode: ThemeMode;
-  themeColors: ThemeColors;
   onViewModeChange: (mode: ViewMode) => void;
   onSearchChange: (query: string) => void;
   onStatusFilterChange: (statusIds: string[]) => void;
   onDueFilterChange: (due: TaskFilters['due']) => void;
   onClearFilters: () => void;
   onLanguageChange: (language: 'en' | 'it') => void;
-  onThemeModeChange: (mode: ThemeMode) => void;
-  onThemeColorsChange: (colors: ThemeColors) => void;
   onCreateTask: () => void;
+  onAddStatus: () => void;
+  statusActionsDisabled?: boolean;
   onImport: () => void;
   onExport: () => void;
 };
@@ -30,43 +36,47 @@ export const DashboardToolbar = ({
   filters,
   statuses,
   language,
-  themeMode,
-  themeColors,
   onViewModeChange,
   onSearchChange,
   onStatusFilterChange,
   onDueFilterChange,
   onClearFilters,
   onLanguageChange,
-  onThemeModeChange,
-  onThemeColorsChange,
   onCreateTask,
+  onAddStatus,
+  statusActionsDisabled = false,
   onImport,
   onExport,
 }: DashboardToolbarProps) => {
   const { t } = useTranslation();
 
   return (
-    <Flex
-      align="center"
-      gap={12}
-      justify="space-between"
-      style={{
-        flexWrap: 'wrap',
-      }}
-      vertical={false}
-    >
+    <Flex align="center" gap={12} justify="space-between" style={{ flexWrap: 'wrap' }}>
       <Flex align="center" gap={10} style={{ flex: 1, flexWrap: 'wrap', minWidth: 0 }}>
         <Segmented
           onChange={(value) => onViewModeChange(value as ViewMode)}
           options={[
-            { label: t('view.list'), value: 'list' },
-            { label: t('view.kanban'), value: 'kanban' },
+            {
+              label: (
+                <Tooltip title={t('view.list')}>
+                  <UnorderedListOutlined />
+                </Tooltip>
+              ),
+              value: 'list',
+            },
+            {
+              label: (
+                <Tooltip title={t('view.kanban')}>
+                  <AppstoreOutlined />
+                </Tooltip>
+              ),
+              value: 'kanban',
+            },
           ]}
           value={viewMode}
         />
 
-        <Input.Search
+        <Input
           allowClear
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={t('filters.search')}
@@ -106,79 +116,38 @@ export const DashboardToolbar = ({
         </Tooltip>
       </Flex>
 
-      <Flex align="center" gap={10} style={{ flexWrap: 'wrap' }}>
-        <Segmented
-          onChange={(value) => onThemeModeChange(value as ThemeMode)}
-          options={[
-            { label: t('theme.mode.light'), value: 'light' },
-            { label: t('theme.mode.dark'), value: 'dark' },
-          ]}
-          size="middle"
-          value={themeMode}
-        />
-
-        <Space size={6}>
-          <Typography.Text type="secondary">{t('theme.primary')}</Typography.Text>
-          <ColorPicker
-            onChangeComplete={(color) =>
-              onThemeColorsChange({
-                ...themeColors,
-                primary: color.toHexString(),
-              })
-            }
-            presets={[
-              {
-                label: t('theme.palette'),
-                colors: THEME_COLOR_PRESETS,
-              },
-            ]}
-            showText
-            value={themeColors.primary}
+      <Space size={8}>
+        <Tooltip title={`${t('actions.toggleLanguage')} (${t(`language.${language}`)})`}>
+          <Button
+            aria-label={t('actions.toggleLanguage')}
+            icon={<GlobalOutlined />}
+            onClick={() => onLanguageChange(language === 'en' ? 'it' : 'en')}
           />
-        </Space>
+        </Tooltip>
 
-        <Space size={6}>
-          <Typography.Text type="secondary">{t('theme.secondary')}</Typography.Text>
-          <ColorPicker
-            onChangeComplete={(color) =>
-              onThemeColorsChange({
-                ...themeColors,
-                secondary: color.toHexString(),
-              })
-            }
-            presets={[
-              {
-                label: t('theme.palette'),
-                colors: THEME_COLOR_PRESETS,
-              },
-            ]}
-            showText
-            value={themeColors.secondary}
-          />
-        </Space>
+        {viewMode === 'kanban' && (
+          <Tooltip title={t('kanban.addStatus')}>
+            <Button
+              aria-label={t('kanban.addStatus')}
+              disabled={statusActionsDisabled}
+              icon={<AppstoreAddOutlined />}
+              onClick={onAddStatus}
+            />
+          </Tooltip>
+        )}
 
-        <Select
-          onChange={onLanguageChange}
-          options={[
-            { label: t('language.en'), value: 'en' },
-            { label: t('language.it'), value: 'it' },
-          ]}
-          style={{ width: 122 }}
-          value={language}
-        />
+        <Tooltip title={t('actions.import')}>
+          <Button aria-label={t('actions.import')} icon={<UploadOutlined />} onClick={onImport} />
+        </Tooltip>
 
-        <Space size={8}>
-          <Tooltip title={t('actions.import')}>
-            <Button aria-label={t('actions.import')} icon={<UploadOutlined />} onClick={onImport} />
-          </Tooltip>
-          <Tooltip title={t('actions.export')}>
-            <Button aria-label={t('actions.export')} icon={<DownloadOutlined />} onClick={onExport} />
-          </Tooltip>
-          <Tooltip title={t('task.create')}>
-            <Button aria-label={t('task.create')} icon={<PlusOutlined />} onClick={onCreateTask} type="primary" />
-          </Tooltip>
-        </Space>
-      </Flex>
+        <Tooltip title={t('actions.export')}>
+          <Button aria-label={t('actions.export')} icon={<DownloadOutlined />} onClick={onExport} />
+        </Tooltip>
+
+        <Tooltip title={t('task.create')}>
+          <Button aria-label={t('task.create')} icon={<PlusOutlined />} onClick={onCreateTask} type="primary" />
+        </Tooltip>
+      </Space>
     </Flex>
   );
 };

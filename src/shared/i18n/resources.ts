@@ -21,6 +21,7 @@ export const resources = {
         export: 'Export',
         import: 'Import',
         clearFilters: 'Clear filters',
+        toggleLanguage: 'Switch language',
       },
       project: {
         sectionTitle: 'Projects',
@@ -133,6 +134,7 @@ export const resources = {
         export: 'Esporta',
         import: 'Importa',
         clearFilters: 'Reset filtri',
+        toggleLanguage: 'Cambia lingua',
       },
       project: {
         sectionTitle: 'Progetti',

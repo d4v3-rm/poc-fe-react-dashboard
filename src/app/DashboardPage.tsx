@@ -5,6 +5,7 @@ import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { DashboardToolbar } from './components/DashboardToolbar';
+import { ThemeSidebarCard } from './components/ThemeSidebarCard';
 import { KanbanBoard } from '../features/kanban/components/KanbanBoard';
 import { ProjectFormModal } from '../features/projects/components/ProjectFormModal';
 import { ProjectSidebar } from '../features/projects/components/ProjectSidebar';
@@ -288,85 +289,97 @@ export const DashboardPage = () => {
           trigger={null}
           width={340}
         >
-          <Flex gap={12} style={{ height: '100%' }} vertical>
-            {!isProjectPanelCollapsed && (
-              <Flex align="center" justify="space-between">
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                  {t('project.sectionTitle')}
-                </Typography.Title>
-                <Space size={8}>
+          <Flex style={{ height: '100%' }} vertical>
+            <Flex gap={12} style={{ flex: 1, minHeight: 0 }} vertical>
+              {!isProjectPanelCollapsed && (
+                <Flex align="center" justify="space-between">
+                  <Typography.Title level={4} style={{ margin: 0 }}>
+                    {t('project.sectionTitle')}
+                  </Typography.Title>
+                  <Space size={8}>
+                    <Tooltip title={t('project.create')}>
+                      <Button
+                        aria-label={t('project.create')}
+                        icon={<PlusOutlined />}
+                        onClick={openProjectCreate}
+                        size="small"
+                        type="primary"
+                      />
+                    </Tooltip>
+                    <Tooltip title={t('project.collapsePanel')}>
+                      <Button
+                        aria-label={t('project.collapsePanel')}
+                        icon={<LeftOutlined />}
+                        onClick={() => setProjectPanelCollapsed(true)}
+                        size="small"
+                        type="text"
+                      />
+                    </Tooltip>
+                  </Space>
+                </Flex>
+              )}
+
+              {isProjectPanelCollapsed && (
+                <Flex align="center" gap={8} vertical>
                   <Tooltip title={t('project.create')}>
                     <Button
                       aria-label={t('project.create')}
                       icon={<PlusOutlined />}
                       onClick={openProjectCreate}
-                      size="small"
-                      type="primary"
-                    />
-                  </Tooltip>
-                  <Tooltip title={t('project.collapsePanel')}>
-                    <Button
-                      aria-label={t('project.collapsePanel')}
-                      icon={<LeftOutlined />}
-                      onClick={() => setProjectPanelCollapsed(true)}
-                      size="small"
+                      shape="circle"
                       type="text"
                     />
                   </Tooltip>
-                </Space>
-              </Flex>
-            )}
+                  <Tooltip title={t('project.expandPanel')}>
+                    <Button
+                      aria-label={t('project.expandPanel')}
+                      icon={<RightOutlined />}
+                      onClick={() => setProjectPanelCollapsed(false)}
+                      shape="circle"
+                      type="text"
+                    />
+                  </Tooltip>
+                </Flex>
+              )}
 
-            {isProjectPanelCollapsed && (
-              <Flex align="center" gap={8} vertical>
-                <Tooltip title={t('project.create')}>
-                  <Button
-                    aria-label={t('project.create')}
-                    icon={<PlusOutlined />}
-                    onClick={openProjectCreate}
-                    shape="circle"
-                    type="text"
+              {isProjectPanelCollapsed ? (
+                <Flex align="center" gap={8} style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 8 }} vertical>
+                  {projects.map((project) => {
+                    return (
+                      <Tooltip key={project.id} placement="right" title={project.name}>
+                        <Button
+                          aria-label={project.name}
+                          icon={<FolderOpenOutlined />}
+                          onClick={() => setActiveProject(project.id)}
+                          shape="circle"
+                          type={activeProjectId === project.id ? 'primary' : 'default'}
+                        />
+                      </Tooltip>
+                    );
+                  })}
+                </Flex>
+              ) : (
+                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 2 }}>
+                  <ProjectSidebar
+                    activeProjectId={activeProjectId}
+                    onCreateProject={openProjectCreate}
+                    onDeleteProject={handleProjectDelete}
+                    onEditProject={openProjectEdit}
+                    onSelectProject={setActiveProject}
+                    projects={projects}
+                    showHeader={false}
                   />
-                </Tooltip>
-                <Tooltip title={t('project.expandPanel')}>
-                  <Button
-                    aria-label={t('project.expandPanel')}
-                    icon={<RightOutlined />}
-                    onClick={() => setProjectPanelCollapsed(false)}
-                    shape="circle"
-                    type="text"
-                  />
-                </Tooltip>
-              </Flex>
-            )}
+                </div>
+              )}
+            </Flex>
 
-            {isProjectPanelCollapsed ? (
-              <Flex align="center" gap={8} style={{ overflowY: 'auto', paddingBottom: 8 }} vertical>
-                {projects.map((project) => {
-                  return (
-                    <Tooltip key={project.id} placement="right" title={project.name}>
-                      <Button
-                        aria-label={project.name}
-                        icon={<FolderOpenOutlined />}
-                        onClick={() => setActiveProject(project.id)}
-                        shape="circle"
-                        type={activeProjectId === project.id ? 'primary' : 'default'}
-                      />
-                    </Tooltip>
-                  );
-                })}
-              </Flex>
-            ) : (
-              <ProjectSidebar
-                activeProjectId={activeProjectId}
-                onCreateProject={openProjectCreate}
-                onDeleteProject={handleProjectDelete}
-                onEditProject={openProjectEdit}
-                onSelectProject={setActiveProject}
-                projects={projects}
-                showHeader={false}
-              />
-            )}
+            <ThemeSidebarCard
+              compact={isProjectPanelCollapsed}
+              onThemeColorsChange={setThemeColors}
+              onThemeModeChange={setThemeMode}
+              themeColors={themeColors}
+              themeMode={themeMode}
+            />
           </Flex>
         </Layout.Sider>
         <Layout.Content style={{ minWidth: 0 }}>
@@ -383,31 +396,12 @@ export const DashboardPage = () => {
                 onLanguageChange={setLanguage}
                 onSearchChange={setFilterQuery}
                 onStatusFilterChange={setFilterStatusIds}
-                onThemeColorsChange={setThemeColors}
-                onThemeModeChange={setThemeMode}
                 onViewModeChange={setViewMode}
                 statuses={activeProject?.statuses ?? []}
-                themeColors={themeColors}
-                themeMode={themeMode}
                 viewMode={viewMode}
+                onAddStatus={openStatusCreate}
+                statusActionsDisabled={!activeProject}
               />
-            </Card>
-
-            <Card>
-              {activeProject ? (
-                <Flex gap={4} vertical>
-                  <Typography.Title level={3} style={{ margin: 0 }}>
-                    {activeProject.name}
-                  </Typography.Title>
-                  <Typography.Text type="secondary">
-                    {activeProject.description || t('project.form.description')}
-                  </Typography.Text>
-                </Flex>
-              ) : (
-                <Typography.Title level={3} style={{ margin: 0 }}>
-                  -
-                </Typography.Title>
-              )}
             </Card>
 
             <Card style={{ minHeight: 400 }}>
@@ -420,31 +414,52 @@ export const DashboardPage = () => {
               )}
 
               {activeProject && viewMode === 'list' && (
-                <TaskListView
-                  language={language}
-                  onDeleteTask={handleTaskDelete}
-                  onEditTask={openTaskEdit}
-                  onStatusChange={handleTaskStatusChange}
-                  statuses={activeProject.statuses}
-                  tasks={filteredTasks}
-                />
+                <Flex gap={12} vertical>
+                  <Flex gap={2} vertical>
+                    <Typography.Title level={4} style={{ margin: 0 }}>
+                      {activeProject.name}
+                    </Typography.Title>
+                    <Typography.Text type="secondary">
+                      {activeProject.description || t('project.form.description')}
+                    </Typography.Text>
+                  </Flex>
+
+                  <TaskListView
+                    language={language}
+                    onDeleteTask={handleTaskDelete}
+                    onEditTask={openTaskEdit}
+                    onStatusChange={handleTaskStatusChange}
+                    statuses={activeProject.statuses}
+                    tasks={filteredTasks}
+                  />
+                </Flex>
               )}
 
               {activeProject && viewMode === 'kanban' && (
-                <KanbanBoard
-                  language={language}
-                  onAddStatus={openStatusCreate}
-                  onDeleteStatus={handleStatusDelete}
-                  onDeleteTask={handleTaskDelete}
-                  onEditStatus={openStatusEdit}
-                  onEditTask={openTaskEdit}
-                  onMoveTask={(taskId, targetStatusId, targetIndex) => {
-                    moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
-                  }}
-                  onStatusChange={handleTaskStatusChange}
-                  statuses={activeProject.statuses}
-                  tasks={filteredTasks}
-                />
+                <Flex gap={12} vertical>
+                  <Flex gap={2} vertical>
+                    <Typography.Title level={4} style={{ margin: 0 }}>
+                      {activeProject.name}
+                    </Typography.Title>
+                    <Typography.Text type="secondary">
+                      {activeProject.description || t('project.form.description')}
+                    </Typography.Text>
+                  </Flex>
+
+                  <KanbanBoard
+                    language={language}
+                    onDeleteStatus={handleStatusDelete}
+                    onDeleteTask={handleTaskDelete}
+                    onEditStatus={openStatusEdit}
+                    onEditTask={openTaskEdit}
+                    onMoveTask={(taskId, targetStatusId, targetIndex) => {
+                      moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
+                    }}
+                    onStatusChange={handleTaskStatusChange}
+                    statuses={activeProject.statuses}
+                    tasks={filteredTasks}
+                  />
+                </Flex>
               )}
             </Card>
           </Space>
