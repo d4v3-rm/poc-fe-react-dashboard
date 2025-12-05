@@ -1,0 +1,62 @@
+.task-card {
+  border: 1px solid #dbe6ff;
+  border-radius: 16px;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  box-shadow: 0 10px 24px rgba(24, 78, 150, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+}
+
+.task-card--compact {
+  min-height: 180px;
+}
+
+.task-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.task-card__title {
+  margin: 0 !important;
+  font-size: 1.02rem !important;
+  line-height: 1.3 !important;
+}
+
+.task-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-card__markdown {
+  border: 1px solid #e6edff;
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  overflow: hidden;
+  min-height: 94px;
+  max-height: 130px;
+}
+
+.task-card__markdown > * {
+  margin-top: 0;
+}
+
+.task-card__markdown p {
+  margin: 0.3em 0;
+}
+
+.task-card__markdown ul,
+.task-card__markdown ol {
+  margin: 0.35em 0;
+  padding-left: 1.3em;
+}
+
+.task-card__actions {
+  margin-top: auto;
+}

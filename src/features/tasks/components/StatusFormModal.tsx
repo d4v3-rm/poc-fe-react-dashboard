@@ -1,0 +1,108 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, Form, Input, Modal } from 'antd';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { statusFormSchema, type StatusFormValues } from '../status.schema';
+
+type StatusFormModalProps = {
+  open: boolean;
+  mode: 'create' | 'edit';
+  initialValues?: Partial<StatusFormValues>;
+  onCancel: () => void;
+  onSubmit: (values: StatusFormValues) => void;
+};
+
+const defaultValues: StatusFormValues = {
+  name: '',
+  color: '#0d8bff',
+};
+
+export const StatusFormModal = ({
+  open,
+  mode,
+  initialValues,
+  onCancel,
+  onSubmit,
+}: StatusFormModalProps) => {
+  const { t } = useTranslation();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<StatusFormValues>({
+    resolver: zodResolver(statusFormSchema),
+    defaultValues,
+  });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    reset({
+      name: initialValues?.name ?? '',
+      color: initialValues?.color ?? '#0d8bff',
+    });
+  }, [initialValues?.color, initialValues?.name, open, reset]);
+
+  return (
+    <Modal
+      destroyOnHidden
+      open={open}
+      onCancel={onCancel}
+      title={mode === 'create' ? t('kanban.addStatus') : t('kanban.editStatus')}
+      footer={[
+        <Button key="cancel" onClick={onCancel}>
+          {t('actions.cancel')}
+        </Button>,
+        <Button
+          key="save"
+          loading={isSubmitting}
+          onClick={handleSubmit((values) => onSubmit(values))}
+          type="primary"
+        >
+          {mode === 'create' ? t('actions.create') : t('actions.save')}
+        </Button>,
+      ]}
+    >
+      <Form layout="vertical" onFinish={handleSubmit((values) => onSubmit(values))}>
+        <Form.Item
+          label={t('kanban.statusForm.name')}
+          validateStatus={errors.name ? 'error' : ''}
+          help={errors.name?.message}
+        >
+          <Controller
+            control={control}
+            name="name"
+            render={({ field }) => <Input {...field} autoFocus />}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label={t('kanban.statusForm.color')}
+          validateStatus={errors.color ? 'error' : ''}
+          help={errors.color?.message}
+        >
+          <Controller
+            control={control}
+            name="color"
+            render={({ field }) => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <input
+                  aria-label={t('kanban.statusForm.color')}
+                  onChange={(event) => field.onChange(event.target.value)}
+                  style={{ width: 48, height: 36, border: 'none', background: 'transparent', padding: 0 }}
+                  type="color"
+                  value={field.value}
+                />
+                <Input {...field} />
+              </div>
+            )}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
