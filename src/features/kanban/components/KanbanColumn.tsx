@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Button, Card, Dropdown, Empty, Flex, Space, Tag, Tooltip, Typography, theme } from 'antd';
+import { Button, Card, Dropdown, Empty, Flex, Tag, Tooltip, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
@@ -58,19 +58,13 @@ export const KanbanColumn = ({
     <Card
       ref={setNodeRef}
       size="small"
-      style={{
-        borderColor: isOver ? token.colorPrimary : token.colorBorderSecondary,
-        borderWidth: isOver ? 2 : 1,
-        borderStyle: 'solid',
-        flex: '0 0 320px',
-        minHeight: 540,
-      }}
       title={
-        <Flex align="center" justify="space-between">
-        <Space align="center" size={8}>
-            <Tag style={semanticTagStyle(status.color, 0.14, 0.32)}>{status.name}</Tag>
+        <Flex align="center" gap={8} justify="space-between">
+          <Flex align="center" gap={8}>
+            <Tag style={semanticTagStyle(status.color, 0.15, 0.34)}>{status.name}</Tag>
             <Typography.Text type="secondary">{tasks.length}</Typography.Text>
-          </Space>
+          </Flex>
+
           <Dropdown
             menu={{
               items: actions,
@@ -93,24 +87,40 @@ export const KanbanColumn = ({
           </Dropdown>
         </Flex>
       }
+      style={{
+        borderColor: isOver ? token.colorPrimary : token.colorBorderSecondary,
+        borderWidth: isOver ? 2 : 1,
+        borderStyle: 'solid',
+        borderRadius: token.borderRadiusLG,
+        flex: '0 0 328px',
+        minHeight: 100,
+      }}
     >
-      <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
-        <Flex gap={10} style={{ minHeight: 420 }} vertical>
-          {tasks.length === 0 && <Empty description={t('kanban.emptyColumn')} image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: '36px 0' }} />}
-          {tasks.map((task) => (
-            <SortableTaskCard
-              key={task.id}
-              language={language}
-              onDeleteTask={onDeleteTask}
-              onEditTask={onEditTask}
-              onStatusChange={onStatusChange}
-              status={status}
-              statuses={statuses}
-              task={task}
-            />
-          ))}
-        </Flex>
-      </SortableContext>
+      <Flex vertical gap={10} style={{ minHeight: 260 }}>
+        <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
+          {t('kanban.dragHint')}
+        </Typography.Text>
+
+        <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
+          <Flex gap={10} style={{ minHeight: 300, overflowY: 'auto', paddingBottom: 4 }} vertical>
+            {tasks.length === 0 && (
+              <Empty description={t('kanban.emptyColumn')} image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: '18px 0' }} />
+            )}
+            {tasks.map((task) => (
+              <SortableTaskCard
+                key={task.id}
+                language={language}
+                onDeleteTask={onDeleteTask}
+                onEditTask={onEditTask}
+                onStatusChange={onStatusChange}
+                status={status}
+                statuses={statuses}
+                task={task}
+              />
+            ))}
+          </Flex>
+        </SortableContext>
+      </Flex>
     </Card>
   );
 };

@@ -25,6 +25,7 @@ export const SortableTaskCard = ({
   const {
     attributes,
     listeners,
+    setActivatorNodeRef,
     setNodeRef,
     transform,
     transition,
@@ -36,12 +37,10 @@ export const SortableTaskCard = ({
   return (
     <div
       ref={setNodeRef}
-      {...attributes}
-      {...(listeners ?? {})}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.75 : 1,
+        opacity: isDragging ? 0.95 : 1,
       }}
     >
       <TaskCard
@@ -53,6 +52,12 @@ export const SortableTaskCard = ({
         status={status}
         statuses={statuses}
         task={task}
+        showDragHandle
+        dragHandleProps={{
+          attributes,
+          listeners,
+          setActivatorNodeRef,
+        }}
       />
     </div>
   );
