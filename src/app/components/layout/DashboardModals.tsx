@@ -1,4 +1,4 @@
-import { Button, Divider, Flex, Modal, theme } from "antd";
+import { Button, Divider, Flex, Modal, Typography, theme } from "antd";
 import type { ProjectItem } from "../../../features/projects/project.types";
 import { ProjectFormModal } from "../../../features/projects/components/ProjectFormModal";
 import { StatusFormModal } from "../../../features/tasks/components/StatusFormModal";
@@ -179,17 +179,23 @@ export const DashboardModals = ({
           }}
         >
           <Flex align="center" gap={8}>
-            <h5 style={{ margin: 0 }}>{t("theme.settings")}</h5>
+            <Typography.Title level={5} style={{ margin: 0 }}>
+              {t("theme.settings")}
+            </Typography.Title>
           </Flex>
-          <p style={{ margin: 0 }}>{t("theme.sectionDescription")}</p>
+          <Typography.Text type="secondary">
+            {t("theme.sectionDescription")}
+          </Typography.Text>
         </div>
 
-        <ThemeSidebarCard
-          onThemeColorsChange={onThemeColorsChange}
-          onThemeModeChange={onThemeModeChange}
-          themeColors={themeColors}
-          themeMode={themeMode}
-        />
+        <div style={{ padding: 16 }}>
+          <ThemeSidebarCard
+            onThemeColorsChange={onThemeColorsChange}
+            onThemeModeChange={onThemeModeChange}
+            themeColors={themeColors}
+            themeMode={themeMode}
+          />
+        </div>
 
         <Divider style={{ margin: 0 }} />
 

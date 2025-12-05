@@ -120,9 +120,9 @@ export const ProjectSidebar = ({
                 justify="space-between"
                 style={{ marginBottom: 8 }}
               >
-                <Space size={8}>
+                <Space size={8} style={{ flex: 1, minWidth: 0 }}>
                   <FolderOpenOutlined />
-                  <Typography.Text ellipsis strong style={{ maxWidth: 180 }}>
+                  <Typography.Text ellipsis strong style={{ minWidth: 0 }}>
                     {project.name}
                   </Typography.Text>
                 </Space>
@@ -141,7 +141,7 @@ export const ProjectSidebar = ({
               <Flex align="start" justify="space-between">
                 <Typography.Paragraph
                   ellipsis={{ rows: 2 }}
-                  style={{ marginBottom: 0, maxWidth: 190 }}
+                  style={{ flex: 1, marginBottom: 0, minWidth: 0 }}
                   type="secondary"
                 >
                   {project.description || "-"}

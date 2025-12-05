@@ -98,7 +98,9 @@ export const StatusFormModal = ({
             aria-label={t("actions.cancel")}
             icon={<CloseOutlined />}
             onClick={onCancel}
-          />
+          >
+            {t("actions.cancel")}
+          </Button>
         </Tooltip>,
         <Tooltip
           key="save"
@@ -112,7 +114,9 @@ export const StatusFormModal = ({
             loading={isSubmitting}
             onClick={handleSubmit((values) => onSubmit(values))}
             type="primary"
-          />
+          >
+            {mode === "create" ? t("actions.create") : t("actions.save")}
+          </Button>
         </Tooltip>,
       ]}
     >
@@ -128,51 +132,53 @@ export const StatusFormModal = ({
           </Typography.Title>
         </Space>
       </div>
-      <Form
-        layout="vertical"
-        onFinish={handleSubmit((values) => onSubmit(values))}
-      >
-        <Form.Item
-          label={t("kanban.statusForm.name")}
-          validateStatus={errors.name ? "error" : ""}
-          help={errors.name?.message}
+      <div style={{ padding: "16px 18px 4px" }}>
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit((values) => onSubmit(values))}
         >
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => <Input {...field} autoFocus />}
-          />
-        </Form.Item>
+          <Form.Item
+            label={t("kanban.statusForm.name")}
+            validateStatus={errors.name ? "error" : ""}
+            help={errors.name?.message}
+          >
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => <Input {...field} autoFocus />}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label={t("kanban.statusForm.color")}
-          validateStatus={errors.color ? "error" : ""}
-          help={errors.color?.message}
-        >
-          <Controller
-            control={control}
-            name="color"
-            render={({ field }) => (
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <input
-                  aria-label={t("kanban.statusForm.color")}
-                  onChange={(event) => field.onChange(event.target.value)}
-                  style={{
-                    width: 48,
-                    height: 36,
-                    border: "none",
-                    background: "transparent",
-                    padding: 0,
-                  }}
-                  type="color"
-                  value={field.value}
-                />
-                <Input {...field} />
-              </div>
-            )}
-          />
-        </Form.Item>
-      </Form>
+          <Form.Item
+            label={t("kanban.statusForm.color")}
+            validateStatus={errors.color ? "error" : ""}
+            help={errors.color?.message}
+          >
+            <Controller
+              control={control}
+              name="color"
+              render={({ field }) => (
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <input
+                    aria-label={t("kanban.statusForm.color")}
+                    onChange={(event) => field.onChange(event.target.value)}
+                    style={{
+                      width: 48,
+                      height: 36,
+                      border: "none",
+                      background: "transparent",
+                      padding: 0,
+                    }}
+                    type="color"
+                    value={field.value}
+                  />
+                  <Input {...field} />
+                </div>
+              )}
+            />
+          </Form.Item>
+        </Form>
+      </div>
     </Modal>
   );
 };

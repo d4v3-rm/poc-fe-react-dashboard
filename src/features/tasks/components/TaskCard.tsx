@@ -85,7 +85,6 @@ export const TaskCard = ({
     0.34,
     token.colorBgContainer,
   );
-  const cardHeight = compact ? 172 : 172;
   const hoverBorder = isHovering
     ? toRgba(token.colorPrimary, 0.34)
     : token.colorBorder;
@@ -123,9 +122,7 @@ export const TaskCard = ({
           : isHovering
             ? `0 10px 18px -10px ${toRgba(token.colorPrimary, 0.35)}`
             : token.boxShadow,
-        height: cardHeight,
-        maxHeight: cardHeight,
-        minHeight: cardHeight,
+        minHeight: compact ? 156 : 172,
         overflow: "hidden",
         transition: "all .2s ease",
         width: "100%",
@@ -133,14 +130,13 @@ export const TaskCard = ({
       }}
       styles={{
         body: {
-          height: "100%",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
         },
       }}
     >
-      <Flex gap={10} style={{ height: "100%" }} vertical>
+      <Flex gap={10} style={{ minHeight: 0, height: "100%" }} vertical>
         <Flex align="center" gap={8} justify="space-between">
           <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
             {status.name}
@@ -190,18 +186,22 @@ export const TaskCard = ({
         </Flex>
 
         <Flex align="start" style={{ minHeight: 0, flex: 1 }}>
-          <Typography.Text
-            ellipsis={{ rows: 2 }}
+          <Typography.Paragraph
             title={task.title}
             style={{
               color: token.colorText,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2,
               lineHeight: 1.35,
               fontSize: 15,
               fontWeight: 600,
+              marginBottom: 0,
+              overflow: "hidden",
             }}
           >
             {task.title}
-          </Typography.Text>
+          </Typography.Paragraph>
         </Flex>
 
         {task.tags.length > 0 ? (
@@ -219,7 +219,7 @@ export const TaskCard = ({
           </Flex>
         ) : null}
 
-        <Flex align="center" justify="space-between">
+        <Flex align="center" gap={8} justify="space-between" wrap>
           <Tag
             icon={dueIsOverdue ? <FlagOutlined /> : undefined}
             style={dueTagStyle}
@@ -247,15 +247,15 @@ export const TaskCard = ({
                   "aria-label": t("actions.cancel"),
                   icon: <CloseOutlined />,
                 }}
-                cancelText=""
                 okButtonProps={{
                   "aria-label": t("actions.delete"),
                   icon: <DeleteOutlined />,
                 }}
-                okText=""
+                okText={t("actions.delete")}
                 okType="danger"
                 onConfirm={() => onDelete(task.id)}
                 title={t("task.deleteConfirm.title")}
+                cancelText={t("actions.cancel")}
               >
                 <Tooltip title={t("actions.delete")}>
                   <Button

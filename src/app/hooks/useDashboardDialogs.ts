@@ -58,7 +58,9 @@ export const useDashboardDialogs = (): UseDashboardDialogsReturn => {
   const [isThemeModalOpen, setThemeModalOpen] = useState(false);
   const [isTaskDetailsOpen, setTaskDetailsOpen] = useState(false);
   const [taskDetailsId, setTaskDetailsId] = useState<string | null>(null);
-  const [isProjectPanelCollapsed, setProjectPanelCollapsed] = useState(false);
+  const [isProjectPanelCollapsed, setProjectPanelCollapsed] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 992,
+  );
 
   const importInputRef = useRef<HTMLInputElement>(null);
 

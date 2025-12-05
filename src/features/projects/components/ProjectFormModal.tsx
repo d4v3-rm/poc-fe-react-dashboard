@@ -106,7 +106,9 @@ export const ProjectFormModal = ({
             aria-label={t("actions.cancel")}
             icon={<CloseOutlined />}
             onClick={onCancel}
-          />
+          >
+            {t("actions.cancel")}
+          </Button>
         </Tooltip>,
         <Tooltip
           key="save"
@@ -120,7 +122,9 @@ export const ProjectFormModal = ({
             loading={isSubmitting}
             onClick={handleSubmit((values) => onSubmit(values))}
             type="primary"
-          />
+          >
+            {mode === "create" ? t("actions.create") : t("actions.save")}
+          </Button>
         </Tooltip>,
       ]}
     >
@@ -136,69 +140,72 @@ export const ProjectFormModal = ({
           </Typography.Title>
         </Space>
       </div>
-      <Form
-        layout="vertical"
-        onFinish={handleSubmit((values) => onSubmit(values))}
-      >
-        <Form.Item
-          label={t("project.form.name")}
-          validateStatus={errors.name ? "error" : ""}
-          help={errors.name?.message}
+      <div style={{ padding: "16px 18px 4px" }}>
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit((values) => onSubmit(values))}
         >
-          <Controller
-            control={control}
-            name="name"
-            render={({ field }) => (
-              <Input
-                {...field}
-                autoFocus
-                placeholder={t("project.form.name")}
-              />
-            )}
-          />
-        </Form.Item>
+          <Form.Item
+            label={t("project.form.name")}
+            validateStatus={errors.name ? "error" : ""}
+            help={errors.name?.message}
+          >
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  autoFocus
+                  placeholder={t("project.form.name")}
+                />
+              )}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label={t("project.form.description")}
-          validateStatus={errors.description ? "error" : ""}
-          help={errors.description?.message}
-        >
-          <Controller
-            control={control}
-            name="description"
-            render={({ field }) => (
-              <Input.TextArea
-                {...field}
-                autoSize={{ minRows: 3, maxRows: 6 }}
-                placeholder={t("project.form.description")}
-              />
-            )}
-          />
-        </Form.Item>
+          <Form.Item
+            label={t("project.form.description")}
+            validateStatus={errors.description ? "error" : ""}
+            help={errors.description?.message}
+          >
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <Input.TextArea
+                  {...field}
+                  autoSize={{ minRows: 3, maxRows: 6 }}
+                  placeholder={t("project.form.description")}
+                />
+              )}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label={t("project.form.tags")}
-          validateStatus={errors.tags ? "error" : ""}
-          help={errors.tags?.message}
-        >
-          <Controller
-            control={control}
-            name="tags"
-            render={({ field }) => (
-              <Select
-                {...field}
-                allowClear
-                mode="tags"
-                options={(initialValues?.tags ?? []).map((tag) => ({
-                  label: tag,
-                  value: tag,
-                }))}
-                placeholder={t("project.form.tags")}
-              />
-            )}
-          />
-        </Form.Item>
-      </Form>
+          <Form.Item
+            label={t("project.form.tags")}
+            validateStatus={errors.tags ? "error" : ""}
+            help={errors.tags?.message}
+          >
+            <Controller
+              control={control}
+              name="tags"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  allowClear
+                  mode="tags"
+                  options={(initialValues?.tags ?? []).map((tag) => ({
+                    label: tag,
+                    value: tag,
+                  }))}
+                  placeholder={t("project.form.tags")}
+                  onChange={(value) => field.onChange(value ?? [])}
+                />
+              )}
+            />
+          </Form.Item>
+        </Form>
+      </div>
     </Modal>
   );
 };

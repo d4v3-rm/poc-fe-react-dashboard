@@ -1,7 +1,7 @@
 import { CloseOutlined, DeleteOutlined } from "@ant-design/icons";
-import { App as AntdApp, Layout, theme } from "antd";
+import { App as AntdApp, Grid, Layout, theme } from "antd";
 import dayjs from "dayjs";
-import { type ChangeEvent } from "react";
+import { type ChangeEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { DashboardModals } from "./components/layout/DashboardModals";
 import { DashboardWorkspace } from "./components/layout/DashboardWorkspace";
@@ -83,6 +83,8 @@ export const DashboardPage = () => {
   const { message, modal } = AntdApp.useApp();
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const screens = Grid.useBreakpoint();
+  const isCompactLayout = !screens.lg;
   const overlayMaskStyle = {
     backgroundColor: "rgba(12, 22, 38, 0.44)",
     backdropFilter: "blur(2px)",
@@ -95,6 +97,12 @@ export const DashboardPage = () => {
   const hasActiveProject = activeProject !== null;
 
   const activeStatuses = activeProject?.statuses ?? [];
+
+  useEffect(() => {
+    if (isCompactLayout) {
+      setProjectPanelCollapsed(true);
+    }
+  }, [isCompactLayout, setProjectPanelCollapsed]);
 
   const handleProjectSubmit = (values: {
     name: string;
@@ -217,14 +225,14 @@ export const DashboardPage = () => {
       icon: <DeleteOutlined style={{ color: token.colorError }} />,
       title: t("project.deleteConfirm.title"),
       content: t("project.deleteConfirm.description"),
-      okText: "",
+      okText: t("actions.delete"),
       okButtonProps: {
         "aria-label": t("actions.delete"),
         icon: <DeleteOutlined />,
         danger: true,
       },
       okType: "danger",
-      cancelText: "",
+      cancelText: t("actions.cancel"),
       cancelButtonProps: {
         "aria-label": t("actions.cancel"),
         icon: <CloseOutlined />,
@@ -250,14 +258,14 @@ export const DashboardPage = () => {
       icon: <DeleteOutlined style={{ color: token.colorError }} />,
       title: t("kanban.deleteStatusConfirm.title"),
       content: t("kanban.deleteStatusConfirm.description"),
-      okText: "",
+      okText: t("actions.delete"),
       okButtonProps: {
         "aria-label": t("actions.delete"),
         icon: <DeleteOutlined />,
         danger: true,
       },
       okType: "danger",
-      cancelText: "",
+      cancelText: t("actions.cancel"),
       cancelButtonProps: {
         "aria-label": t("actions.cancel"),
         icon: <CloseOutlined />,
@@ -329,6 +337,7 @@ export const DashboardPage = () => {
         }}
       >
         <ProjectPanel
+          isCompactLayout={isCompactLayout}
           isCollapsed={isProjectPanelCollapsed}
           onCollapseChange={setProjectPanelCollapsed}
           projects={projects}

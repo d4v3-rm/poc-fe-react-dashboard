@@ -150,7 +150,9 @@ export const TaskEditorDrawer = ({
                 aria-label={t("actions.cancel")}
                 icon={<CloseOutlined />}
                 onClick={onClose}
-              />
+              >
+                {t("actions.cancel")}
+              </Button>
             </Tooltip>
             <Tooltip
               title={
@@ -175,7 +177,9 @@ export const TaskEditorDrawer = ({
                   });
                 })}
                 type="primary"
-              />
+              >
+                {mode === "create" ? t("actions.create") : t("actions.save")}
+              </Button>
             </Tooltip>
           </Space>
         </Flex>

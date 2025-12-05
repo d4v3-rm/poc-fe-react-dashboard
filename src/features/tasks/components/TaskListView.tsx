@@ -77,7 +77,7 @@ export const TaskListView = ({
         >
           <Flex gap={12} wrap>
             {statusTasks.map((task) => (
-              <div key={task.id} style={{ flex: "1 1 320px", minWidth: 280 }}>
+              <div key={task.id} style={{ flex: "1 1 280px", minWidth: 0 }}>
                 <TaskCard
                   language={language}
                   onDelete={onDeleteTask}

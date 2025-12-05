@@ -93,7 +93,7 @@ export const DashboardToolbar = ({
           allowClear
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={t("filters.search")}
-          style={{ minWidth: 220, width: "min(340px, 80vw)" }}
+          style={{ flex: "1 1 220px", minWidth: 0, width: "auto" }}
           value={filters.query}
         />
 
@@ -106,7 +106,7 @@ export const DashboardToolbar = ({
             value: status.id,
           }))}
           placeholder={t("filters.status")}
-          style={{ minWidth: 170 }}
+          style={{ flex: "1 1 170px", minWidth: 140 }}
           value={filters.statusIds}
         />
 
@@ -120,7 +120,7 @@ export const DashboardToolbar = ({
             value: tag,
           }))}
           placeholder={t("filters.tag")}
-          style={{ minWidth: 180 }}
+          style={{ flex: "1 1 180px", minWidth: 140 }}
           value={filters.tagIds}
         />
 
@@ -134,7 +134,7 @@ export const DashboardToolbar = ({
             { label: t("filters.dueOptions.noDue"), value: "no_due" },
           ]}
           placeholder={t("filters.due")}
-          style={{ minWidth: 170 }}
+          style={{ flex: "1 1 170px", minWidth: 140 }}
           value={filters.due}
         />
 
@@ -147,7 +147,7 @@ export const DashboardToolbar = ({
         </Tooltip>
       </Flex>
 
-      <Space size={8}>
+      <Space size={8} wrap>
         <Tooltip
           title={`${t("actions.toggleLanguage")} (${t(`language.${language}`)})`}
         >
