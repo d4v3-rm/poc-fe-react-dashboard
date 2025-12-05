@@ -1,11 +1,10 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { closestCorners, DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
-import { Button } from 'antd';
+import { Button, Flex } from 'antd';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
 import { KanbanColumn } from './KanbanColumn';
-import './KanbanBoard.css';
 
 type KanbanBoardProps = {
   statuses: TaskStatus[];
@@ -101,15 +100,15 @@ export const KanbanBoard = ({
   };
 
   return (
-    <div className="kanban-board-wrap">
-      <div className="kanban-board__toolbar">
+    <Flex gap={12} vertical>
+      <Flex justify="end">
         <Button icon={<PlusOutlined />} onClick={onAddStatus} type="dashed">
           {t('kanban.addStatus')}
         </Button>
-      </div>
+      </Flex>
 
       <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd} sensors={sensors}>
-        <div className="kanban-board">
+        <Flex gap={12} style={{ overflowX: 'auto', paddingBottom: 8 }}>
           {statuses.map((status) => (
             <KanbanColumn
               canDeleteStatus={statuses.length > 1}
@@ -125,8 +124,8 @@ export const KanbanBoard = ({
               tasks={groupedTasks[status.id] ?? []}
             />
           ))}
-        </div>
+        </Flex>
       </DndContext>
-    </div>
+    </Flex>
   );
 };

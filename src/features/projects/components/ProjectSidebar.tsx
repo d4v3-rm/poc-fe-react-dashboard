@@ -5,12 +5,10 @@ import {
   FolderOpenOutlined,
   MoreOutlined,
 } from '@ant-design/icons';
-import { Button, Dropdown, Empty, Space, Tag, Typography } from 'antd';
+import { Button, Card, Dropdown, Empty, Flex, List, Space, Tag, theme, Typography } from 'antd';
 import type { MenuProps } from 'antd';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import type { ProjectItem } from '../project.types';
-import './ProjectSidebar.css';
 
 type ProjectSidebarProps = {
   projects: ProjectItem[];
@@ -30,28 +28,28 @@ export const ProjectSidebar = ({
   onDeleteProject,
 }: ProjectSidebarProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
 
   return (
-    <aside className="project-sidebar">
-      <div className="project-sidebar__header">
-        <div>
-          <Typography.Title className="project-sidebar__title" level={4}>
+    <Flex gap={16} vertical>
+      <Flex align="center" justify="space-between">
+        <Typography.Title level={4} style={{ letterSpacing: '-0.015em', margin: 0 }}>
             {t('project.sectionTitle')}
-          </Typography.Title>
-        </div>
+        </Typography.Title>
         <Button icon={<FolderAddOutlined />} onClick={onCreateProject} type="primary">
           {t('project.create')}
         </Button>
-      </div>
+      </Flex>
 
       {projects.length === 0 && (
-        <div className="project-sidebar__empty-wrap">
+        <Card>
           <Empty description={t('project.empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
-        </div>
+        </Card>
       )}
 
-      <div className="project-sidebar__list">
-        {projects.map((project) => {
+      <List
+        dataSource={projects}
+        renderItem={(project) => {
           const menuItems: MenuProps['items'] = [
             {
               key: 'edit',
@@ -66,12 +64,13 @@ export const ProjectSidebar = ({
             },
           ];
 
+          const isActive = activeProjectId === project.id;
+
           return (
-            <div
+            <List.Item style={{ border: 'none', paddingInline: 0, paddingTop: 0, paddingBottom: 10 }}>
+              <Card
+                hoverable
               key={project.id}
-              className={clsx('project-sidebar__item', {
-                'project-sidebar__item--active': activeProjectId === project.id,
-              })}
               onClick={() => onSelectProject(project.id)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
@@ -80,22 +79,33 @@ export const ProjectSidebar = ({
                 }
               }}
               role="button"
+                size="small"
+                style={{
+                  borderColor: isActive ? token.colorPrimary : token.colorBorderSecondary,
+                  borderWidth: isActive ? 2 : 1,
+                  borderStyle: 'solid',
+                  width: '100%',
+                }}
               tabIndex={0}
             >
-              <div className="project-sidebar__item-main">
+                <Flex align="center" justify="space-between" style={{ marginBottom: 8 }}>
                 <Space size={8}>
                   <FolderOpenOutlined />
-                  <Typography.Text className="project-sidebar__item-title" strong>
+                    <Typography.Text ellipsis strong style={{ maxWidth: 180 }}>
                     {project.name}
                   </Typography.Text>
                 </Space>
                 <Tag>{project.tasks.length}</Tag>
-              </div>
+                </Flex>
 
-              <div className="project-sidebar__item-footer">
-                <Typography.Text className="project-sidebar__item-description" type="secondary">
+                <Flex align="start" justify="space-between">
+                  <Typography.Paragraph
+                    ellipsis={{ rows: 2 }}
+                    style={{ marginBottom: 0, maxWidth: 190 }}
+                    type="secondary"
+                  >
                   {project.description || '-'}
-                </Typography.Text>
+                  </Typography.Paragraph>
 
                 <Dropdown
                   menu={{
@@ -120,11 +130,12 @@ export const ProjectSidebar = ({
                     type="text"
                   />
                 </Dropdown>
-              </div>
-            </div>
+                </Flex>
+              </Card>
+            </List.Item>
           );
-        })}
-      </div>
-    </aside>
+        }}
+      />
+    </Flex>
   );
 };

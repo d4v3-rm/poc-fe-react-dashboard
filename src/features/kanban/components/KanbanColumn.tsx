@@ -1,9 +1,8 @@
 import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Button, Dropdown, Empty, Space, Tag, Typography } from 'antd';
+import { Button, Card, Dropdown, Empty, Flex, Space, Tag, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
 import { SortableTaskCard } from './SortableTaskCard';
@@ -34,6 +33,7 @@ export const KanbanColumn = ({
   onDeleteStatus,
 }: KanbanColumnProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const { isOver, setNodeRef } = useDroppable({
     id: status.id,
   });
@@ -54,43 +54,46 @@ export const KanbanColumn = ({
   ];
 
   return (
-    <section className={clsx('kanban-column', { 'kanban-column--over': isOver })} ref={setNodeRef}>
-      <header className="kanban-column__header">
-        <Space align="center" size={8}>
-          <Tag color={status.color}>{status.name}</Tag>
-          <Typography.Text type="secondary">{tasks.length}</Typography.Text>
-        </Space>
+    <Card
+      ref={setNodeRef}
+      size="small"
+      style={{
+        borderColor: isOver ? token.colorPrimary : token.colorBorderSecondary,
+        borderWidth: isOver ? 2 : 1,
+        borderStyle: 'solid',
+        flex: '0 0 320px',
+        minHeight: 540,
+      }}
+      title={
+        <Flex align="center" justify="space-between">
+          <Space align="center" size={8}>
+            <Tag color={status.color}>{status.name}</Tag>
+            <Typography.Text type="secondary">{tasks.length}</Typography.Text>
+          </Space>
+          <Dropdown
+            menu={{
+              items: actions,
+              onClick: ({ key }) => {
+                if (key === 'edit') {
+                  onEditStatus(status);
+                  return;
+                }
 
-        <Dropdown
-          menu={{
-            items: actions,
-            onClick: ({ key }) => {
-              if (key === 'edit') {
-                onEditStatus(status);
-                return;
-              }
-
-              if (canDeleteStatus) {
-                onDeleteStatus(status);
-              }
-            },
-          }}
-          trigger={['click']}
-        >
-          <Button icon={<MoreOutlined />} size="small" type="text" />
-        </Dropdown>
-      </header>
-
+                if (canDeleteStatus) {
+                  onDeleteStatus(status);
+                }
+              },
+            }}
+            trigger={['click']}
+          >
+            <Button icon={<MoreOutlined />} size="small" type="text" />
+          </Dropdown>
+        </Flex>
+      }
+    >
       <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
-        <div className="kanban-column__tasks">
-          {tasks.length === 0 && (
-            <Empty
-              className="kanban-column__empty"
-              description={t('kanban.emptyColumn')}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          )}
-
+        <Flex gap={10} style={{ minHeight: 420 }} vertical>
+          {tasks.length === 0 && <Empty description={t('kanban.emptyColumn')} image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: '36px 0' }} />}
           {tasks.map((task) => (
             <SortableTaskCard
               key={task.id}
@@ -103,8 +106,8 @@ export const KanbanColumn = ({
               task={task}
             />
           ))}
-        </div>
+        </Flex>
       </SortableContext>
-    </section>
+    </Card>
   );
 };

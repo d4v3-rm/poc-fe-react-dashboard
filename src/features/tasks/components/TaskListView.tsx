@@ -1,8 +1,7 @@
-import { Empty, Typography } from 'antd';
+import { Card, Col, Empty, Row, Space, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../task.types';
 import { TaskCard } from './TaskCard';
-import './TaskListView.css';
 
 type TaskListViewProps = {
   tasks: TaskItem[];
@@ -24,11 +23,15 @@ export const TaskListView = ({
   const { t } = useTranslation();
 
   if (tasks.length === 0) {
-    return <Empty className="task-list-view__empty" description={t('task.empty')} />;
+    return (
+      <Card>
+        <Empty description={t('task.empty')} />
+      </Card>
+    );
   }
 
   return (
-    <div className="task-list-view">
+    <Space direction="vertical" size={20} style={{ width: '100%' }}>
       {statuses.map((status) => {
         const statusTasks = tasks
           .filter((task) => task.statusId === status.id)
@@ -39,27 +42,28 @@ export const TaskListView = ({
         }
 
         return (
-          <section className="task-list-view__section" key={status.id}>
-            <Typography.Title className="task-list-view__section-title" level={5}>
+          <Card key={status.id}>
+            <Typography.Title level={5} style={{ marginTop: 0 }}>
               {status.name}
             </Typography.Title>
-            <div className="task-list-view__grid">
+            <Row gutter={[12, 12]}>
               {statusTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  language={language}
-                  onDelete={onDeleteTask}
-                  onEdit={onEditTask}
-                  onStatusChange={onStatusChange}
-                  status={status}
-                  statuses={statuses}
-                  task={task}
-                />
+                <Col key={task.id} lg={8} md={12} sm={24} xl={6} xs={24}>
+                  <TaskCard
+                    language={language}
+                    onDelete={onDeleteTask}
+                    onEdit={onEditTask}
+                    onStatusChange={onStatusChange}
+                    status={status}
+                    statuses={statuses}
+                    task={task}
+                  />
+                </Col>
               ))}
-            </div>
-          </section>
+            </Row>
+          </Card>
         );
       })}
-    </div>
+    </Space>
   );
 };

@@ -1,13 +1,11 @@
 import { DeleteOutlined, EditOutlined, FlagOutlined, SwapOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Typography } from 'antd';
 import type { MenuProps } from 'antd';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { formatDueDate, isOverdue } from '../../../shared/utils/date';
 import type { TaskItem, TaskStatus } from '../task.types';
-import './TaskCard.css';
 
 type TaskCardProps = {
   task: TaskItem;
@@ -42,11 +40,17 @@ export const TaskCard = ({
     }));
 
   return (
-    <article className={clsx('task-card', { 'task-card--compact': compact })}>
-      <header className="task-card__header">
-        <Typography.Title className="task-card__title" level={compact ? 5 : 4}>
-          {task.title}
-        </Typography.Title>
+    <Card
+      size="small"
+      style={{
+        minHeight: compact ? 180 : 220,
+      }}
+    >
+      <Flex gap={10} vertical>
+        <Flex align="start" justify="space-between">
+          <Typography.Title level={compact ? 5 : 4} style={{ lineHeight: 1.3, margin: 0 }}>
+            {task.title}
+          </Typography.Title>
 
         {statusOptions.length > 0 && (
           <Dropdown
@@ -59,22 +63,21 @@ export const TaskCard = ({
             <Button icon={<SwapOutlined />} size="small" type="text" />
           </Dropdown>
         )}
-      </header>
+        </Flex>
 
-      <div className="task-card__tags">
-        <Tag color={status.color}>{status.name}</Tag>
-        <Tag color={dueIsOverdue ? 'error' : 'default'}>{formatDueDate(task.dueDate, language)}</Tag>
-      </div>
+        <Space size={6} wrap>
+          <Tag color={status.color}>{status.name}</Tag>
+          <Tag color={dueIsOverdue ? 'error' : 'default'}>{formatDueDate(task.dueDate, language)}</Tag>
+        </Space>
 
-      <div className="task-card__markdown markdown-surface">
-        {task.content.trim() ? (
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{task.content}</ReactMarkdown>
-        ) : (
-          <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
-        )}
-      </div>
+        <Card size="small" style={{ maxHeight: 130, minHeight: 94, overflow: 'auto' }}>
+          {task.content.trim() ? (
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{task.content}</ReactMarkdown>
+          ) : (
+            <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+          )}
+        </Card>
 
-      <footer className="task-card__actions">
         <Space size={6}>
           <Button icon={<EditOutlined />} onClick={() => onEdit(task.id)} size="small">
             {t('actions.edit')}
@@ -92,7 +95,7 @@ export const TaskCard = ({
             </Button>
           </Popconfirm>
         </Space>
-      </footer>
-    </article>
+      </Flex>
+    </Card>
   );
 };

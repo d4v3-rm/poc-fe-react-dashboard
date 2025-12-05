@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, DatePicker, Drawer, Form, Input, Select, Space, Typography } from 'antd';
+import { Button, Card, Col, DatePicker, Drawer, Flex, Form, Grid, Input, Row, Select, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
@@ -8,7 +8,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { taskFormSchema, type TaskFormValues } from '../task.schema';
 import type { TaskItem, TaskStatus } from '../task.types';
-import './TaskEditorDrawer.css';
 
 type TaskEditorDrawerProps = {
   open: boolean;
@@ -33,6 +32,7 @@ export const TaskEditorDrawer = ({
   onSubmit,
 }: TaskEditorDrawerProps) => {
   const { t } = useTranslation();
+  const screens = Grid.useBreakpoint();
   const {
     control,
     handleSubmit,
@@ -70,7 +70,7 @@ export const TaskEditorDrawer = ({
     <Drawer
       destroyOnHidden
       footer={
-        <div className="task-editor__footer">
+        <Flex justify="end">
           <Space>
             <Button onClick={onClose}>{t('actions.cancel')}</Button>
             <Button
@@ -88,7 +88,7 @@ export const TaskEditorDrawer = ({
               {mode === 'create' ? t('actions.create') : t('actions.save')}
             </Button>
           </Space>
-        </div>
+        </Flex>
       }
       onClose={onClose}
       open={open}
@@ -96,95 +96,105 @@ export const TaskEditorDrawer = ({
       size="large"
       title={mode === 'create' ? t('task.create') : t('task.edit')}
     >
-      <div className="task-editor">
-        <Form className="task-editor__form" layout="vertical">
-          <Form.Item
-            help={errors.title?.message}
-            label={t('task.form.title')}
-            validateStatus={errors.title ? 'error' : ''}
-          >
-            <Controller
-              control={control}
-              name="title"
-              render={({ field }) => <Input {...field} autoFocus placeholder={t('task.form.title')} />}
-            />
-          </Form.Item>
-
-          <div className="task-editor__grid">
+      <Row gutter={18}>
+        <Col span={screens.lg ? 12 : 24}>
+          <Form layout="vertical">
             <Form.Item
-              help={errors.statusId?.message}
-              label={t('task.form.status')}
-              validateStatus={errors.statusId ? 'error' : ''}
+              help={errors.title?.message}
+              label={t('task.form.title')}
+              validateStatus={errors.title ? 'error' : ''}
             >
               <Controller
                 control={control}
-                name="statusId"
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    options={statuses.map((status) => ({
-                      label: status.name,
-                      value: status.id,
-                    }))}
-                  />
-                )}
+                name="title"
+                render={({ field }) => <Input {...field} autoFocus placeholder={t('task.form.title')} />}
               />
             </Form.Item>
 
+            <Row gutter={12}>
+              <Col span={screens.sm ? 12 : 24}>
+                <Form.Item
+                  help={errors.statusId?.message}
+                  label={t('task.form.status')}
+                  validateStatus={errors.statusId ? 'error' : ''}
+                >
+                  <Controller
+                    control={control}
+                    name="statusId"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        options={statuses.map((status) => ({
+                          label: status.name,
+                          value: status.id,
+                        }))}
+                      />
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={screens.sm ? 12 : 24}>
+                <Form.Item
+                  help={errors.dueDate?.message as string | undefined}
+                  label={t('task.form.dueDate')}
+                  validateStatus={errors.dueDate ? 'error' : ''}
+                >
+                  <Controller
+                    control={control}
+                    name="dueDate"
+                    render={({ field }) => (
+                      <DatePicker
+                        allowClear
+                        format="YYYY-MM-DD"
+                        onChange={(value) => field.onChange(value ?? null)}
+                        style={{ width: '100%' }}
+                        value={field.value}
+                      />
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
             <Form.Item
-              help={errors.dueDate?.message as string | undefined}
-              label={t('task.form.dueDate')}
-              validateStatus={errors.dueDate ? 'error' : ''}
+              help={errors.content?.message}
+              label={
+                <Space direction="vertical" size={0}>
+                  <span>{t('task.form.content')}</span>
+                  <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+                </Space>
+              }
+              validateStatus={errors.content ? 'error' : ''}
             >
               <Controller
                 control={control}
-                name="dueDate"
+                name="content"
                 render={({ field }) => (
-                  <DatePicker
-                    allowClear
-                    className="task-editor__date"
-                    format="YYYY-MM-DD"
-                    onChange={(value) => field.onChange(value ?? null)}
-                    value={field.value}
-                  />
+                  <Input.TextArea {...field} autoSize={{ minRows: 12, maxRows: 18 }} />
                 )}
               />
             </Form.Item>
-          </div>
+          </Form>
+        </Col>
 
-          <Form.Item
-            help={errors.content?.message}
-            label={
-              <Space direction="vertical" size={0}>
-                <span>{t('task.form.content')}</span>
-                <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
-              </Space>
-            }
-            validateStatus={errors.content ? 'error' : ''}
-          >
-            <Controller
-              control={control}
-              name="content"
-              render={({ field }) => (
-                <Input.TextArea {...field} autoSize={{ minRows: 12, maxRows: 18 }} />
-              )}
-            />
-          </Form.Item>
-        </Form>
-
-        <section className="task-editor__preview-wrap">
-          <Typography.Title className="task-editor__preview-title" level={5}>
-            {t('task.preview')}
-          </Typography.Title>
-          <div className="task-editor__preview markdown-surface">
-            {(content ?? '').trim().length > 0 ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>{content ?? ''}</ReactMarkdown>
-            ) : (
-              <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
-            )}
-          </div>
-        </section>
-      </div>
+        <Col span={screens.lg ? 12 : 24}>
+          <Card>
+            <Flex gap={10} vertical>
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                {t('task.preview')}
+              </Typography.Title>
+              <Card size="small" style={{ maxHeight: screens.lg ? 560 : 300, minHeight: 220, overflow: 'auto' }}>
+                {(content ?? '').trim().length > 0 ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content ?? ''}</ReactMarkdown>
+                ) : (
+                  <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+                )}
+              </Card>
+            </Flex>
+          </Card>
+        </Col>
+      </Row>
     </Drawer>
   );
 };
