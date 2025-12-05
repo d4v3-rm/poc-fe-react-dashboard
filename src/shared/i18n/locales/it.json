@@ -1,0 +1,126 @@
+{
+  "app": {
+    "title": "Task Operations Board",
+    "subtitle": "Dashboard produttiva locale"
+  },
+  "language": {
+    "label": "Lingua",
+    "en": "Inglese",
+    "it": "Italiano"
+  },
+  "actions": {
+    "create": "Crea",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "more": "Altre azioni",
+    "close": "Chiudi",
+    "export": "Esporta",
+    "import": "Importa",
+    "clearFilters": "Reset filtri",
+    "toggleLanguage": "Cambia lingua"
+  },
+  "project": {
+    "sectionTitle": "Progetti",
+    "create": "Nuovo Progetto",
+    "edit": "Modifica Progetto",
+    "delete": "Elimina Progetto",
+    "empty": "Crea il primo progetto per iniziare a gestire task.",
+    "form": {
+      "name": "Nome progetto",
+      "description": "Descrizione",
+      "tags": "Tag progetto"
+    },
+    "deleteConfirm": {
+      "title": "Eliminare il progetto?",
+      "description": "Questa azione elimina in modo permanente tutti i task del progetto."
+    },
+    "collapsePanel": "Comprimi pannello progetti",
+    "expandPanel": "Espandi pannello progetti"
+  },
+  "task": {
+    "create": "Nuovo Task",
+    "edit": "Modifica Task",
+    "delete": "Elimina Task",
+    "drag": "Sposta task",
+    "dragHint": "Trascina per riordinare o spostare tra colonne",
+    "form": {
+      "title": "Titolo",
+      "status": "Stato",
+      "dueDate": "Scadenza",
+      "tags": "Tag",
+      "content": "Dettagli markdown",
+      "markdownHint": "Usa la sintassi markdown per note ricche.",
+      "noDueDate": "Nessuna scadenza"
+    },
+    "deleteConfirm": {
+      "title": "Eliminare il task?",
+      "description": "Il task verra rimosso da questo progetto."
+    },
+    "preview": "Anteprima",
+    "editor": "Editor",
+    "quickStatus": "Cambia stato",
+    "empty": "Nessun task corrisponde ai filtri correnti.",
+    "noTags": "Nessun tag"
+  },
+  "view": {
+    "list": "Lista",
+    "kanban": "Kanban"
+  },
+  "filters": {
+    "search": "Cerca per titolo o markdown...",
+    "status": "Stato",
+    "due": "Scadenza",
+    "tag": "Tag",
+    "dueOptions": {
+      "all": "Qualsiasi data",
+      "overdue": "Scaduti",
+      "today": "Oggi",
+      "week": "Prossimi 7 giorni",
+      "noDue": "Senza scadenza"
+    }
+  },
+  "theme": {
+    "settings": "Impostazioni tema",
+    "openSettings": "Apri impostazioni",
+    "sectionDescription": "Personalizza l'aspetto dell'app e passa tra tema chiaro e scuro.",
+    "mode": {
+      "label": "Modalita tema",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    },
+    "reset": "Ripristina colori",
+    "primary": "Primario",
+    "secondary": "Secondario",
+    "palette": "Palette",
+    "preview": "Anteprima",
+    "previewName": "Tema applicazione",
+    "previewHint": "L'anteprima si aggiorna in tempo reale."
+  },
+  "kanban": {
+    "addStatus": "Aggiungi stato",
+    "editStatus": "Modifica stato",
+    "deleteStatus": "Elimina stato",
+    "emptyColumn": "Trascina qui i task",
+    "statusForm": {
+      "name": "Nome stato",
+      "color": "Colore"
+    },
+    "deleteStatusConfirm": {
+      "title": "Eliminare lo stato?",
+      "description": "I task di questo stato verranno spostati nella prima colonna."
+    }
+  },
+  "messages": {
+    "importSuccess": "Progetti importati con successo.",
+    "importError": "Import fallito: struttura file non valida.",
+    "exportReady": "File export generato."
+  },
+  "validation": {
+    "required": "Campo obbligatorio.",
+    "minName": "Usa almeno 2 caratteri.",
+    "color": "Usa un colore hex valido, es. #1677ff.",
+    "invalidDate": "Usa una data valida."
+  }
+}

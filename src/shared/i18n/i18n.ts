@@ -6,7 +6,9 @@ const fallbackLanguage = "en";
 
 void i18n.use(initReactI18next).init({
   resources,
+  lng: fallbackLanguage,
   fallbackLng: fallbackLanguage,
+  supportedLngs: ["en", "it"],
   showSupportNotice: false,
   interpolation: {
     escapeValue: false,
