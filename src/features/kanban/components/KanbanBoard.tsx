@@ -7,21 +7,26 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
-import { Flex } from 'antd';
-import { useMemo, useState } from 'react';
-import type { TaskItem, TaskStatus } from '../../tasks/task.types';
-import { KanbanColumn } from './KanbanColumn';
-import { TaskCard } from '../../tasks/components/TaskCard';
+} from "@dnd-kit/core";
+import { Flex } from "antd";
+import { useMemo, useState } from "react";
+import type { TaskItem, TaskStatus } from "../../tasks/task.types";
+import { KanbanColumn } from "./KanbanColumn";
+import { TaskCard } from "../../tasks/components/TaskCard";
 
 type KanbanBoardProps = {
   statuses: TaskStatus[];
   tasks: TaskItem[];
-  language: 'en' | 'it';
-  onMoveTask: (taskId: string, targetStatusId: string, targetIndex?: number) => void;
+  language: "en" | "it";
+  onMoveTask: (
+    taskId: string,
+    targetStatusId: string,
+    targetIndex?: number,
+  ) => void;
   onEditTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, statusId: string) => void;
+  onOpenTaskDetails: (taskId: string) => void;
   onEditStatus: (status: TaskStatus) => void;
   onDeleteStatus: (status: TaskStatus) => void;
 };
@@ -34,6 +39,7 @@ export const KanbanBoard = ({
   onEditTask,
   onDeleteTask,
   onStatusChange,
+  onOpenTaskDetails,
   onEditStatus,
   onDeleteStatus,
 }: KanbanBoardProps) => {
@@ -102,9 +108,15 @@ export const KanbanBoard = ({
 
     if (overTask) {
       const targetStatusId = overTask.statusId;
-      const targetIndex = groupedTasks[targetStatusId]?.findIndex((task) => task.id === overId);
+      const targetIndex = groupedTasks[targetStatusId]?.findIndex(
+        (task) => task.id === overId,
+      );
 
-      onMoveTask(activeTaskLocal.id, targetStatusId, targetIndex === -1 ? undefined : targetIndex);
+      onMoveTask(
+        activeTaskLocal.id,
+        targetStatusId,
+        targetIndex === -1 ? undefined : targetIndex,
+      );
       return;
     }
 
@@ -119,7 +131,11 @@ export const KanbanBoard = ({
   };
 
   return (
-    <Flex gap={12} vertical>
+    <Flex
+      gap={12}
+      style={{ height: "100%", minHeight: 0, overflow: "hidden" }}
+      vertical
+    >
       <DndContext
         collisionDetection={closestCorners}
         onDragCancel={handleDragCancel}
@@ -127,7 +143,18 @@ export const KanbanBoard = ({
         onDragStart={handleDragStart}
         sensors={sensors}
       >
-        <Flex gap={12} style={{ overflowX: 'auto', paddingBottom: 8 }}>
+        <Flex
+          gap={12}
+          style={{
+            height: "100%",
+            minHeight: 0,
+            overflowY: "hidden",
+            overflowX: "auto",
+            paddingBottom: 8,
+          }}
+          wrap={false}
+          align="stretch"
+        >
           {statuses.map((status) => (
             <KanbanColumn
               canDeleteStatus={statuses.length > 1}
@@ -138,6 +165,7 @@ export const KanbanBoard = ({
               onEditStatus={onEditStatus}
               onEditTask={onEditTask}
               onStatusChange={onStatusChange}
+              onOpenTaskDetails={onOpenTaskDetails}
               status={status}
               statuses={statuses}
               tasks={groupedTasks[status.id] ?? []}
@@ -158,6 +186,9 @@ export const KanbanBoard = ({
                 return;
               }}
               onStatusChange={() => {
+                return;
+              }}
+              onOpenDetails={() => {
                 return;
               }}
               status={activeStatus}

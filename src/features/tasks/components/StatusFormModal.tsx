@@ -1,22 +1,31 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Modal, Space, Typography, Tooltip } from 'antd';
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { DEFAULT_THEME_COLORS } from '../../../shared/utils/defaults';
-import { statusFormSchema, type StatusFormValues } from '../status.schema';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Space,
+  Typography,
+  Tooltip,
+  theme,
+} from "antd";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { DEFAULT_THEME_COLORS } from "../../../shared/utils/defaults";
+import { statusFormSchema, type StatusFormValues } from "../status.schema";
 
 type StatusFormModalProps = {
   open: boolean;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   initialValues?: Partial<StatusFormValues>;
   onCancel: () => void;
   onSubmit: (values: StatusFormValues) => void;
 };
 
 const defaultValues: StatusFormValues = {
-  name: '',
+  name: "",
   color: DEFAULT_THEME_COLORS.primary,
 };
 
@@ -28,6 +37,7 @@ export const StatusFormModal = ({
   onSubmit,
 }: StatusFormModalProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const {
     control,
     handleSubmit,
@@ -44,7 +54,7 @@ export const StatusFormModal = ({
     }
 
     reset({
-      name: initialValues?.name ?? '',
+      name: initialValues?.name ?? "",
       color: initialValues?.color ?? DEFAULT_THEME_COLORS.primary,
     });
   }, [initialValues?.color, initialValues?.name, open, reset]);
@@ -54,22 +64,45 @@ export const StatusFormModal = ({
       destroyOnHidden
       open={open}
       onCancel={onCancel}
+      centered
+      width="min(520px, 95vw)"
       title={null}
       styles={{
+        wrapper: {
+          border: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: token.borderRadiusLG,
+          boxShadow: token.boxShadowSecondary,
+          background: token.colorBgElevated,
+          overflow: "hidden",
+        },
         body: {
-          borderRadius: 16,
+          borderRadius: token.borderRadiusLG,
+          background: token.colorBgElevated,
           padding: 0,
-          overflow: 'hidden',
+          overflow: "visible",
+        },
+        footer: {
+          borderTop: `1px solid ${token.colorBorderSecondary}`,
+          padding: "12px 16px 14px",
         },
       }}
       footer={[
-        <Tooltip key="cancel" title={t('actions.cancel')}>
-          <Button aria-label={t('actions.cancel')} icon={<CloseOutlined />} onClick={onCancel} />
-        </Tooltip>,
-        <Tooltip key="save" title={mode === 'create' ? t('actions.create') : t('actions.save')}>
+        <Tooltip key="cancel" title={t("actions.cancel")}>
           <Button
-            aria-label={mode === 'create' ? t('actions.create') : t('actions.save')}
-            icon={mode === 'create' ? <PlusOutlined /> : <CheckOutlined />}
+            aria-label={t("actions.cancel")}
+            icon={<CloseOutlined />}
+            onClick={onCancel}
+          />
+        </Tooltip>,
+        <Tooltip
+          key="save"
+          title={mode === "create" ? t("actions.create") : t("actions.save")}
+        >
+          <Button
+            aria-label={
+              mode === "create" ? t("actions.create") : t("actions.save")
+            }
+            icon={mode === "create" ? <PlusOutlined /> : <CheckOutlined />}
             loading={isSubmitting}
             onClick={handleSubmit((values) => onSubmit(values))}
             type="primary"
@@ -77,17 +110,25 @@ export const StatusFormModal = ({
         </Tooltip>,
       ]}
     >
-      <div style={{ padding: '16px 18px', borderBottom: '1px solid #f0f0f0' }}>
+      <div
+        style={{
+          padding: "16px 18px",
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+        }}
+      >
         <Space>
           <Typography.Title level={5} style={{ margin: 0 }}>
-            {mode === 'create' ? t('kanban.addStatus') : t('kanban.editStatus')}
+            {mode === "create" ? t("kanban.addStatus") : t("kanban.editStatus")}
           </Typography.Title>
         </Space>
       </div>
-      <Form layout="vertical" onFinish={handleSubmit((values) => onSubmit(values))}>
+      <Form
+        layout="vertical"
+        onFinish={handleSubmit((values) => onSubmit(values))}
+      >
         <Form.Item
-          label={t('kanban.statusForm.name')}
-          validateStatus={errors.name ? 'error' : ''}
+          label={t("kanban.statusForm.name")}
+          validateStatus={errors.name ? "error" : ""}
           help={errors.name?.message}
         >
           <Controller
@@ -98,19 +139,25 @@ export const StatusFormModal = ({
         </Form.Item>
 
         <Form.Item
-          label={t('kanban.statusForm.color')}
-          validateStatus={errors.color ? 'error' : ''}
+          label={t("kanban.statusForm.color")}
+          validateStatus={errors.color ? "error" : ""}
           help={errors.color?.message}
         >
           <Controller
             control={control}
             name="color"
             render={({ field }) => (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <input
-                  aria-label={t('kanban.statusForm.color')}
+                  aria-label={t("kanban.statusForm.color")}
                   onChange={(event) => field.onChange(event.target.value)}
-                  style={{ width: 48, height: 36, border: 'none', background: 'transparent', padding: 0 }}
+                  style={{
+                    width: 48,
+                    height: 36,
+                    border: "none",
+                    background: "transparent",
+                    padding: 0,
+                  }}
                   type="color"
                   value={field.value}
                 />

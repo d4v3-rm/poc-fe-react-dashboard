@@ -1,22 +1,36 @@
-import { DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
-import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Button, Card, Dropdown, Empty, Flex, Tag, Tooltip, Typography, theme } from 'antd';
-import type { MenuProps } from 'antd';
-import { useTranslation } from 'react-i18next';
-import type { TaskItem, TaskStatus } from '../../tasks/task.types';
-import { semanticTagStyle } from '../../../shared/theme/color-utils';
-import { SortableTaskCard } from './SortableTaskCard';
+import { DeleteOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {
+  Button,
+  Card,
+  Dropdown,
+  Empty,
+  Flex,
+  Tag,
+  Tooltip,
+  Typography,
+  theme,
+} from "antd";
+import type { MenuProps } from "antd";
+import { useTranslation } from "react-i18next";
+import type { TaskItem, TaskStatus } from "../../tasks/task.types";
+import { semanticTagStyle } from "../../../shared/theme/color-utils";
+import { SortableTaskCard } from "./SortableTaskCard";
 
 type KanbanColumnProps = {
   status: TaskStatus;
   tasks: TaskItem[];
   statuses: TaskStatus[];
   canDeleteStatus: boolean;
-  language: 'en' | 'it';
+  language: "en" | "it";
   onEditTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, statusId: string) => void;
+  onOpenTaskDetails: (taskId: string) => void;
   onEditStatus: (status: TaskStatus) => void;
   onDeleteStatus: (status: TaskStatus) => void;
 };
@@ -30,6 +44,7 @@ export const KanbanColumn = ({
   onEditTask,
   onDeleteTask,
   onStatusChange,
+  onOpenTaskDetails,
   onEditStatus,
   onDeleteStatus,
 }: KanbanColumnProps) => {
@@ -39,18 +54,18 @@ export const KanbanColumn = ({
     id: status.id,
   });
 
-  const actions: MenuProps['items'] = [
+  const actions: MenuProps["items"] = [
     {
-      key: 'edit',
+      key: "edit",
       icon: <EditOutlined />,
-      label: t('actions.edit'),
+      label: t("actions.edit"),
     },
     {
-      key: 'delete',
+      key: "delete",
       icon: <DeleteOutlined />,
       danger: true,
       disabled: !canDeleteStatus,
-      label: t('actions.delete'),
+      label: t("actions.delete"),
     },
   ];
 
@@ -61,7 +76,9 @@ export const KanbanColumn = ({
       title={
         <Flex align="center" gap={8} justify="space-between">
           <Flex align="center" gap={8}>
-            <Tag style={semanticTagStyle(status.color, 0.15, 0.34)}>{status.name}</Tag>
+            <Tag style={semanticTagStyle(status.color, 0.15, 0.34)}>
+              {status.name}
+            </Tag>
             <Typography.Text type="secondary">{tasks.length}</Typography.Text>
           </Flex>
 
@@ -69,7 +86,7 @@ export const KanbanColumn = ({
             menu={{
               items: actions,
               onClick: ({ key }) => {
-                if (key === 'edit') {
+                if (key === "edit") {
                   onEditStatus(status);
                   return;
                 }
@@ -79,32 +96,65 @@ export const KanbanColumn = ({
                 }
               },
             }}
-            trigger={['click']}
+            trigger={["click"]}
           >
-            <Tooltip title={t('actions.more')}>
-              <Button aria-label={t('actions.more')} icon={<MoreOutlined />} size="small" type="text" />
+            <Tooltip title={t("actions.more")}>
+              <Button
+                aria-label={t("actions.more")}
+                icon={<MoreOutlined />}
+                size="small"
+                type="text"
+              />
             </Tooltip>
           </Dropdown>
         </Flex>
       }
       style={{
         borderColor: isOver ? token.colorPrimary : token.colorBorderSecondary,
-        borderWidth: isOver ? 2 : 1,
-        borderStyle: 'solid',
+        borderWidth: 1,
+        borderStyle: "solid",
         borderRadius: token.borderRadiusLG,
-        flex: '0 0 328px',
-        minHeight: 100,
+        flex: "0 0 328px",
+        height: "100%",
+      }}
+      styles={{
+        body: {
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+          overflow: "hidden",
+        },
       }}
     >
-      <Flex vertical gap={10} style={{ minHeight: 260 }}>
-        <Typography.Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-          {t('kanban.dragHint')}
+      <Flex vertical gap={10} style={{ minHeight: 0, flex: 1 }}>
+        <Typography.Text
+          type="secondary"
+          style={{ fontSize: token.fontSizeSM }}
+        >
+          {t("kanban.dragHint")}
         </Typography.Text>
 
-        <SortableContext items={tasks.map((task) => task.id)} strategy={verticalListSortingStrategy}>
-          <Flex gap={10} style={{ minHeight: 300, overflowY: 'auto', paddingBottom: 4 }} vertical>
+        <SortableContext
+          items={tasks.map((task) => task.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <Flex
+            gap={10}
+            style={{
+              minHeight: 0,
+              paddingBottom: 4,
+              flex: 1,
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+            vertical
+          >
             {tasks.length === 0 && (
-              <Empty description={t('kanban.emptyColumn')} image={Empty.PRESENTED_IMAGE_SIMPLE} style={{ margin: '18px 0' }} />
+              <Empty
+                description={t("kanban.emptyColumn")}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ margin: "18px 0" }}
+              />
             )}
             {tasks.map((task) => (
               <SortableTaskCard
@@ -113,6 +163,7 @@ export const KanbanColumn = ({
                 onDeleteTask={onDeleteTask}
                 onEditTask={onEditTask}
                 onStatusChange={onStatusChange}
+                onOpenTaskDetails={onOpenTaskDetails}
                 status={status}
                 statuses={statuses}
                 task={task}

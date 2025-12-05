@@ -6,30 +6,44 @@ import {
   PlusOutlined,
   RightOutlined,
   SettingOutlined,
-} from '@ant-design/icons';
-import { App as AntdApp, Button, Card, Divider, Empty, Flex, Layout, Modal, Space, Tooltip, Typography, theme } from 'antd';
-import dayjs from 'dayjs';
-import { useMemo, useRef, useState, type ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useShallow } from 'zustand/react/shallow';
-import { DashboardToolbar } from './components/DashboardToolbar';
-import { ThemeSidebarCard } from './components/ThemeSidebarCard';
-import { KanbanBoard } from '../features/kanban/components/KanbanBoard';
-import { ProjectFormModal } from '../features/projects/components/ProjectFormModal';
-import { ProjectSidebar } from '../features/projects/components/ProjectSidebar';
-import type { ProjectItem } from '../features/projects/project.types';
-import { TaskEditorDrawer } from '../features/tasks/components/TaskEditorDrawer';
-import { TaskListView } from '../features/tasks/components/TaskListView';
-import { StatusFormModal } from '../features/tasks/components/StatusFormModal';
-import type { TaskStatus } from '../features/tasks/task.types';
-import { filterTasks } from '../features/tasks/task-filters';
-import { DEFAULT_STATUS_TEMPLATES } from '../shared/utils/defaults';
-import { dashboardSnapshotSchema } from '../store/dashboard.schema';
-import { useDashboardStore } from '../store/dashboard-store';
+} from "@ant-design/icons";
+import {
+  App as AntdApp,
+  Button,
+  Card,
+  Divider,
+  Empty,
+  Flex,
+  Layout,
+  Modal,
+  Space,
+  Tooltip,
+  Typography,
+  theme,
+} from "antd";
+import dayjs from "dayjs";
+import { useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
+import { DashboardToolbar } from "./components/DashboardToolbar";
+import { ThemeSidebarCard } from "./components/ThemeSidebarCard";
+import { KanbanBoard } from "../features/kanban/components/KanbanBoard";
+import { ProjectFormModal } from "../features/projects/components/ProjectFormModal";
+import { ProjectSidebar } from "../features/projects/components/ProjectSidebar";
+import type { ProjectItem } from "../features/projects/project.types";
+import { TaskEditorDrawer } from "../features/tasks/components/TaskEditorDrawer";
+import { TaskListView } from "../features/tasks/components/TaskListView";
+import { StatusFormModal } from "../features/tasks/components/StatusFormModal";
+import type { TaskStatus } from "../features/tasks/task.types";
+import { TaskDetailsDrawer } from "../features/tasks/components/TaskDetailsDrawer";
+import { filterTasks } from "../features/tasks/task-filters";
+import { DEFAULT_STATUS_TEMPLATES } from "../shared/utils/defaults";
+import { dashboardSnapshotSchema } from "../store/dashboard.schema";
+import { useDashboardStore } from "../store/dashboard-store";
 
-type TaskEditorMode = 'create' | 'edit';
-type ProjectEditorMode = 'create' | 'edit';
-type StatusEditorMode = 'create' | 'edit';
+type TaskEditorMode = "create" | "edit";
+type ProjectEditorMode = "create" | "edit";
+type StatusEditorMode = "create" | "edit";
 
 export const DashboardPage = () => {
   const {
@@ -44,6 +58,7 @@ export const DashboardPage = () => {
     setViewMode,
     setFilterQuery,
     setFilterStatusIds,
+    setFilterTagIds,
     setDueFilter,
     clearFilters,
     setLanguage,
@@ -74,6 +89,7 @@ export const DashboardPage = () => {
       setViewMode: state.setViewMode,
       setFilterQuery: state.setFilterQuery,
       setFilterStatusIds: state.setFilterStatusIds,
+      setFilterTagIds: state.setFilterTagIds,
       setDueFilter: state.setDueFilter,
       clearFilters: state.clearFilters,
       setLanguage: state.setLanguage,
@@ -103,6 +119,20 @@ export const DashboardPage = () => {
     [activeProjectId, projects],
   );
 
+  const activeTaskTags = useMemo(() => {
+    if (!activeProject) {
+      return [];
+    }
+
+    return Array.from(
+      new Set(
+        activeProject.tasks
+          .flatMap((task) => task.tags)
+          .filter((tag) => tag.length > 0),
+      ),
+    ).sort((a, b) => a.localeCompare(b));
+  }, [activeProject]);
+
   const filteredTasks = useMemo(() => {
     if (!activeProject) {
       return [];
@@ -111,35 +141,45 @@ export const DashboardPage = () => {
     return filterTasks(activeProject.tasks, filters);
   }, [activeProject, filters]);
 
-  const [projectEditorMode, setProjectEditorMode] = useState<ProjectEditorMode>('create');
+  const [projectEditorMode, setProjectEditorMode] =
+    useState<ProjectEditorMode>("create");
   const [isProjectModalOpen, setProjectModalOpen] = useState(false);
   const [projectDraft, setProjectDraft] = useState<ProjectItem | null>(null);
   const [isProjectPanelCollapsed, setProjectPanelCollapsed] = useState(false);
 
-  const [taskEditorMode, setTaskEditorMode] = useState<TaskEditorMode>('create');
+  const [taskEditorMode, setTaskEditorMode] =
+    useState<TaskEditorMode>("create");
   const [isTaskDrawerOpen, setTaskDrawerOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
-  const [statusEditorMode, setStatusEditorMode] = useState<StatusEditorMode>('create');
+  const [statusEditorMode, setStatusEditorMode] =
+    useState<StatusEditorMode>("create");
   const [isStatusModalOpen, setStatusModalOpen] = useState(false);
   const [statusDraft, setStatusDraft] = useState<TaskStatus | null>(null);
   const [isThemeModalOpen, setThemeModalOpen] = useState(false);
+  const [isTaskDetailsOpen, setTaskDetailsOpen] = useState(false);
+  const [taskDetailsId, setTaskDetailsId] = useState<string | null>(null);
 
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const editingTask =
     editingTaskId && activeProject
-      ? activeProject.tasks.find((task) => task.id === editingTaskId) ?? null
+      ? (activeProject.tasks.find((task) => task.id === editingTaskId) ?? null)
+      : null;
+
+  const viewedTask =
+    taskDetailsId && activeProject
+      ? (activeProject.tasks.find((task) => task.id === taskDetailsId) ?? null)
       : null;
 
   const openProjectCreate = () => {
-    setProjectEditorMode('create');
+    setProjectEditorMode("create");
     setProjectDraft(null);
     setProjectModalOpen(true);
   };
 
   const openProjectEdit = (project: ProjectItem) => {
-    setProjectEditorMode('edit');
+    setProjectEditorMode("edit");
     setProjectDraft(project);
     setProjectModalOpen(true);
   };
@@ -149,42 +189,61 @@ export const DashboardPage = () => {
       return;
     }
 
-    setTaskEditorMode('create');
+    setTaskEditorMode("create");
     setEditingTaskId(null);
     setTaskDrawerOpen(true);
   };
 
   const openTaskEdit = (taskId: string) => {
-    setTaskEditorMode('edit');
+    setTaskEditorMode("edit");
     setEditingTaskId(taskId);
+    setTaskDetailsOpen(false);
+    setTaskDetailsId(null);
     setTaskDrawerOpen(true);
   };
 
+  const openTaskDetails = (taskId: string) => {
+    setTaskDetailsId(taskId);
+    setTaskDetailsOpen(true);
+  };
+
+  const closeTaskDetails = () => {
+    setTaskDetailsOpen(false);
+    setTaskDetailsId(null);
+  };
+
   const openStatusCreate = () => {
-    setStatusEditorMode('create');
+    setStatusEditorMode("create");
     setStatusDraft(null);
     setStatusModalOpen(true);
   };
 
   const openStatusEdit = (status: TaskStatus) => {
-    setStatusEditorMode('edit');
+    setStatusEditorMode("edit");
     setStatusDraft(status);
     setStatusModalOpen(true);
   };
 
   const handleProjectDelete = (project: ProjectItem) => {
     modal.confirm({
-      title: t('project.deleteConfirm.title'),
-      content: t('project.deleteConfirm.description'),
-      okText: '',
-      okButtonProps: {
-        'aria-label': t('actions.delete'),
-        icon: <DeleteOutlined />,
+      centered: true,
+      width: "min(460px, 95vw)",
+      style: {
+        borderRadius: token.borderRadiusLG,
       },
-      okType: 'danger',
-      cancelText: '',
+      icon: <DeleteOutlined style={{ color: token.colorError }} />,
+      title: t("project.deleteConfirm.title"),
+      content: t("project.deleteConfirm.description"),
+      okText: "",
+      okButtonProps: {
+        "aria-label": t("actions.delete"),
+        icon: <DeleteOutlined />,
+        danger: true,
+      },
+      okType: "danger",
+      cancelText: "",
       cancelButtonProps: {
-        'aria-label': t('actions.cancel'),
+        "aria-label": t("actions.cancel"),
         icon: <CloseOutlined />,
       },
       onOk: () => removeProject(project.id),
@@ -197,17 +256,24 @@ export const DashboardPage = () => {
     }
 
     modal.confirm({
-      title: t('kanban.deleteStatusConfirm.title'),
-      content: t('kanban.deleteStatusConfirm.description'),
-      okText: '',
-      okButtonProps: {
-        'aria-label': t('actions.delete'),
-        icon: <DeleteOutlined />,
+      centered: true,
+      width: "min(460px, 95vw)",
+      style: {
+        borderRadius: token.borderRadiusLG,
       },
-      okType: 'danger',
-      cancelText: '',
+      icon: <DeleteOutlined style={{ color: token.colorError }} />,
+      title: t("kanban.deleteStatusConfirm.title"),
+      content: t("kanban.deleteStatusConfirm.description"),
+      okText: "",
+      okButtonProps: {
+        "aria-label": t("actions.delete"),
+        icon: <DeleteOutlined />,
+        danger: true,
+      },
+      okType: "danger",
+      cancelText: "",
       cancelButtonProps: {
-        'aria-label': t('actions.cancel'),
+        "aria-label": t("actions.cancel"),
         icon: <CloseOutlined />,
       },
       onOk: () => removeStatus(activeProject.id, status.id),
@@ -233,17 +299,17 @@ export const DashboardPage = () => {
   const handleExport = () => {
     const snapshot = getSnapshot();
     const blob = new Blob([JSON.stringify(snapshot, null, 2)], {
-      type: 'application/json',
+      type: "application/json",
     });
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.download = `task-dashboard-${dayjs().format('YYYYMMDD-HHmmss')}.json`;
+    link.download = `task-dashboard-${dayjs().format("YYYYMMDD-HHmmss")}.json`;
     link.click();
     URL.revokeObjectURL(url);
 
-    void message.success(t('messages.exportReady'));
+    void message.success(t("messages.exportReady"));
   };
 
   const triggerImport = () => {
@@ -262,19 +328,27 @@ export const DashboardPage = () => {
       const parsedJson = JSON.parse(content);
       const validated = dashboardSnapshotSchema.parse(parsedJson);
       importSnapshot(validated);
-      void message.success(t('messages.importSuccess'));
+      void message.success(t("messages.importSuccess"));
     } catch {
-      void message.error(t('messages.importError'));
+      void message.error(t("messages.importError"));
     } finally {
-      event.target.value = '';
+      event.target.value = "";
     }
   };
 
   return (
-    <div style={{ height: '100vh', minHeight: '100vh', padding: 14, boxSizing: 'border-box' }}>
+    <div
+      style={{
+        height: "100dvh",
+        minHeight: "100vh",
+        overflow: "hidden",
+        padding: 14,
+        boxSizing: "border-box",
+      }}
+    >
       <input
         accept="application/json"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onChange={(event) => {
           void handleImportFile(event);
         }}
@@ -285,29 +359,29 @@ export const DashboardPage = () => {
       <Layout
         hasSider
         style={{
-          background: 'transparent',
+          background: "transparent",
           minHeight: 0,
-          height: '100%',
+          height: "100%",
         }}
       >
         <Layout.Sider
           collapsed={isProjectPanelCollapsed}
           collapsedWidth={84}
           style={{
-            background: 'transparent',
+            background: "transparent",
             marginRight: 14,
           }}
           trigger={null}
           width={340}
         >
-          <Flex style={{ height: '100%' }} vertical>
+          <Flex style={{ height: "100%" }} vertical>
             <Flex gap={12} style={{ flex: 1, minHeight: 0 }} vertical>
               {!isProjectPanelCollapsed && (
                 <Flex align="center" gap={10} justify="space-between">
                   <Flex align="center" gap={8}>
-                    <Tooltip title={t('theme.openSettings')}>
+                    <Tooltip title={t("theme.openSettings")}>
                       <Button
-                        aria-label={t('theme.openSettings')}
+                        aria-label={t("theme.openSettings")}
                         icon={<SettingOutlined />}
                         onClick={() => setThemeModalOpen(true)}
                         type="text"
@@ -315,23 +389,23 @@ export const DashboardPage = () => {
                     </Tooltip>
 
                     <Typography.Title level={4} style={{ margin: 0 }}>
-                      {t('project.sectionTitle')}
+                      {t("project.sectionTitle")}
                     </Typography.Title>
                   </Flex>
 
                   <Space size={8}>
-                    <Tooltip title={t('project.create')}>
+                    <Tooltip title={t("project.create")}>
                       <Button
-                        aria-label={t('project.create')}
+                        aria-label={t("project.create")}
                         icon={<PlusOutlined />}
                         onClick={openProjectCreate}
                         size="small"
                         type="primary"
                       />
                     </Tooltip>
-                    <Tooltip title={t('project.collapsePanel')}>
+                    <Tooltip title={t("project.collapsePanel")}>
                       <Button
-                        aria-label={t('project.collapsePanel')}
+                        aria-label={t("project.collapsePanel")}
                         icon={<LeftOutlined />}
                         onClick={() => setProjectPanelCollapsed(true)}
                         size="small"
@@ -344,9 +418,9 @@ export const DashboardPage = () => {
 
               {isProjectPanelCollapsed && (
                 <Flex align="center" gap={8} vertical>
-                  <Tooltip title={t('theme.openSettings')}>
+                  <Tooltip title={t("theme.openSettings")}>
                     <Button
-                      aria-label={t('theme.openSettings')}
+                      aria-label={t("theme.openSettings")}
                       icon={<SettingOutlined />}
                       onClick={() => setThemeModalOpen(true)}
                       shape="circle"
@@ -354,18 +428,18 @@ export const DashboardPage = () => {
                     />
                   </Tooltip>
 
-                  <Tooltip title={t('project.create')}>
+                  <Tooltip title={t("project.create")}>
                     <Button
-                      aria-label={t('project.create')}
+                      aria-label={t("project.create")}
                       icon={<PlusOutlined />}
                       onClick={openProjectCreate}
                       shape="circle"
                       type="text"
                     />
                   </Tooltip>
-                  <Tooltip title={t('project.expandPanel')}>
+                  <Tooltip title={t("project.expandPanel")}>
                     <Button
-                      aria-label={t('project.expandPanel')}
+                      aria-label={t("project.expandPanel")}
                       icon={<RightOutlined />}
                       onClick={() => setProjectPanelCollapsed(false)}
                       shape="circle"
@@ -376,23 +450,48 @@ export const DashboardPage = () => {
               )}
 
               {isProjectPanelCollapsed ? (
-                <Flex align="center" gap={8} style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingBottom: 8 }} vertical>
+                <Flex
+                  align="center"
+                  gap={8}
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflowY: "auto",
+                    paddingBottom: 8,
+                  }}
+                  vertical
+                >
                   {projects.map((project) => {
                     return (
-                      <Tooltip key={project.id} placement="right" title={project.name}>
+                      <Tooltip
+                        key={project.id}
+                        placement="right"
+                        title={project.name}
+                      >
                         <Button
                           aria-label={project.name}
                           icon={<FolderOpenOutlined />}
                           onClick={() => setActiveProject(project.id)}
                           shape="circle"
-                          type={activeProjectId === project.id ? 'primary' : 'default'}
+                          type={
+                            activeProjectId === project.id
+                              ? "primary"
+                              : "default"
+                          }
                         />
                       </Tooltip>
                     );
                   })}
                 </Flex>
               ) : (
-                <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: 2 }}>
+                <div
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflowY: "auto",
+                    paddingRight: 2,
+                  }}
+                >
                   <ProjectSidebar
                     activeProjectId={activeProjectId}
                     onCreateProject={openProjectCreate}
@@ -407,12 +506,25 @@ export const DashboardPage = () => {
             </Flex>
           </Flex>
         </Layout.Sider>
-        <Layout.Content style={{ display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
-          <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
+        <Layout.Content
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+            minWidth: 0,
+            overflow: "hidden",
+          }}
+        >
+          <Flex
+            gap={12}
+            style={{ height: "100%", minHeight: 0, flexDirection: "column" }}
+            vertical
+          >
             <Card>
               <DashboardToolbar
                 filters={filters}
                 language={language}
+                availableTags={activeTaskTags}
                 onClearFilters={clearFilters}
                 onCreateTask={openTaskCreate}
                 onDueFilterChange={setDueFilter}
@@ -421,6 +533,7 @@ export const DashboardPage = () => {
                 onLanguageChange={setLanguage}
                 onSearchChange={setFilterQuery}
                 onStatusFilterChange={setFilterStatusIds}
+                onTagFilterChange={setFilterTagIds}
                 onViewModeChange={setViewMode}
                 statuses={activeProject?.statuses ?? []}
                 viewMode={viewMode}
@@ -429,32 +542,64 @@ export const DashboardPage = () => {
               />
             </Card>
 
-            <Card style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', marginBottom: 2 }}>
+            <Card
+              style={{
+                flex: 1,
+                minHeight: 0,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              }}
+              styles={{
+                body: {
+                  display: "flex",
+                  flexDirection: "column",
+                  flex: 1,
+                  minHeight: 0,
+                  overflow: "hidden",
+                  padding: 12,
+                },
+              }}
+            >
               {!activeProject && (
                 <Empty
-                  description={t('project.empty')}
+                  description={t("project.empty")}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   style={{ marginTop: 36, marginBottom: 0 }}
                 />
               )}
 
-              {activeProject && viewMode === 'list' && (
-                <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
+              {activeProject && viewMode === "list" && (
+                <Flex
+                  gap={12}
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    flexDirection: "column",
+                    overflow: "hidden",
+                  }}
+                  vertical
+                >
                   <Flex gap={2} vertical>
                     <Typography.Title level={4} style={{ margin: 0 }}>
                       {activeProject.name}
                     </Typography.Title>
                     <Typography.Text type="secondary">
-                      {activeProject.description || t('project.form.description')}
+                      {activeProject.description ||
+                        t("project.form.description")}
                     </Typography.Text>
                   </Flex>
 
-                  <Flex style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} vertical>
+                  <Flex
+                    style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
+                    vertical
+                  >
                     <TaskListView
                       language={language}
                       onDeleteTask={handleTaskDelete}
                       onEditTask={openTaskEdit}
                       onStatusChange={handleTaskStatusChange}
+                      onOpenTaskDetails={openTaskDetails}
                       statuses={activeProject.statuses}
                       tasks={filteredTasks}
                     />
@@ -462,26 +607,45 @@ export const DashboardPage = () => {
                 </Flex>
               )}
 
-              {activeProject && viewMode === 'kanban' && (
-                <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
+              {activeProject && viewMode === "kanban" && (
+                <Flex
+                  gap={12}
+                  style={{
+                    flex: 1,
+                    minHeight: 0,
+                    flexDirection: "column",
+                    overflow: "hidden",
+                  }}
+                  vertical
+                >
                   <Flex gap={2} vertical>
                     <Typography.Title level={4} style={{ margin: 0 }}>
                       {activeProject.name}
                     </Typography.Title>
                     <Typography.Text type="secondary">
-                      {activeProject.description || t('project.form.description')}
+                      {activeProject.description ||
+                        t("project.form.description")}
                     </Typography.Text>
                   </Flex>
 
-                  <Flex style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} vertical>
+                  <Flex
+                    style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
+                    vertical
+                  >
                     <KanbanBoard
                       language={language}
                       onDeleteStatus={handleStatusDelete}
                       onDeleteTask={handleTaskDelete}
                       onEditStatus={openStatusEdit}
                       onEditTask={openTaskEdit}
+                      onOpenTaskDetails={openTaskDetails}
                       onMoveTask={(taskId, targetStatusId, targetIndex) => {
-                        moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
+                        moveTask(
+                          activeProject.id,
+                          taskId,
+                          targetStatusId,
+                          targetIndex,
+                        );
                       }}
                       onStatusChange={handleTaskStatusChange}
                       statuses={activeProject.statuses}
@@ -497,7 +661,7 @@ export const DashboardPage = () => {
 
       <ProjectFormModal
         initialValues={
-          projectEditorMode === 'edit' && projectDraft
+          projectEditorMode === "edit" && projectDraft
             ? {
                 name: projectDraft.name,
                 description: projectDraft.description,
@@ -510,7 +674,7 @@ export const DashboardPage = () => {
           setProjectDraft(null);
         }}
         onSubmit={(values) => {
-          if (projectEditorMode === 'create') {
+          if (projectEditorMode === "create") {
             createProject({
               name: values.name,
               description: values.description,
@@ -528,7 +692,7 @@ export const DashboardPage = () => {
 
       <StatusFormModal
         initialValues={
-          statusEditorMode === 'edit' && statusDraft
+          statusEditorMode === "edit" && statusDraft
             ? {
                 name: statusDraft.name,
                 color: statusDraft.color,
@@ -545,7 +709,7 @@ export const DashboardPage = () => {
             return;
           }
 
-          if (statusEditorMode === 'create') {
+          if (statusEditorMode === "create") {
             addStatus(activeProject.id, values);
           } else if (statusDraft) {
             updateStatus(activeProject.id, statusDraft.id, values);
@@ -558,29 +722,32 @@ export const DashboardPage = () => {
       />
 
       <TaskEditorDrawer
-        initialTask={taskEditorMode === 'edit' ? editingTask : null}
+        initialTask={taskEditorMode === "edit" ? editingTask : null}
         mode={taskEditorMode}
         onClose={() => {
           setTaskDrawerOpen(false);
           setEditingTaskId(null);
-          setTaskEditorMode('create');
+          setTaskEditorMode("create");
+          closeTaskDetails();
         }}
         onSubmit={(values) => {
           if (!activeProject) {
             return;
           }
 
-          if (taskEditorMode === 'create') {
+          if (taskEditorMode === "create") {
             createTask(activeProject.id, {
               title: values.title,
               content: values.content,
+              tags: values.tags,
               dueDate: values.dueDate,
-              statusId: values.statusId || activeProject.statuses[0]?.id || '',
+              statusId: values.statusId || activeProject.statuses[0]?.id || "",
             });
           } else if (editingTaskId) {
             updateTask(activeProject.id, editingTaskId, {
               title: values.title,
               content: values.content,
+              tags: values.tags,
               dueDate: values.dueDate,
               statusId: values.statusId,
             });
@@ -588,35 +755,66 @@ export const DashboardPage = () => {
 
           setTaskDrawerOpen(false);
           setEditingTaskId(null);
-          setTaskEditorMode('create');
+          setTaskEditorMode("create");
+          closeTaskDetails();
         }}
         open={isTaskDrawerOpen}
         statuses={activeProject?.statuses ?? []}
+        availableTags={activeTaskTags}
+      />
+
+      <TaskDetailsDrawer
+        onClose={closeTaskDetails}
+        open={isTaskDetailsOpen}
+        onEdit={(taskId) => {
+          closeTaskDetails();
+          openTaskEdit(taskId);
+        }}
+        statuses={activeProject?.statuses ?? []}
+        task={viewedTask}
+        language={language}
       />
 
       <Modal
         centered
         onCancel={() => setThemeModalOpen(false)}
+        width="min(520px, 95vw)"
         open={isThemeModalOpen}
         footer={null}
         styles={{
+          wrapper: {
+            background: token.colorBgElevated,
+            border: `1px solid ${token.colorBorderSecondary}`,
+            borderRadius: token.borderRadiusLG,
+            boxShadow: token.boxShadowSecondary,
+            overflow: "hidden",
+          },
           body: {
+            background: token.colorBgElevated,
             borderRadius: token.borderRadiusLG,
             padding: 0,
-            overflow: 'hidden',
-            width: 'min(520px, 95vw)',
+            overflow: "auto",
+          },
+          footer: {
+            borderTop: `1px solid ${token.colorBorderSecondary}`,
           },
         }}
-        style={{ maxWidth: 520 }}
       >
-        <div style={{ padding: '16px 18px', borderBottom: `1px solid ${token.colorBorder}` }}>
+        <div
+          style={{
+            padding: "16px 18px",
+            borderBottom: `1px solid ${token.colorBorder}`,
+          }}
+        >
           <Space size={8}>
             <SettingOutlined />
             <Typography.Title level={5} style={{ margin: 0 }}>
-              {t('theme.settings')}
+              {t("theme.settings")}
             </Typography.Title>
           </Space>
-          <Typography.Text type="secondary">{t('theme.sectionDescription')}</Typography.Text>
+          <Typography.Text type="secondary">
+            {t("theme.sectionDescription")}
+          </Typography.Text>
         </div>
 
         <ThemeSidebarCard
@@ -629,7 +827,9 @@ export const DashboardPage = () => {
         <Divider style={{ margin: 0 }} />
 
         <Flex justify="end" style={{ padding: 14 }}>
-          <Button onClick={() => setThemeModalOpen(false)}>{t('actions.close')}</Button>
+          <Button onClick={() => setThemeModalOpen(false)}>
+            {t("actions.close")}
+          </Button>
         </Flex>
       </Modal>
     </div>

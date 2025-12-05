@@ -1,16 +1,17 @@
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { TaskCard } from '../../tasks/components/TaskCard';
-import type { TaskItem, TaskStatus } from '../../tasks/task.types';
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { TaskCard } from "../../tasks/components/TaskCard";
+import type { TaskItem, TaskStatus } from "../../tasks/task.types";
 
 type SortableTaskCardProps = {
   task: TaskItem;
   status: TaskStatus;
   statuses: TaskStatus[];
-  language: 'en' | 'it';
+  language: "en" | "it";
   onEditTask: (taskId: string) => void;
   onDeleteTask: (taskId: string) => void;
   onStatusChange: (taskId: string, statusId: string) => void;
+  onOpenTaskDetails: (taskId: string) => void;
 };
 
 export const SortableTaskCard = ({
@@ -21,6 +22,7 @@ export const SortableTaskCard = ({
   onEditTask,
   onDeleteTask,
   onStatusChange,
+  onOpenTaskDetails,
 }: SortableTaskCardProps) => {
   const {
     attributes,
@@ -49,6 +51,7 @@ export const SortableTaskCard = ({
         onDelete={onDeleteTask}
         onEdit={onEditTask}
         onStatusChange={onStatusChange}
+        onOpenDetails={onOpenTaskDetails}
         status={status}
         statuses={statuses}
         task={task}

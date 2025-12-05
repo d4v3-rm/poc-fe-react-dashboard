@@ -1,38 +1,63 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Card, Col, DatePicker, Drawer, Flex, Form, Grid, Input, Row, Select, Space, Tooltip, Typography } from 'antd';
-import dayjs from 'dayjs';
-import { useEffect } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { taskFormSchema, type TaskFormValues } from '../task.schema';
-import type { TaskItem, TaskStatus } from '../task.types';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckOutlined, CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Drawer,
+  Flex,
+  Form,
+  Grid,
+  Input,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+  Typography,
+  theme,
+} from "antd";
+import dayjs from "dayjs";
+import { useEffect } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { taskFormSchema, type TaskFormValues } from "../task.schema";
+import type { TaskItem, TaskStatus } from "../task.types";
 
 type TaskEditorDrawerProps = {
   open: boolean;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   statuses: TaskStatus[];
+  availableTags?: string[];
   initialTask?: TaskItem | null;
   onClose: () => void;
   onSubmit: (values: {
     title: string;
     content: string;
+    tags: string[];
     statusId: string;
     dueDate: string | null;
   }) => void;
 };
 
+const normalizeTags = (tags: string[] = []) =>
+  Array.from(
+    new Set(tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0)),
+  );
+
 export const TaskEditorDrawer = ({
   open,
   mode,
   statuses,
+  availableTags = [],
   initialTask,
   onClose,
   onSubmit,
 }: TaskEditorDrawerProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const screens = Grid.useBreakpoint();
   const {
     control,
@@ -42,9 +67,10 @@ export const TaskEditorDrawer = ({
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
-      title: '',
-      content: '',
-      statusId: statuses[0]?.id ?? '',
+      title: "",
+      content: "",
+      tags: [],
+      statusId: statuses[0]?.id ?? "",
       dueDate: null,
     },
   });
@@ -55,38 +81,62 @@ export const TaskEditorDrawer = ({
     }
 
     reset({
-      title: initialTask?.title ?? '',
-      content: initialTask?.content ?? '',
-      statusId: initialTask?.statusId ?? statuses[0]?.id ?? '',
+      title: initialTask?.title ?? "",
+      content: initialTask?.content ?? "",
+      tags: normalizeTags(initialTask?.tags),
+      statusId: initialTask?.statusId ?? statuses[0]?.id ?? "",
       dueDate: initialTask?.dueDate ? dayjs(initialTask.dueDate) : null,
     });
-  }, [initialTask?.content, initialTask?.dueDate, initialTask?.statusId, initialTask?.title, open, reset, statuses]);
+  }, [
+    initialTask?.content,
+    initialTask?.dueDate,
+    initialTask?.statusId,
+    initialTask?.tags,
+    initialTask?.title,
+    open,
+    reset,
+    statuses,
+  ]);
 
   const content = useWatch({
     control,
-    name: 'content',
+    name: "content",
   });
 
   return (
     <Drawer
       destroyOnHidden
+      width="min(860px, 95vw)"
       footer={
         <Flex justify="end">
           <Space>
-            <Tooltip title={t('actions.cancel')}>
-              <Button aria-label={t('actions.cancel')} icon={<CloseOutlined />} onClick={onClose} />
-            </Tooltip>
-            <Tooltip title={mode === 'create' ? t('actions.create') : t('actions.save')}>
+            <Tooltip title={t("actions.cancel")}>
               <Button
-                aria-label={mode === 'create' ? t('actions.create') : t('actions.save')}
-                icon={mode === 'create' ? <PlusOutlined /> : <CheckOutlined />}
+                aria-label={t("actions.cancel")}
+                icon={<CloseOutlined />}
+                onClick={onClose}
+              />
+            </Tooltip>
+            <Tooltip
+              title={
+                mode === "create" ? t("actions.create") : t("actions.save")
+              }
+            >
+              <Button
+                aria-label={
+                  mode === "create" ? t("actions.create") : t("actions.save")
+                }
+                icon={mode === "create" ? <PlusOutlined /> : <CheckOutlined />}
                 loading={isSubmitting}
                 onClick={handleSubmit((values) => {
                   onSubmit({
                     title: values.title,
                     content: values.content,
+                    tags: normalizeTags(values.tags),
                     statusId: values.statusId,
-                    dueDate: values.dueDate ? values.dueDate.toISOString() : null,
+                    dueDate: values.dueDate
+                      ? values.dueDate.toISOString()
+                      : null,
                   });
                 })}
                 type="primary"
@@ -99,29 +149,84 @@ export const TaskEditorDrawer = ({
       open={open}
       placement="right"
       size="large"
-      title={mode === 'create' ? t('task.create') : t('task.edit')}
+      title={mode === "create" ? t("task.create") : t("task.edit")}
+      styles={{
+        root: {
+          margin: "12px 12px 12px 0",
+        },
+        wrapper: {
+          border: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: token.borderRadiusLG,
+          background: token.colorBgElevated,
+          boxShadow: token.boxShadowSecondary,
+          overflow: "hidden",
+        },
+        body: {
+          background: token.colorBgElevated,
+          borderRadius: token.borderRadiusLG,
+          overflow: "auto",
+          padding: 12,
+        },
+        footer: {
+          borderTop: `1px solid ${token.colorBorderSecondary}`,
+          padding: "12px 16px",
+          background: token.colorBgElevated,
+        },
+      }}
     >
       <Row gutter={18}>
         <Col span={screens.lg ? 12 : 24}>
           <Form layout="vertical">
             <Form.Item
               help={errors.title?.message}
-              label={t('task.form.title')}
-              validateStatus={errors.title ? 'error' : ''}
+              label={t("task.form.title")}
+              validateStatus={errors.title ? "error" : ""}
             >
               <Controller
                 control={control}
                 name="title"
-                render={({ field }) => <Input {...field} autoFocus placeholder={t('task.form.title')} />}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    autoFocus
+                    placeholder={t("task.form.title")}
+                  />
+                )}
               />
             </Form.Item>
 
             <Row gutter={12}>
               <Col span={screens.sm ? 12 : 24}>
                 <Form.Item
+                  help={errors.tags?.message}
+                  label={t("task.form.tags")}
+                  validateStatus={errors.tags ? "error" : ""}
+                >
+                  <Controller
+                    control={control}
+                    name="tags"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        allowClear
+                        mode="tags"
+                        options={availableTags.map((tag) => ({
+                          label: tag,
+                          value: tag,
+                        }))}
+                        placeholder={t("task.form.tags")}
+                        onChange={(value) => field.onChange(value)}
+                      />
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={screens.sm ? 12 : 24}>
+                <Form.Item
                   help={errors.statusId?.message}
-                  label={t('task.form.status')}
-                  validateStatus={errors.statusId ? 'error' : ''}
+                  label={t("task.form.status")}
+                  validateStatus={errors.statusId ? "error" : ""}
                 >
                   <Controller
                     control={control}
@@ -138,12 +243,14 @@ export const TaskEditorDrawer = ({
                   />
                 </Form.Item>
               </Col>
+            </Row>
 
+            <Row gutter={12}>
               <Col span={screens.sm ? 12 : 24}>
                 <Form.Item
                   help={errors.dueDate?.message as string | undefined}
-                  label={t('task.form.dueDate')}
-                  validateStatus={errors.dueDate ? 'error' : ''}
+                  label={t("task.form.dueDate")}
+                  validateStatus={errors.dueDate ? "error" : ""}
                 >
                   <Controller
                     control={control}
@@ -153,7 +260,7 @@ export const TaskEditorDrawer = ({
                         allowClear
                         format="YYYY-MM-DD"
                         onChange={(value) => field.onChange(value ?? null)}
-                        style={{ width: '100%' }}
+                        style={{ width: "100%" }}
                         value={field.value}
                       />
                     )}
@@ -166,17 +273,22 @@ export const TaskEditorDrawer = ({
               help={errors.content?.message}
               label={
                 <Space orientation="vertical" size={0}>
-                  <span>{t('task.form.content')}</span>
-                  <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+                  <span>{t("task.form.content")}</span>
+                  <Typography.Text type="secondary">
+                    {t("task.form.markdownHint")}
+                  </Typography.Text>
                 </Space>
               }
-              validateStatus={errors.content ? 'error' : ''}
+              validateStatus={errors.content ? "error" : ""}
             >
               <Controller
                 control={control}
                 name="content"
                 render={({ field }) => (
-                  <Input.TextArea {...field} autoSize={{ minRows: 12, maxRows: 18 }} />
+                  <Input.TextArea
+                    {...field}
+                    autoSize={{ minRows: 12, maxRows: 18 }}
+                  />
                 )}
               />
             </Form.Item>
@@ -187,13 +299,24 @@ export const TaskEditorDrawer = ({
           <Card>
             <Flex gap={10} vertical>
               <Typography.Title level={5} style={{ margin: 0 }}>
-                {t('task.preview')}
+                {t("task.preview")}
               </Typography.Title>
-              <Card size="small" style={{ maxHeight: screens.lg ? 560 : 300, minHeight: 220, overflow: 'auto' }}>
-                {(content ?? '').trim().length > 0 ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content ?? ''}</ReactMarkdown>
+              <Card
+                size="small"
+                style={{
+                  maxHeight: screens.lg ? 560 : 300,
+                  minHeight: 220,
+                  overflow: "auto",
+                }}
+              >
+                {(content ?? "").trim().length > 0 ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {content ?? ""}
+                  </ReactMarkdown>
                 ) : (
-                  <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+                  <Typography.Text type="secondary">
+                    {t("task.form.markdownHint")}
+                  </Typography.Text>
                 )}
               </Card>
             </Flex>
