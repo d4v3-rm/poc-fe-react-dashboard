@@ -5,6 +5,7 @@ import { Button, Card, Dropdown, Empty, Flex, Space, Tag, Tooltip, Typography, t
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskItem, TaskStatus } from '../../tasks/task.types';
+import { semanticTagStyle } from '../../../shared/theme/color-utils';
 import { SortableTaskCard } from './SortableTaskCard';
 
 type KanbanColumnProps = {
@@ -66,8 +67,8 @@ export const KanbanColumn = ({
       }}
       title={
         <Flex align="center" justify="space-between">
-          <Space align="center" size={8}>
-            <Tag color={status.color}>{status.name}</Tag>
+        <Space align="center" size={8}>
+            <Tag style={semanticTagStyle(status.color, 0.14, 0.32)}>{status.name}</Tag>
             <Typography.Text type="secondary">{tasks.length}</Typography.Text>
           </Space>
           <Dropdown

@@ -4,6 +4,7 @@ import { Button, Form, Input, Modal, Tooltip } from 'antd';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_THEME_COLORS } from '../../../shared/utils/defaults';
 import { statusFormSchema, type StatusFormValues } from '../status.schema';
 
 type StatusFormModalProps = {
@@ -16,7 +17,7 @@ type StatusFormModalProps = {
 
 const defaultValues: StatusFormValues = {
   name: '',
-  color: '#0d8bff',
+  color: DEFAULT_THEME_COLORS.primary,
 };
 
 export const StatusFormModal = ({
@@ -44,7 +45,7 @@ export const StatusFormModal = ({
 
     reset({
       name: initialValues?.name ?? '',
-      color: initialValues?.color ?? '#0d8bff',
+      color: initialValues?.color ?? DEFAULT_THEME_COLORS.primary,
     });
   }, [initialValues?.color, initialValues?.name, open, reset]);
 

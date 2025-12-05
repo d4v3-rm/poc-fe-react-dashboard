@@ -1,26 +1,10 @@
 import { BgColorsOutlined, HighlightOutlined, MoonOutlined, ReloadOutlined, SunOutlined } from '@ant-design/icons';
 import { Button, Divider, Flex, Segmented, Space, Tooltip, Typography, theme } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { getFallbackColor, textColorFor } from '../../shared/theme/color-utils';
+import { DEFAULT_THEME_COLORS } from '../../shared/utils/defaults';
 import { THEME_COLOR_PRESETS } from '../../shared/utils/defaults';
 import type { ThemeColors, ThemeMode } from '../../store/dashboard-store.types';
-
-const PRESET_PRIMARY = '#0D8BFF';
-const PRESET_SECONDARY = '#1FA77A';
-
-const textColorFor = (hex: string): string => {
-  const normalized = hex.replace('#', '');
-  const isValid = /^[0-9a-fA-F]{6}$/.test(normalized);
-  if (!isValid) {
-    return '#ffffff';
-  }
-
-  const red = Number.parseInt(normalized.slice(0, 2), 16);
-  const green = Number.parseInt(normalized.slice(2, 4), 16);
-  const blue = Number.parseInt(normalized.slice(4, 6), 16);
-  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-
-  return luminance > 145 ? '#1f1f1f' : '#ffffff';
-};
 
 type ThemeSidebarCardProps = {
   themeMode: ThemeMode;
@@ -47,8 +31,8 @@ export const ThemeSidebarCard = ({
 
   const resetColors = () => {
     onThemeColorsChange({
-      primary: PRESET_PRIMARY,
-      secondary: PRESET_SECONDARY,
+      primary: DEFAULT_THEME_COLORS.primary,
+      secondary: DEFAULT_THEME_COLORS.secondary,
     });
   };
 
@@ -64,22 +48,23 @@ export const ThemeSidebarCard = ({
       <Space size={8} wrap>
         {THEME_COLOR_PRESETS.map((color) => {
           const isSelected = themeColors[target].toLowerCase() === color.toLowerCase();
+          const safeColor = getFallbackColor(color);
 
           return (
             <Tooltip key={`${target}-${color}`} title={`${target === 'primary' ? t('theme.primary') : t('theme.secondary')}: ${color}`}>
               <Button
-                aria-label={`${target === 'primary' ? t('theme.primary') : t('theme.secondary')}: ${color}`}
-                onClick={() => applyColor(target, color)}
+                aria-label={`${target === 'primary' ? t('theme.primary') : t('theme.secondary')}: ${safeColor}`}
+                onClick={() => applyColor(target, safeColor)}
                 shape="circle"
                 size="small"
                 style={{
                   alignItems: 'center',
-                  backgroundColor: color,
+                  backgroundColor: safeColor,
                   borderColor: isSelected ? token.colorPrimary : token.colorBorder,
                   boxShadow: isSelected
                     ? `0 0 0 2px ${token.colorBgContainer}, 0 2px 12px ${token.colorBgMask}`
                     : 'none',
-                  color: textColorFor(color),
+                  color: textColorFor(safeColor),
                   height: 24,
                   minWidth: 24,
                   padding: 0,
@@ -129,7 +114,6 @@ export const ThemeSidebarCard = ({
       </Flex>
 
       <Divider style={{ margin: '2px 0' }} />
-
       {renderPalette('primary')}
       <Divider style={{ margin: '2px 0' }} />
       {renderPalette('secondary')}
@@ -140,11 +124,11 @@ export const ThemeSidebarCard = ({
         <Typography.Text style={{ color: token.colorTextSecondary, fontSize: 12 }}>{t('theme.preview')}</Typography.Text>
         <Flex align="center" gap={8}>
           <Button
-            aria-label={`${t('theme.primary')}: ${themeColors.primary}`}
+            aria-label={`${t('theme.primary')}: ${getFallbackColor(themeColors.primary)}`}
             shape="circle"
             size="small"
             style={{
-              backgroundColor: themeColors.primary,
+              backgroundColor: getFallbackColor(themeColors.primary),
               borderColor: token.colorBorder,
               color: textColorFor(themeColors.primary),
               height: 24,
@@ -155,11 +139,11 @@ export const ThemeSidebarCard = ({
           />
           <Typography.Text type="secondary">/</Typography.Text>
           <Button
-            aria-label={`${t('theme.secondary')}: ${themeColors.secondary}`}
+            aria-label={`${t('theme.secondary')}: ${getFallbackColor(themeColors.secondary)}`}
             shape="circle"
             size="small"
             style={{
-              backgroundColor: themeColors.secondary,
+              backgroundColor: getFallbackColor(themeColors.secondary),
               borderColor: token.colorBorder,
               color: textColorFor(themeColors.secondary),
               height: 24,

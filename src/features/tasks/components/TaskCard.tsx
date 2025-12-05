@@ -1,9 +1,10 @@
 import { CloseOutlined, DeleteOutlined, EditOutlined, FlagOutlined, SwapOutlined } from '@ant-design/icons';
-import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Tooltip, Typography } from 'antd';
+import { Button, Card, Dropdown, Flex, Popconfirm, Space, Tag, Tooltip, Typography, theme } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { semanticTagStyle } from '../../../shared/theme/color-utils';
 import { formatDueDate, isOverdue } from '../../../shared/utils/date';
 import type { TaskItem, TaskStatus } from '../task.types';
 
@@ -29,7 +30,10 @@ export const TaskCard = ({
   onStatusChange,
 }: TaskCardProps) => {
   const { t } = useTranslation();
+  const { token } = theme.useToken();
   const dueIsOverdue = isOverdue(task.dueDate);
+  const dueTagColor = dueIsOverdue ? token.colorError : token.colorInfo;
+  const dueTagStyle = semanticTagStyle(dueTagColor, 0.18, 0.42);
 
   const statusOptions: MenuProps['items'] = statuses
     .filter((option) => option.id !== task.statusId)
@@ -68,8 +72,8 @@ export const TaskCard = ({
         </Flex>
 
         <Space size={6} wrap>
-          <Tag color={status.color}>{status.name}</Tag>
-          <Tag color={dueIsOverdue ? 'error' : 'default'}>{formatDueDate(task.dueDate, language)}</Tag>
+          <Tag style={semanticTagStyle(status.color, 0.14, 0.35)}>{status.name}</Tag>
+          <Tag style={dueTagStyle}>{formatDueDate(task.dueDate, language)}</Tag>
         </Space>
 
         <Card size="small" style={{ maxHeight: 130, minHeight: 94, overflow: 'auto' }}>

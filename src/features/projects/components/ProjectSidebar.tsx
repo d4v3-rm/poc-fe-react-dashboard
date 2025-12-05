@@ -9,6 +9,7 @@ import { Button, Card, Dropdown, Empty, Flex, Space, Tag, theme, Tooltip, Typogr
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { ProjectItem } from '../project.types';
+import { semanticTagStyle } from '../../../shared/theme/color-utils';
 
 type ProjectSidebarProps = {
   projects: ProjectItem[];
@@ -97,7 +98,7 @@ export const ProjectSidebar = ({
                     {project.name}
                   </Typography.Text>
                 </Space>
-                <Tag>{project.tasks.length}</Tag>
+                <Tag style={semanticTagStyle(token.colorSuccess, 0.2, 0.5)}>{project.tasks.length}</Tag>
               </Flex>
 
               <Flex align="start" justify="space-between">
