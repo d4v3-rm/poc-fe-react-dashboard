@@ -1,48 +1,8 @@
-import { Card, Empty, Layout, Flex, Typography } from "antd";
+import { Card, Empty, Layout, Flex } from "antd";
 import { useTranslation } from "react-i18next";
-import type {
-  LanguageCode,
-  TaskStatus,
-  ViewMode,
-  TaskItem,
-} from "../../../features/tasks/task.types";
-import type { ProjectItem } from "../../../features/projects/project.types";
-import type { TaskFilters } from "../../../store/dashboard-store.types";
 import { DashboardToolbar } from "../DashboardToolbar";
-import { KanbanBoard } from "../../../features/kanban/components/KanbanBoard";
-import { TaskListView } from "../../../features/tasks/components/TaskListView";
-
-type DashboardWorkspaceProps = {
-  activeProject: ProjectItem | null;
-  viewMode: ViewMode;
-  filters: TaskFilters;
-  language: LanguageCode;
-  availableTags: string[];
-  onClearFilters: () => void;
-  onCreateTask: () => void;
-  onDueFilterChange: (due: TaskFilters["due"]) => void;
-  onLanguageChange: (language: LanguageCode) => void;
-  onSearchChange: (query: string) => void;
-  onStatusFilterChange: (statusIds: string[]) => void;
-  onTagFilterChange: (tagIds: string[]) => void;
-  onViewModeChange: (mode: ViewMode) => void;
-  onAddStatus: () => void;
-  onOpenTaskDetails: (taskId: string) => void;
-  onEditTask: (taskId: string) => void;
-  onDeleteTask: (taskId: string) => void;
-  onStatusChange: (taskId: string, statusId: string) => void;
-  onMoveTask: (
-    taskId: string,
-    targetStatusId: string,
-    targetIndex?: number,
-  ) => void;
-  onEditStatus: (status: TaskStatus) => void;
-  onDeleteStatus: (status: TaskStatus) => void;
-  onExport: () => void;
-  onImport: () => void;
-  tasks: TaskItem[];
-  statusActionsDisabled: boolean;
-};
+import { DashboardWorkspaceContent } from "./DashboardWorkspaceContent";
+import type { DashboardWorkspaceProps } from "./DashboardWorkspace.types";
 
 export const DashboardWorkspace = ({
   activeProject,
@@ -141,81 +101,22 @@ export const DashboardWorkspace = ({
             />
           )}
 
-          {activeProject && viewMode === "list" && (
-            <Flex
-              gap={12}
-              style={{
-                flex: 1,
-                minHeight: 0,
-                flexDirection: "column",
-                overflow: "hidden",
-              }}
-              vertical
-            >
-              <Flex gap={2} vertical>
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                  {projectName}
-                </Typography.Title>
-                <Typography.Text type="secondary">
-                  {projectDescription}
-                </Typography.Text>
-              </Flex>
-
-              <Flex
-                style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
-                vertical
-              >
-                <TaskListView
-                  language={language}
-                  onDeleteTask={onDeleteTask}
-                  onEditTask={onEditTask}
-                  onStatusChange={onStatusChange}
-                  onOpenTaskDetails={onOpenTaskDetails}
-                  statuses={projectStatuses}
-                  tasks={tasks}
-                />
-              </Flex>
-            </Flex>
-          )}
-
-          {activeProject && viewMode === "kanban" && (
-            <Flex
-              gap={12}
-              style={{
-                flex: 1,
-                minHeight: 0,
-                flexDirection: "column",
-                overflow: "hidden",
-              }}
-              vertical
-            >
-              <Flex gap={2} vertical>
-                <Typography.Title level={4} style={{ margin: 0 }}>
-                  {projectName}
-                </Typography.Title>
-                <Typography.Text type="secondary">
-                  {projectDescription}
-                </Typography.Text>
-              </Flex>
-
-              <Flex
-                style={{ flex: 1, minHeight: 0, overflow: "hidden" }}
-                vertical
-              >
-                <KanbanBoard
-                  language={language}
-                  onDeleteStatus={onDeleteStatus}
-                  onDeleteTask={onDeleteTask}
-                  onEditStatus={onEditStatus}
-                  onEditTask={onEditTask}
-                  onOpenTaskDetails={onOpenTaskDetails}
-                  onMoveTask={onMoveTask}
-                  onStatusChange={onStatusChange}
-                  statuses={projectStatuses}
-                  tasks={tasks}
-                />
-              </Flex>
-            </Flex>
+          {activeProject && (
+            <DashboardWorkspaceContent
+              language={language}
+              onDeleteStatus={onDeleteStatus}
+              onDeleteTask={onDeleteTask}
+              onEditStatus={onEditStatus}
+              onEditTask={onEditTask}
+              onMoveTask={onMoveTask}
+              onOpenTaskDetails={onOpenTaskDetails}
+              onStatusChange={onStatusChange}
+              projectDescription={projectDescription}
+              projectName={projectName}
+              statuses={projectStatuses}
+              tasks={tasks}
+              viewMode={viewMode}
+            />
           )}
         </Card>
       </Flex>

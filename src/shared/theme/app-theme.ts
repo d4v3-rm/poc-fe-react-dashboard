@@ -1,13 +1,12 @@
 import { theme, type ThemeConfig } from "antd";
-import type { ThemeColors, ThemeMode } from "../../store/dashboard-store.types";
+import { SEMANTIC_SUCCESS_COLOR } from "../../features/theme/theme.constants";
+import type { ThemeColors, ThemeMode } from "../../features/theme/theme.types";
 import { DEFAULT_THEME_PALETTE } from "./color-utils";
 
 type BuildThemeInput = {
   mode: ThemeMode;
   colors: ThemeColors;
 };
-
-const SEMANTIC_SUCCESS_COLOR = "#1FA77A";
 
 export const buildAppTheme = ({
   mode,

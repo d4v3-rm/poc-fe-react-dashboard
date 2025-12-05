@@ -34,7 +34,7 @@ export const projectSnapshotSchema = z.object({
   tasks: z.array(taskSnapshotSchema),
 });
 
-export const dashboardSnapshotSchema = z.object({
+export const dashboardStoreSnapshotSchema = z.object({
   projects: z.array(projectSnapshotSchema),
   activeProjectId: z.string().nullable(),
   viewMode: z.enum(["list", "kanban"]),
@@ -59,4 +59,6 @@ export const dashboardSnapshotSchema = z.object({
     })),
 });
 
-export type DashboardSnapshotSchema = z.infer<typeof dashboardSnapshotSchema>;
+export type DashboardStoreSnapshotSchema = z.infer<
+  typeof dashboardStoreSnapshotSchema
+>;

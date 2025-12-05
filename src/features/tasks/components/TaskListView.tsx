@@ -1,18 +1,8 @@
 import { Card, Empty, Flex, Tag, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
-import type { TaskItem, TaskStatus } from "../task.types";
 import { statusTagStyle } from "../../../shared/theme/color-utils";
 import { TaskCard } from "./TaskCard";
-
-type TaskListViewProps = {
-  tasks: TaskItem[];
-  statuses: TaskStatus[];
-  language: "en" | "it";
-  onEditTask: (taskId: string) => void;
-  onDeleteTask: (taskId: string) => void;
-  onStatusChange: (taskId: string, statusId: string) => void;
-  onOpenTaskDetails: (taskId: string) => void;
-};
+import type { TaskListViewProps } from "./TaskListView.types";
 
 export const TaskListView = ({
   tasks,

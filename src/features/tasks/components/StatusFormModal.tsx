@@ -18,22 +18,16 @@ import {
   getFallbackColor,
   textColorFor,
 } from "../../../shared/theme/color-utils";
-import {
-  DEFAULT_THEME_COLORS,
-  THEME_COLOR_PRESETS,
-} from "../../../shared/utils/defaults";
+import { OVERLAY_MASK_STYLE } from "../../../shared/ui/overlay.styles";
 import {
   createStatusFormSchema,
   type StatusFormValues,
-} from "../status.schema";
-
-type StatusFormModalProps = {
-  open: boolean;
-  mode: "create" | "edit";
-  initialValues?: Partial<StatusFormValues>;
-  onCancel: () => void;
-  onSubmit: (values: StatusFormValues) => void;
-};
+} from "../status-form.schema";
+import {
+  DEFAULT_THEME_COLORS,
+  THEME_COLOR_PRESETS,
+} from "../../theme/theme.constants";
+import type { StatusFormModalProps } from "./StatusFormModal.types";
 
 const defaultValues: StatusFormValues = {
   name: "",
@@ -50,10 +44,6 @@ export const StatusFormModal = ({
   const { t } = useTranslation();
   const { token } = theme.useToken();
   const schema = useMemo(() => createStatusFormSchema(t), [t]);
-  const modalMaskStyle = {
-    backgroundColor: "rgba(12, 22, 38, 0.44)",
-    backdropFilter: "blur(2px)",
-  };
   const {
     control,
     handleSubmit,
@@ -84,7 +74,7 @@ export const StatusFormModal = ({
       width="min(520px, 95vw)"
       title={null}
       styles={{
-        mask: modalMaskStyle,
+        mask: OVERLAY_MASK_STYLE,
         container: {
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadiusLG,

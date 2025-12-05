@@ -19,18 +19,8 @@ import {
 } from "antd";
 import type { MenuProps } from "antd";
 import { useTranslation } from "react-i18next";
-import type { ProjectItem } from "../project.types";
 import { semanticTagStyle } from "../../../shared/theme/color-utils";
-
-type ProjectSidebarProps = {
-  projects: ProjectItem[];
-  activeProjectId: string | null;
-  showHeader?: boolean;
-  onSelectProject: (projectId: string) => void;
-  onCreateProject: () => void;
-  onEditProject: (project: ProjectItem) => void;
-  onDeleteProject: (project: ProjectItem) => void;
-};
+import type { ProjectSidebarProps } from "./ProjectSidebar.types";
 
 export const ProjectSidebar = ({
   projects,

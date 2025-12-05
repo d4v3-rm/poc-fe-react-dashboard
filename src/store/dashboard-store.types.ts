@@ -1,34 +1,27 @@
 import type { ProjectItem } from "../features/projects/project.types";
-import type {
-  DueFilter,
-  LanguageCode,
-  TaskItem,
-  TaskStatus,
-  ViewMode,
-} from "../features/tasks/task.types";
+import type { TaskItem, TaskStatus } from "../features/tasks/task.types";
+import type { DueFilter, ViewMode } from "../app/dashboard.types";
+import type { ThemeColors, ThemeMode } from "../features/theme/theme.types";
+import type { LanguageCode } from "../shared/i18n/i18n.types";
 
-export type TaskFilters = {
+export type DashboardFilters = {
   query: string;
   statusIds: string[];
   tagIds: string[];
   due: DueFilter;
 };
 
-export type ThemeMode = "light" | "dark";
-
-export type ThemeColors = {
-  primary: string;
-};
-
 export type DashboardSnapshot = {
   projects: ProjectItem[];
   activeProjectId: string | null;
   viewMode: ViewMode;
-  filters: TaskFilters;
+  filters: DashboardFilters;
   language: LanguageCode;
   themeMode: ThemeMode;
   themeColors: ThemeColors;
 };
+
+export type DashboardStoreState = DashboardSnapshot;
 
 export type CreateProjectInput = {
   name: string;
@@ -69,7 +62,7 @@ export type UpdateStatusInput = {
   color: string;
 };
 
-export type DashboardStore = DashboardSnapshot & {
+export type DashboardStoreActions = {
   setActiveProject: (projectId: string) => void;
   setViewMode: (mode: ViewMode) => void;
   setFilterQuery: (query: string) => void;
@@ -108,3 +101,5 @@ export type DashboardStore = DashboardSnapshot & {
   getActiveProject: () => ProjectItem | null;
   getTaskById: (taskId: string) => TaskItem | null;
 };
+
+export type DashboardStore = DashboardStoreState & DashboardStoreActions;

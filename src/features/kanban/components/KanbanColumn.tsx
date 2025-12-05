@@ -1,39 +1,13 @@
-import { DeleteOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import {
-  Button,
-  Card,
-  Dropdown,
-  Empty,
-  Flex,
-  Tag,
-  Tooltip,
-  Typography,
-  theme,
-} from "antd";
-import type { MenuProps } from "antd";
+import { Card, Empty, Flex, Typography, theme } from "antd";
 import { useTranslation } from "react-i18next";
-import type { TaskItem, TaskStatus } from "../../tasks/task.types";
-import { statusTagStyle } from "../../../shared/theme/color-utils";
 import { SortableTaskCard } from "./SortableTaskCard";
-
-type KanbanColumnProps = {
-  status: TaskStatus;
-  tasks: TaskItem[];
-  statuses: TaskStatus[];
-  canDeleteStatus: boolean;
-  language: "en" | "it";
-  onEditTask: (taskId: string) => void;
-  onDeleteTask: (taskId: string) => void;
-  onStatusChange: (taskId: string, statusId: string) => void;
-  onOpenTaskDetails: (taskId: string) => void;
-  onEditStatus: (status: TaskStatus) => void;
-  onDeleteStatus: (status: TaskStatus) => void;
-};
+import { KanbanColumnHeader } from "./KanbanColumnHeader";
+import type { KanbanColumnProps } from "./KanbanColumn.types";
 
 const KANBAN_COLUMN_WIDTH = 332;
 
@@ -56,60 +30,18 @@ export const KanbanColumn = ({
     id: status.id,
   });
 
-  const actions: MenuProps["items"] = [
-    {
-      key: "edit",
-      icon: <EditOutlined />,
-      label: t("actions.edit"),
-    },
-    {
-      key: "delete",
-      icon: <DeleteOutlined />,
-      danger: true,
-      disabled: !canDeleteStatus,
-      label: t("actions.delete"),
-    },
-  ];
-
   return (
     <Card
       ref={setNodeRef}
       size="small"
       title={
-        <Flex align="center" gap={8} justify="space-between">
-          <Flex align="center" gap={8}>
-            <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
-              {status.name}
-            </Tag>
-            <Typography.Text type="secondary">{tasks.length}</Typography.Text>
-          </Flex>
-
-          <Dropdown
-            menu={{
-              items: actions,
-              onClick: ({ key }) => {
-                if (key === "edit") {
-                  onEditStatus(status);
-                  return;
-                }
-
-                if (canDeleteStatus) {
-                  onDeleteStatus(status);
-                }
-              },
-            }}
-            trigger={["click"]}
-          >
-            <Tooltip title={t("actions.more")}>
-              <Button
-                aria-label={t("actions.more")}
-                icon={<MoreOutlined />}
-                size="small"
-                type="text"
-              />
-            </Tooltip>
-          </Dropdown>
-        </Flex>
+        <KanbanColumnHeader
+          canDeleteStatus={canDeleteStatus}
+          onDeleteStatus={onDeleteStatus}
+          onEditStatus={onEditStatus}
+          status={status}
+          taskCount={tasks.length}
+        />
       }
       style={{
         borderColor: isOver ? token.colorPrimary : token.colorBorderSecondary,

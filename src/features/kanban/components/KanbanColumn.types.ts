@@ -1,0 +1,24 @@
+import type { LanguageCode } from "../../../shared/i18n/i18n.types";
+import type { TaskItem, TaskStatus } from "../../tasks/task.types";
+
+export type KanbanColumnProps = {
+  status: TaskStatus;
+  tasks: TaskItem[];
+  statuses: TaskStatus[];
+  canDeleteStatus: boolean;
+  language: LanguageCode;
+  onEditTask: (taskId: string) => void;
+  onDeleteTask: (taskId: string) => void;
+  onStatusChange: (taskId: string, statusId: string) => void;
+  onOpenTaskDetails: (taskId: string) => void;
+  onEditStatus: (status: TaskStatus) => void;
+  onDeleteStatus: (status: TaskStatus) => void;
+};
+
+export type KanbanColumnHeaderProps = {
+  status: TaskStatus;
+  taskCount: number;
+  canDeleteStatus: boolean;
+  onEditStatus: (status: TaskStatus) => void;
+  onDeleteStatus: (status: TaskStatus) => void;
+};

@@ -7,17 +7,9 @@ import {
   semanticTagStyle,
   statusTagStyle,
 } from "../../../shared/theme/color-utils";
+import { OVERLAY_MASK_STYLE } from "../../../shared/ui/overlay.styles";
 import { formatDueDate } from "../../../shared/utils/date";
-import type { TaskItem, TaskStatus } from "../task.types";
-
-type TaskDetailsDrawerProps = {
-  open: boolean;
-  task: TaskItem | null;
-  statuses: TaskStatus[];
-  language: "en" | "it";
-  onClose: () => void;
-  onEdit: (taskId: string) => void;
-};
+import type { TaskDetailsDrawerProps } from "./TaskDetailsDrawer.types";
 
 export const TaskDetailsDrawer = ({
   open,
@@ -29,10 +21,6 @@ export const TaskDetailsDrawer = ({
 }: TaskDetailsDrawerProps) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
-  const drawerMaskStyle = {
-    backgroundColor: "rgba(12, 22, 38, 0.44)",
-    backdropFilter: "blur(2px)",
-  };
 
   if (!task) {
     return null;
@@ -74,7 +62,7 @@ export const TaskDetailsDrawer = ({
         root: {
           margin: "10px 12px 12px 0",
         },
-        mask: drawerMaskStyle,
+        mask: OVERLAY_MASK_STYLE,
         section: {
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadiusLG,

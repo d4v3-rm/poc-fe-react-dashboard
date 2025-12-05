@@ -1,10 +1,10 @@
 import type { TaskItem } from "../tasks/task.types";
-import type { TaskFilters } from "../../store/dashboard-store.types";
+import type { DashboardFilters } from "../../store/dashboard-store.types";
 import { isOverdue, isToday, isWithinNextWeek } from "../../shared/utils/date";
 
 const matchesDueFilter = (
   task: TaskItem,
-  dueFilter: TaskFilters["due"],
+  dueFilter: DashboardFilters["due"],
 ): boolean => {
   if (dueFilter === "all") {
     return true;
@@ -27,7 +27,7 @@ const matchesDueFilter = (
 
 export const filterTasks = (
   tasks: TaskItem[],
-  filters: TaskFilters,
+  filters: DashboardFilters,
 ): TaskItem[] => {
   const query = filters.query.trim().toLowerCase();
 

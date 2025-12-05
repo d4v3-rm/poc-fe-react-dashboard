@@ -1,57 +1,9 @@
-import {
-  CloseOutlined,
-  DeleteOutlined,
-  EditOutlined,
-  HolderOutlined,
-  FlagOutlined,
-  SwapOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Dropdown,
-  Flex,
-  Popconfirm,
-  Space,
-  Tag,
-  Tooltip,
-  Typography,
-  theme,
-} from "antd";
-import type { MenuProps } from "antd";
+import { Card, Flex, Tag, Typography, theme } from "antd";
 import { useState } from "react";
-import type {
-  DraggableAttributes,
-  DraggableSyntheticListeners,
-} from "@dnd-kit/core";
-import { useTranslation } from "react-i18next";
-import {
-  semanticTagStyle,
-  statusTagStyle,
-  toRgba,
-} from "../../../shared/theme/color-utils";
-import { formatDueDate, isOverdue } from "../../../shared/utils/date";
-import type { TaskItem, TaskStatus } from "../task.types";
-
-type TaskCardProps = {
-  task: TaskItem;
-  status: TaskStatus;
-  statuses: TaskStatus[];
-  language: "en" | "it";
-  compact?: boolean;
-  isOverlay?: boolean;
-  showActions?: boolean;
-  showDragHandle?: boolean;
-  onOpenDetails: (taskId: string) => void;
-  dragHandleProps?: {
-    attributes?: DraggableAttributes;
-    listeners?: DraggableSyntheticListeners;
-    setActivatorNodeRef?: (element: HTMLElement | null) => void;
-  };
-  onEdit: (taskId: string) => void;
-  onDelete: (taskId: string) => void;
-  onStatusChange: (taskId: string, statusId: string) => void;
-};
+import { semanticTagStyle, toRgba } from "../../../shared/theme/color-utils";
+import { TaskCardFooter } from "./TaskCardFooter";
+import { TaskCardHeader } from "./TaskCardHeader";
+import type { TaskCardProps } from "./TaskCard.types";
 
 export const TaskCard = ({
   task,
@@ -68,17 +20,8 @@ export const TaskCard = ({
   onDelete,
   onStatusChange,
 }: TaskCardProps) => {
-  const { t } = useTranslation();
   const { token } = theme.useToken();
   const [isHovering, setIsHovering] = useState(false);
-  const dueIsOverdue = isOverdue(task.dueDate);
-  const dueTagColor = dueIsOverdue ? token.colorError : token.colorInfo;
-  const dueTagStyle = semanticTagStyle(
-    dueTagColor,
-    0.18,
-    0.42,
-    token.colorBgContainer,
-  );
   const taskTagStyle = semanticTagStyle(
     token.colorPrimary,
     0.14,
@@ -91,13 +34,6 @@ export const TaskCard = ({
   const hoverBg = isHovering
     ? toRgba(token.colorPrimary, 0.08)
     : token.colorBgContainer;
-  const statusOptions: MenuProps["items"] = statuses
-    .filter((option) => option.id !== task.statusId)
-    .map((option) => ({
-      key: option.id,
-      label: option.name,
-      icon: <FlagOutlined style={{ color: option.color }} />,
-    }));
   const visibleTags = task.tags.slice(0, 4);
   const hasExtraTags = task.tags.length > 4;
 
@@ -138,51 +74,14 @@ export const TaskCard = ({
     >
       <Flex gap={10} style={{ minHeight: 0, height: "100%" }} vertical>
         <Flex align="center" gap={8} justify="space-between">
-          <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
-            {status.name}
-          </Tag>
-
-          <Space size={4} align="center">
-            {showDragHandle && dragHandleProps ? (
-              <Tooltip title={t("task.drag")}>
-                <Button
-                  aria-label={t("task.drag")}
-                  icon={<HolderOutlined />}
-                  ref={(element) =>
-                    dragHandleProps.setActivatorNodeRef?.(element)
-                  }
-                  size="small"
-                  type="text"
-                  {...dragHandleProps.attributes}
-                  {...dragHandleProps.listeners}
-                  onMouseDown={(event) => event.stopPropagation()}
-                  onClick={(event) => event.stopPropagation()}
-                />
-              </Tooltip>
-            ) : null}
-
-            {statusOptions.length > 0 && (
-              <Dropdown
-                menu={{
-                  items: statusOptions,
-                  onClick: ({ key }) => {
-                    onStatusChange(task.id, String(key));
-                  },
-                }}
-                trigger={["click"]}
-              >
-                <Tooltip title={t("task.quickStatus")}>
-                  <Button
-                    aria-label={t("task.quickStatus")}
-                    icon={<SwapOutlined />}
-                    size="small"
-                    type="text"
-                    onClick={(event) => event.stopPropagation()}
-                  />
-                </Tooltip>
-              </Dropdown>
-            )}
-          </Space>
+          <TaskCardHeader
+            dragHandleProps={dragHandleProps}
+            onStatusChange={onStatusChange}
+            showDragHandle={showDragHandle}
+            status={status}
+            statuses={statuses}
+            task={task}
+          />
         </Flex>
 
         <Flex align="start" style={{ minHeight: 0, flex: 1 }}>
@@ -220,55 +119,13 @@ export const TaskCard = ({
         ) : null}
 
         <Flex align="center" gap={8} justify="space-between" wrap>
-          <Tag
-            icon={dueIsOverdue ? <FlagOutlined /> : undefined}
-            style={dueTagStyle}
-          >
-            {formatDueDate(task.dueDate, language)}
-          </Tag>
-
-          {showActions && (
-            <Space size={6}>
-              <Tooltip title={t("actions.edit")}>
-                <Button
-                  aria-label={t("actions.edit")}
-                  icon={<EditOutlined />}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onEdit(task.id);
-                  }}
-                  size="small"
-                />
-              </Tooltip>
-
-              <Popconfirm
-                description={t("task.deleteConfirm.description")}
-                cancelButtonProps={{
-                  "aria-label": t("actions.cancel"),
-                  icon: <CloseOutlined />,
-                }}
-                okButtonProps={{
-                  "aria-label": t("actions.delete"),
-                  icon: <DeleteOutlined />,
-                }}
-                okText={t("actions.delete")}
-                okType="danger"
-                onConfirm={() => onDelete(task.id)}
-                title={t("task.deleteConfirm.title")}
-                cancelText={t("actions.cancel")}
-              >
-                <Tooltip title={t("actions.delete")}>
-                  <Button
-                    aria-label={t("actions.delete")}
-                    danger
-                    icon={<DeleteOutlined />}
-                    size="small"
-                    onClick={(event) => event.stopPropagation()}
-                  />
-                </Tooltip>
-              </Popconfirm>
-            </Space>
-          )}
+          <TaskCardFooter
+            language={language}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            showActions={showActions}
+            task={task}
+          />
         </Flex>
       </Flex>
     </Card>

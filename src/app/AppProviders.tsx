@@ -4,8 +4,9 @@ import itIT from "antd/locale/it_IT";
 import dayjs from "dayjs";
 import "dayjs/locale/en";
 import "dayjs/locale/it";
-import { useEffect, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo } from "react";
 import { AppGlobalStyles } from "./AppGlobalStyles.style";
+import type { AppProvidersProps } from "./AppProviders.types";
 import { i18n } from "../shared/i18n/i18n";
 import {
   DEFAULT_THEME_PALETTE,
@@ -14,10 +15,6 @@ import {
 } from "../shared/theme/color-utils";
 import { buildAppTheme } from "../shared/theme/app-theme";
 import { useDashboardStore } from "../store/dashboard-store";
-
-type AppProvidersProps = {
-  children: ReactNode;
-};
 
 const antdLocales = {
   en: enUS,

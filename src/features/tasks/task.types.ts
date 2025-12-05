@@ -1,9 +1,3 @@
-export type ViewMode = "list" | "kanban";
-
-export type DueFilter = "all" | "overdue" | "today" | "week" | "no_due";
-
-export type LanguageCode = "en" | "it";
-
 export type TaskStatus = {
   id: string;
   name: string;

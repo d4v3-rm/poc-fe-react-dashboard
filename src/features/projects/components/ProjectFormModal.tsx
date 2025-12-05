@@ -17,15 +17,9 @@ import { useTranslation } from "react-i18next";
 import {
   createProjectFormSchema,
   type ProjectFormValues,
-} from "../project.schema";
-
-type ProjectFormModalProps = {
-  open: boolean;
-  mode: "create" | "edit";
-  initialValues?: Partial<ProjectFormValues>;
-  onCancel: () => void;
-  onSubmit: (values: ProjectFormValues) => void;
-};
+} from "../project-form.schema";
+import { OVERLAY_MASK_STYLE } from "../../../shared/ui/overlay.styles";
+import type { ProjectFormModalProps } from "./ProjectFormModal.types";
 
 const defaultValues: ProjectFormValues = {
   name: "",
@@ -43,10 +37,6 @@ export const ProjectFormModal = ({
   const { t } = useTranslation();
   const { token } = theme.useToken();
   const schema = useMemo(() => createProjectFormSchema(t), [t]);
-  const modalMaskStyle = {
-    backgroundColor: "rgba(12, 22, 38, 0.44)",
-    backdropFilter: "blur(2px)",
-  };
   const {
     control,
     handleSubmit,
@@ -84,7 +74,7 @@ export const ProjectFormModal = ({
       width="min(560px, 95vw)"
       title={null}
       styles={{
-        mask: modalMaskStyle,
+        mask: OVERLAY_MASK_STYLE,
         container: {
           border: `1px solid ${token.colorBorderSecondary}`,
           borderRadius: token.borderRadiusLG,
