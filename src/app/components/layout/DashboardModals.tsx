@@ -18,7 +18,6 @@ type DashboardModalsProps = {
   themeMode: "light" | "dark";
   themeColors: {
     primary: string;
-    secondary: string;
   };
   isProjectModalOpen: boolean;
   projectEditorMode: ProjectEditorMode;
@@ -54,7 +53,7 @@ type DashboardModalsProps = {
   isThemeModalOpen: boolean;
   onThemeClose: () => void;
   onThemeModeChange: (mode: "light" | "dark") => void;
-  onThemeColorsChange: (colors: { primary: string; secondary: string }) => void;
+  onThemeColorsChange: (colors: { primary: string }) => void;
 };
 
 export const DashboardModals = ({

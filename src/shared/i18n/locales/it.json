@@ -84,15 +84,14 @@
   "theme": {
     "settings": "Impostazioni tema",
     "openSettings": "Apri impostazioni",
-    "sectionDescription": "Personalizza l'aspetto dell'app e passa tra tema chiaro e scuro.",
+    "sectionDescription": "Personalizza l'aspetto dell'app con modalita chiara o scura e un solo colore accent.",
     "mode": {
       "label": "Modalita tema",
       "light": "Chiaro",
       "dark": "Scuro"
     },
-    "reset": "Ripristina colori",
-    "primary": "Primario",
-    "secondary": "Secondario",
+    "reset": "Ripristina accento",
+    "accent": "Colore accento",
     "palette": "Palette",
     "preview": "Anteprima",
     "previewName": "Tema applicazione",

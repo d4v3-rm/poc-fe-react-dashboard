@@ -64,14 +64,9 @@ const normalizeThemeColors = (
     colors?.primary && HEX_COLOR_PATTERN.test(colors.primary)
       ? colors.primary
       : DEFAULT_THEME_COLORS.primary;
-  const secondary =
-    colors?.secondary && HEX_COLOR_PATTERN.test(colors.secondary)
-      ? colors.secondary
-      : DEFAULT_THEME_COLORS.secondary;
 
   return {
     primary,
-    secondary,
   };
 };
 

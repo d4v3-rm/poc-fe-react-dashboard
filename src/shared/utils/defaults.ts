@@ -24,7 +24,6 @@ export const DEFAULT_PROJECT_NAME: Record<LanguageCode, string> = {
 
 export const DEFAULT_THEME_COLORS: ThemeColors = {
   primary: "#0D8BFF",
-  secondary: "#1FA77A",
 };
 
 export const THEME_COLOR_PRESETS: string[] = [

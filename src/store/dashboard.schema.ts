@@ -45,16 +45,18 @@ export const dashboardSnapshotSchema = z.object({
     due: z.enum(["all", "overdue", "today", "week", "no_due"]),
   }),
   language: z.enum(["en", "it"]),
-  themeMode: z.enum(["light", "dark"]).default("light"),
+  themeMode: z.enum(["light", "dark"]).default("dark"),
   themeColors: z
     .object({
-      primary: hexColorSchema,
-      secondary: hexColorSchema,
+      primary: hexColorSchema.optional(),
+      secondary: hexColorSchema.optional(),
     })
     .default({
       primary: "#0D8BFF",
-      secondary: "#1FA77A",
-    }),
+    })
+    .transform((colors) => ({
+      primary: colors.primary ?? "#0D8BFF",
+    })),
 });
 
 export type DashboardSnapshotSchema = z.infer<typeof dashboardSnapshotSchema>;

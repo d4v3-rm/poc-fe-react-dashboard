@@ -52,13 +52,9 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
         ? "rgba(255, 255, 255, 0.06)"
         : "rgba(16, 24, 40, 0.10)";
     const safePrimary = getFallbackColor(themeColors.primary);
-    const safeSecondary = getFallbackColor(themeColors.secondary);
     const thumbColor = toRgba(safePrimary, themeMode === "dark" ? 0.52 : 0.44);
     const thumbHover = toRgba(safePrimary, themeMode === "dark" ? 0.72 : 0.6);
-    const thumbStrong = toRgba(
-      safeSecondary,
-      themeMode === "dark" ? 0.82 : 0.72,
-    );
+    const thumbStrong = toRgba(safePrimary, themeMode === "dark" ? 0.82 : 0.72);
 
     document.body.style.backgroundColor =
       themeMode === "dark"
@@ -69,8 +65,8 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
     root.style.setProperty("--app-scrollbar-thumb-hover", thumbHover);
     root.style.setProperty("--app-scrollbar-thumb-strong", thumbStrong);
     root.style.setProperty("--app-accent-color", safePrimary);
-    root.style.setProperty("--app-accent-secondary", safeSecondary);
-  }, [themeColors.primary, themeColors.secondary, themeMode]);
+    root.style.removeProperty("--app-accent-secondary");
+  }, [themeColors.primary, themeMode]);
 
   return (
     <ConfigProvider locale={antdLocales[language]} theme={appTheme}>

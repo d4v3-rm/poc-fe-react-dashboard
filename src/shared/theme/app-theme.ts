@@ -7,6 +7,8 @@ type BuildThemeInput = {
   colors: ThemeColors;
 };
 
+const SEMANTIC_SUCCESS_COLOR = "#1FA77A";
+
 export const buildAppTheme = ({
   mode,
   colors,
@@ -18,7 +20,7 @@ export const buildAppTheme = ({
     token: {
       colorPrimary: colors.primary,
       colorInfo: colors.primary,
-      colorSuccess: colors.secondary,
+      colorSuccess: SEMANTIC_SUCCESS_COLOR,
       colorWarning: "#D99012",
       colorError: "#D84A63",
       colorBgLayout: isDark

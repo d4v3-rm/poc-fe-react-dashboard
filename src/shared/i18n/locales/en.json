@@ -84,19 +84,18 @@
   "theme": {
     "settings": "Theme settings",
     "openSettings": "Open settings",
-    "sectionDescription": "Customize the app appearance and switch between light and dark modes.",
+    "sectionDescription": "Customize the app appearance with light or dark mode and a single accent color.",
     "mode": {
       "label": "Theme mode",
       "light": "Light",
       "dark": "Dark"
     },
-    "primary": "Primary",
-    "secondary": "Secondary",
+    "accent": "Accent color",
     "palette": "Palette",
     "preview": "Theme preview",
     "previewName": "App theme",
     "previewHint": "Preview is updated in real time.",
-    "reset": "Reset colors"
+    "reset": "Reset accent"
   },
   "kanban": {
     "addStatus": "Add status",
