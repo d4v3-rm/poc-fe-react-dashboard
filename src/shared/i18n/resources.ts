@@ -73,6 +73,15 @@ export const resources = {
           noDue: 'No due date',
         },
       },
+      theme: {
+        mode: {
+          light: 'Light',
+          dark: 'Dark',
+        },
+        primary: 'Primary',
+        secondary: 'Secondary',
+        palette: 'Palette',
+      },
       kanban: {
         addStatus: 'Add status',
         editStatus: 'Edit status',
@@ -172,6 +181,15 @@ export const resources = {
           week: 'Prossimi 7 giorni',
           noDue: 'Senza scadenza',
         },
+      },
+      theme: {
+        mode: {
+          light: 'Chiaro',
+          dark: 'Scuro',
+        },
+        primary: 'Primario',
+        secondary: 'Secondario',
+        palette: 'Palette',
       },
       kanban: {
         addStatus: 'Aggiungi stato',

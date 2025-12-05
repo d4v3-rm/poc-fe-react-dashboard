@@ -28,6 +28,8 @@ export const DashboardPage = () => {
     viewMode,
     filters,
     language,
+    themeMode,
+    themeColors,
     setActiveProject,
     setViewMode,
     setFilterQuery,
@@ -35,6 +37,8 @@ export const DashboardPage = () => {
     setDueFilter,
     clearFilters,
     setLanguage,
+    setThemeMode,
+    setThemeColors,
     createProject,
     updateProject,
     removeProject,
@@ -54,6 +58,8 @@ export const DashboardPage = () => {
       viewMode: state.viewMode,
       filters: state.filters,
       language: state.language,
+      themeMode: state.themeMode,
+      themeColors: state.themeColors,
       setActiveProject: state.setActiveProject,
       setViewMode: state.setViewMode,
       setFilterQuery: state.setFilterQuery,
@@ -61,6 +67,8 @@ export const DashboardPage = () => {
       setDueFilter: state.setDueFilter,
       clearFilters: state.clearFilters,
       setLanguage: state.setLanguage,
+      setThemeMode: state.setThemeMode,
+      setThemeColors: state.setThemeColors,
       createProject: state.createProject,
       updateProject: state.updateProject,
       removeProject: state.removeProject,
@@ -261,15 +269,6 @@ export const DashboardPage = () => {
         <Col lg={16} xl={17} xs={24}>
           <Space direction="vertical" size={12} style={{ width: '100%' }}>
             <Card>
-              <Typography.Title level={2} style={{ letterSpacing: '-0.018em', margin: 0 }}>
-                {t('app.title')}
-              </Typography.Title>
-              <Typography.Paragraph style={{ marginBottom: 0, marginTop: 4 }} type="secondary">
-                {t('app.subtitle')}
-              </Typography.Paragraph>
-            </Card>
-
-            <Card>
               <DashboardToolbar
                 filters={filters}
                 language={language}
@@ -281,8 +280,12 @@ export const DashboardPage = () => {
                 onLanguageChange={setLanguage}
                 onSearchChange={setFilterQuery}
                 onStatusFilterChange={setFilterStatusIds}
+                onThemeColorsChange={setThemeColors}
+                onThemeModeChange={setThemeMode}
                 onViewModeChange={setViewMode}
                 statuses={activeProject?.statuses ?? []}
+                themeColors={themeColors}
+                themeMode={themeMode}
                 viewMode={viewMode}
               />
             </Card>
