@@ -146,11 +146,13 @@ export const KanbanBoard = ({
         <Flex
           gap={12}
           style={{
-            height: "100%",
+            flex: 1,
             minHeight: 0,
             overflowY: "hidden",
             overflowX: "auto",
-            paddingBottom: 8,
+            paddingBottom: 14,
+            boxSizing: "border-box",
+            scrollbarGutter: "stable both-edges",
           }}
           wrap={false}
           align="stretch"
