@@ -44,6 +44,8 @@ export const resources = {
         create: 'New Task',
         edit: 'Edit Task',
         delete: 'Delete Task',
+        drag: 'Move task',
+        dragHint: 'Drag to reorder or move between columns',
         form: {
           title: 'Title',
           status: 'Status',
@@ -80,6 +82,7 @@ export const resources = {
       theme: {
         settings: 'Theme settings',
         openSettings: 'Open settings',
+        sectionDescription: 'Customize the app appearance and switch between light and dark modes.',
         mode: {
           label: 'Theme mode',
           light: 'Light',
@@ -164,6 +167,8 @@ export const resources = {
         create: 'Nuovo Task',
         edit: 'Modifica Task',
         delete: 'Elimina Task',
+        drag: 'Sposta task',
+        dragHint: 'Trascina per riordinare o spostare tra colonne',
         form: {
           title: 'Titolo',
           status: 'Stato',
@@ -200,6 +205,7 @@ export const resources = {
       theme: {
         settings: 'Impostazioni tema',
         openSettings: 'Apri impostazioni',
+        sectionDescription: 'Personalizza l\'aspetto dell\'app e passa tra tema chiaro e scuro.',
         mode: {
           label: 'Modalita tema',
           light: 'Chiaro',

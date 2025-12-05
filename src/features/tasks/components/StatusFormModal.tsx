@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Modal, Tooltip } from 'antd';
+import { Button, Form, Input, Modal, Space, Typography, Tooltip } from 'antd';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +54,14 @@ export const StatusFormModal = ({
       destroyOnHidden
       open={open}
       onCancel={onCancel}
-      title={mode === 'create' ? t('kanban.addStatus') : t('kanban.editStatus')}
+      title={null}
+      styles={{
+        body: {
+          borderRadius: 16,
+          padding: 0,
+          overflow: 'hidden',
+        },
+      }}
       footer={[
         <Tooltip key="cancel" title={t('actions.cancel')}>
           <Button aria-label={t('actions.cancel')} icon={<CloseOutlined />} onClick={onCancel} />
@@ -70,6 +77,13 @@ export const StatusFormModal = ({
         </Tooltip>,
       ]}
     >
+      <div style={{ padding: '16px 18px', borderBottom: '1px solid #f0f0f0' }}>
+        <Space>
+          <Typography.Title level={5} style={{ margin: 0 }}>
+            {mode === 'create' ? t('kanban.addStatus') : t('kanban.editStatus')}
+          </Typography.Title>
+        </Space>
+      </div>
       <Form layout="vertical" onFinish={handleSubmit((values) => onSubmit(values))}>
         <Form.Item
           label={t('kanban.statusForm.name')}

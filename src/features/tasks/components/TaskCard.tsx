@@ -14,6 +14,8 @@ type TaskCardProps = {
   statuses: TaskStatus[];
   language: 'en' | 'it';
   compact?: boolean;
+  isOverlay?: boolean;
+  showActions?: boolean;
   onEdit: (taskId: string) => void;
   onDelete: (taskId: string) => void;
   onStatusChange: (taskId: string, statusId: string) => void;
@@ -25,6 +27,8 @@ export const TaskCard = ({
   statuses,
   language,
   compact = false,
+  isOverlay = false,
+  showActions = true,
   onEdit,
   onDelete,
   onStatusChange,
@@ -34,6 +38,7 @@ export const TaskCard = ({
   const dueIsOverdue = isOverdue(task.dueDate);
   const dueTagColor = dueIsOverdue ? token.colorError : token.colorInfo;
   const dueTagStyle = semanticTagStyle(dueTagColor, 0.18, 0.42);
+  const contentHeight = compact ? 88 : 108;
 
   const statusOptions: MenuProps['items'] = statuses
     .filter((option) => option.id !== task.statusId)
@@ -46,12 +51,19 @@ export const TaskCard = ({
   return (
     <Card
       size="small"
+      hoverable={!isOverlay}
       style={{
+        borderColor: isOverlay ? 'transparent' : undefined,
+        boxShadow: isOverlay ? token.boxShadowSecondary : undefined,
+        maxWidth: isOverlay ? 420 : undefined,
+        opacity: isOverlay ? 0.95 : 1,
         minHeight: compact ? 180 : 220,
       }}
     >
       <Flex gap={10} vertical>
         <Flex align="start" justify="space-between">
+          <span />
+
           <Typography.Title level={compact ? 5 : 4} style={{ lineHeight: 1.3, margin: 0 }}>
             {task.title}
           </Typography.Title>
@@ -76,40 +88,70 @@ export const TaskCard = ({
           <Tag style={dueTagStyle}>{formatDueDate(task.dueDate, language)}</Tag>
         </Space>
 
-        <Card size="small" style={{ maxHeight: 130, minHeight: 94, overflow: 'auto' }}>
-          {task.content.trim() ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{task.content}</ReactMarkdown>
-          ) : (
-            <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
-          )}
-        </Card>
-
-        <Space size={6}>
-          <Tooltip title={t('actions.edit')}>
-            <Button aria-label={t('actions.edit')} icon={<EditOutlined />} onClick={() => onEdit(task.id)} size="small" />
-          </Tooltip>
-
-          <Popconfirm
-            description={t('task.deleteConfirm.description')}
-            cancelButtonProps={{
-              'aria-label': t('actions.cancel'),
-              icon: <CloseOutlined />,
+        <div
+          style={{
+            backgroundColor: token.colorFillTertiary,
+            border: `1px solid ${token.colorBorder}`,
+            borderRadius: token.borderRadius,
+            flex: 1,
+            minHeight: compact ? 84 : 110,
+            maxHeight: contentHeight,
+            overflow: 'hidden',
+            padding: 12,
+          }}
+        >
+          <Typography.Text
+            strong
+            style={{
+              color: token.colorTextSecondary,
+              display: compact ? 'none' : 'block',
+              marginBottom: compact ? 0 : 8,
             }}
-            cancelText=""
-            okButtonProps={{
-              'aria-label': t('actions.delete'),
-              icon: <DeleteOutlined />,
-            }}
-            okText=""
-            okType="danger"
-            onConfirm={() => onDelete(task.id)}
-            title={t('task.deleteConfirm.title')}
           >
-            <Tooltip title={t('actions.delete')}>
-              <Button aria-label={t('actions.delete')} danger icon={<DeleteOutlined />} size="small" />
+            {t('task.preview')}
+          </Typography.Text>
+          {task.content.trim() ? (
+              <div style={{ overflow: 'hidden', whiteSpace: compact ? 'nowrap' : 'normal' }}>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{task.content}</ReactMarkdown>
+              </div>
+            ) : (
+              <Typography.Text type="secondary">{t('task.form.markdownHint')}</Typography.Text>
+          )}
+        </div>
+
+        {showActions && (
+          <Space size={6}>
+            <Tooltip title={t('actions.edit')}>
+              <Button
+                aria-label={t('actions.edit')}
+                icon={<EditOutlined />}
+                onClick={() => onEdit(task.id)}
+                size="small"
+              />
             </Tooltip>
-          </Popconfirm>
-        </Space>
+
+            <Popconfirm
+              description={t('task.deleteConfirm.description')}
+              cancelButtonProps={{
+                'aria-label': t('actions.cancel'),
+                icon: <CloseOutlined />,
+              }}
+              cancelText=""
+              okButtonProps={{
+                'aria-label': t('actions.delete'),
+                icon: <DeleteOutlined />,
+              }}
+              okText=""
+              okType="danger"
+              onConfirm={() => onDelete(task.id)}
+              title={t('task.deleteConfirm.title')}
+            >
+              <Tooltip title={t('actions.delete')}>
+                <Button aria-label={t('actions.delete')} danger icon={<DeleteOutlined />} size="small" />
+              </Tooltip>
+            </Popconfirm>
+          </Space>
+        )}
       </Flex>
     </Card>
   );
