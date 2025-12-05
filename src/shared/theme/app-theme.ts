@@ -9,7 +9,6 @@ export const appTheme: ThemeConfig = {
     colorError: '#E6485D',
     borderRadius: 14,
     borderRadiusLG: 18,
-    fontFamily: '"Manrope", "Space Grotesk", "Segoe UI", sans-serif',
     colorBgLayout: '#EEF4FF',
     colorBgContainer: '#FFFFFF',
   },

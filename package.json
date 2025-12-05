@@ -16,7 +16,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.2.2",
     "antd": "^6.3.0",
-    "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "i18next": "^25.8.5",
     "react": "^19.2.0",
