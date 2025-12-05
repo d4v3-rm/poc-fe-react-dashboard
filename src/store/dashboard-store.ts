@@ -212,7 +212,7 @@ const createInitialSnapshot = (): DashboardSnapshot => {
       due: "all",
     },
     language,
-    themeMode: "light",
+    themeMode: "dark",
     themeColors: DEFAULT_THEME_COLORS,
   };
 };
@@ -258,7 +258,7 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
       due: snapshot.filters.due,
     },
     language,
-    themeMode: snapshot.themeMode ?? "light",
+    themeMode: snapshot.themeMode ?? "dark",
     themeColors: normalizeThemeColors(snapshot.themeColors),
   };
 };
