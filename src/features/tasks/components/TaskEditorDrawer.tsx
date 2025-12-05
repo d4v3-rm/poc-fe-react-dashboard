@@ -19,7 +19,7 @@ import {
   theme,
 } from "antd";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
@@ -28,7 +28,7 @@ import {
   semanticTagStyle,
   statusTagStyle,
 } from "../../../shared/theme/color-utils";
-import { taskFormSchema, type TaskFormValues } from "../task.schema";
+import { createTaskFormSchema, type TaskFormValues } from "../task.schema";
 import type { TaskItem, TaskStatus } from "../task.types";
 
 type TaskEditorDrawerProps = {
@@ -63,6 +63,7 @@ export const TaskEditorDrawer = ({
 }: TaskEditorDrawerProps) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const schema = useMemo(() => createTaskFormSchema(t), [t]);
   const drawerMaskStyle = {
     backgroundColor: "rgba(12, 22, 38, 0.44)",
     backdropFilter: "blur(2px)",
@@ -74,7 +75,7 @@ export const TaskEditorDrawer = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<TaskFormValues>({
-    resolver: zodResolver(taskFormSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       title: "",
       content: "",

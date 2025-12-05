@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { i18n } from "../i18n/i18n";
 
 export const isOverdue = (isoDate: string | null): boolean => {
   if (!isoDate) {
@@ -37,7 +38,7 @@ export const formatDueDate = (
   language: "en" | "it",
 ): string => {
   if (!isoDate) {
-    return language === "it" ? "Nessuna scadenza" : "No due date";
+    return i18n.t("task.form.noDueDate", { lng: language });
   }
 
   return dayjs(isoDate)

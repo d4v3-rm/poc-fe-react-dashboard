@@ -11,10 +11,13 @@ import {
   Tooltip,
   theme,
 } from "antd";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { projectFormSchema, type ProjectFormValues } from "../project.schema";
+import {
+  createProjectFormSchema,
+  type ProjectFormValues,
+} from "../project.schema";
 
 type ProjectFormModalProps = {
   open: boolean;
@@ -39,6 +42,7 @@ export const ProjectFormModal = ({
 }: ProjectFormModalProps) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
+  const schema = useMemo(() => createProjectFormSchema(t), [t]);
   const modalMaskStyle = {
     backgroundColor: "rgba(12, 22, 38, 0.44)",
     backdropFilter: "blur(2px)",
@@ -49,7 +53,7 @@ export const ProjectFormModal = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectFormSchema),
+    resolver: zodResolver(schema),
     defaultValues,
   });
 
