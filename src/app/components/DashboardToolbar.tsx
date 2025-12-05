@@ -1,9 +1,8 @@
 import { DownloadOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Input, Segmented, Select, Space } from 'antd';
+import { Button, Flex, Input, Segmented, Select, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { TaskStatus, ViewMode } from '../../features/tasks/task.types';
 import type { TaskFilters } from '../../store/dashboard-store.types';
-import './DashboardToolbar.css';
 
 type DashboardToolbarProps = {
   viewMode: ViewMode;
@@ -39,8 +38,16 @@ export const DashboardToolbar = ({
   const { t } = useTranslation();
 
   return (
-    <section className="dashboard-toolbar">
-      <div className="dashboard-toolbar__filters">
+    <Flex
+      align="center"
+      gap={12}
+      justify="space-between"
+      style={{
+        flexWrap: 'wrap',
+      }}
+      vertical={false}
+    >
+      <Flex align="center" gap={10} style={{ flex: 1, flexWrap: 'wrap', minWidth: 0 }}>
         <Segmented
           onChange={(value) => onViewModeChange(value as ViewMode)}
           options={[
@@ -52,15 +59,14 @@ export const DashboardToolbar = ({
 
         <Input.Search
           allowClear
-          className="dashboard-toolbar__search"
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={t('filters.search')}
+          style={{ minWidth: 220, width: 'min(340px, 80vw)' }}
           value={filters.query}
         />
 
         <Select
           allowClear
-          className="dashboard-toolbar__field"
           mode="multiple"
           onChange={onStatusFilterChange}
           options={statuses.map((status) => ({
@@ -68,11 +74,11 @@ export const DashboardToolbar = ({
             value: status.id,
           }))}
           placeholder={t('filters.status')}
+          style={{ minWidth: 170 }}
           value={filters.statusIds}
         />
 
         <Select
-          className="dashboard-toolbar__field"
           onChange={onDueFilterChange}
           options={[
             { label: t('filters.dueOptions.all'), value: 'all' },
@@ -82,20 +88,21 @@ export const DashboardToolbar = ({
             { label: t('filters.dueOptions.noDue'), value: 'no_due' },
           ]}
           placeholder={t('filters.due')}
+          style={{ minWidth: 170 }}
           value={filters.due}
         />
 
         <Button onClick={onClearFilters}>{t('actions.clearFilters')}</Button>
-      </div>
+      </Flex>
 
-      <div className="dashboard-toolbar__actions">
+      <Flex align="center" gap={10} style={{ flexWrap: 'wrap' }}>
         <Select
-          className="dashboard-toolbar__lang"
           onChange={onLanguageChange}
           options={[
             { label: t('language.en'), value: 'en' },
             { label: t('language.it'), value: 'it' },
           ]}
+          style={{ width: 122 }}
           value={language}
         />
 
@@ -110,7 +117,7 @@ export const DashboardToolbar = ({
             {t('task.create')}
           </Button>
         </Space>
-      </div>
-    </section>
+      </Flex>
+    </Flex>
   );
 };

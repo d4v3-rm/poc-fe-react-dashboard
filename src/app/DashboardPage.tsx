@@ -1,4 +1,4 @@
-import { App as AntdApp, Empty, Typography } from 'antd';
+import { App as AntdApp, Card, Col, Empty, Flex, Row, Space, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +16,6 @@ import { filterTasks } from '../features/tasks/task-filters';
 import { DEFAULT_STATUS_TEMPLATES } from '../shared/utils/defaults';
 import { dashboardSnapshotSchema } from '../store/dashboard.schema';
 import { useDashboardStore } from '../store/dashboard-store';
-import '../styles/dashboard.css';
 
 type TaskEditorMode = 'create' | 'edit';
 type ProjectEditorMode = 'create' | 'edit';
@@ -235,10 +234,10 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="dashboard-shell">
+    <div style={{ minHeight: '100vh', padding: 14 }}>
       <input
         accept="application/json"
-        className="dashboard-hidden-input"
+        style={{ display: 'none' }}
         onChange={(event) => {
           void handleImportFile(event);
         }}
@@ -246,100 +245,105 @@ export const DashboardPage = () => {
         type="file"
       />
 
-      <aside className="dashboard-shell__sidebar">
-        <ProjectSidebar
-          activeProjectId={activeProjectId}
-          onCreateProject={openProjectCreate}
-          onDeleteProject={handleProjectDelete}
-          onEditProject={openProjectEdit}
-          onSelectProject={setActiveProject}
-          projects={projects}
-        />
-      </aside>
-
-      <main className="dashboard-shell__main">
-        <header className="dashboard-shell__header">
-          <div>
-            <Typography.Title className="dashboard-shell__title" level={2}>
-              {t('app.title')}
-            </Typography.Title>
-            <Typography.Paragraph className="dashboard-shell__subtitle" type="secondary">
-              {t('app.subtitle')}
-            </Typography.Paragraph>
-          </div>
-        </header>
-
-        <DashboardToolbar
-          filters={filters}
-          language={language}
-          onClearFilters={clearFilters}
-          onCreateTask={openTaskCreate}
-          onDueFilterChange={setDueFilter}
-          onExport={handleExport}
-          onImport={triggerImport}
-          onLanguageChange={setLanguage}
-          onSearchChange={setFilterQuery}
-          onStatusFilterChange={setFilterStatusIds}
-          onViewModeChange={setViewMode}
-          statuses={activeProject?.statuses ?? []}
-          viewMode={viewMode}
-        />
-
-        <section className="dashboard-shell__project-head">
-          {activeProject ? (
-            <>
-              <Typography.Title className="dashboard-shell__project-title" level={3}>
-                {activeProject.name}
+      <Row gutter={[14, 14]}>
+        <Col lg={8} xl={7} xs={24}>
+          <Card>
+            <ProjectSidebar
+              activeProjectId={activeProjectId}
+              onCreateProject={openProjectCreate}
+              onDeleteProject={handleProjectDelete}
+              onEditProject={openProjectEdit}
+              onSelectProject={setActiveProject}
+              projects={projects}
+            />
+          </Card>
+        </Col>
+        <Col lg={16} xl={17} xs={24}>
+          <Space direction="vertical" size={12} style={{ width: '100%' }}>
+            <Card>
+              <Typography.Title level={2} style={{ letterSpacing: '-0.018em', margin: 0 }}>
+                {t('app.title')}
               </Typography.Title>
-              <Typography.Text type="secondary">
-                {activeProject.description || t('project.form.description')}
-              </Typography.Text>
-            </>
-          ) : (
-            <Typography.Title className="dashboard-shell__project-title" level={3}>
-              -
-            </Typography.Title>
-          )}
-        </section>
+              <Typography.Paragraph style={{ marginBottom: 0, marginTop: 4 }} type="secondary">
+                {t('app.subtitle')}
+              </Typography.Paragraph>
+            </Card>
 
-        <section className="dashboard-shell__content">
-          {!activeProject && (
-            <Empty
-              description={t('project.empty')}
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              style={{ paddingTop: 36 }}
-            />
-          )}
+            <Card>
+              <DashboardToolbar
+                filters={filters}
+                language={language}
+                onClearFilters={clearFilters}
+                onCreateTask={openTaskCreate}
+                onDueFilterChange={setDueFilter}
+                onExport={handleExport}
+                onImport={triggerImport}
+                onLanguageChange={setLanguage}
+                onSearchChange={setFilterQuery}
+                onStatusFilterChange={setFilterStatusIds}
+                onViewModeChange={setViewMode}
+                statuses={activeProject?.statuses ?? []}
+                viewMode={viewMode}
+              />
+            </Card>
 
-          {activeProject && viewMode === 'list' && (
-            <TaskListView
-              language={language}
-              onDeleteTask={handleTaskDelete}
-              onEditTask={openTaskEdit}
-              onStatusChange={handleTaskStatusChange}
-              statuses={activeProject.statuses}
-              tasks={filteredTasks}
-            />
-          )}
+            <Card>
+              {activeProject ? (
+                <Flex gap={4} vertical>
+                  <Typography.Title level={3} style={{ margin: 0 }}>
+                    {activeProject.name}
+                  </Typography.Title>
+                  <Typography.Text type="secondary">
+                    {activeProject.description || t('project.form.description')}
+                  </Typography.Text>
+                </Flex>
+              ) : (
+                <Typography.Title level={3} style={{ margin: 0 }}>
+                  -
+                </Typography.Title>
+              )}
+            </Card>
 
-          {activeProject && viewMode === 'kanban' && (
-            <KanbanBoard
-              language={language}
-              onAddStatus={openStatusCreate}
-              onDeleteStatus={handleStatusDelete}
-              onDeleteTask={handleTaskDelete}
-              onEditStatus={openStatusEdit}
-              onEditTask={openTaskEdit}
-              onMoveTask={(taskId, targetStatusId, targetIndex) => {
-                moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
-              }}
-              onStatusChange={handleTaskStatusChange}
-              statuses={activeProject.statuses}
-              tasks={filteredTasks}
-            />
-          )}
-        </section>
-      </main>
+            <Card style={{ minHeight: 400 }}>
+              {!activeProject && (
+                <Empty
+                  description={t('project.empty')}
+                  image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  style={{ paddingTop: 36 }}
+                />
+              )}
+
+              {activeProject && viewMode === 'list' && (
+                <TaskListView
+                  language={language}
+                  onDeleteTask={handleTaskDelete}
+                  onEditTask={openTaskEdit}
+                  onStatusChange={handleTaskStatusChange}
+                  statuses={activeProject.statuses}
+                  tasks={filteredTasks}
+                />
+              )}
+
+              {activeProject && viewMode === 'kanban' && (
+                <KanbanBoard
+                  language={language}
+                  onAddStatus={openStatusCreate}
+                  onDeleteStatus={handleStatusDelete}
+                  onDeleteTask={handleTaskDelete}
+                  onEditStatus={openStatusEdit}
+                  onEditTask={openTaskEdit}
+                  onMoveTask={(taskId, targetStatusId, targetIndex) => {
+                    moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
+                  }}
+                  onStatusChange={handleTaskStatusChange}
+                  statuses={activeProject.statuses}
+                  tasks={filteredTasks}
+                />
+              )}
+            </Card>
+          </Space>
+        </Col>
+      </Row>
 
       <ProjectFormModal
         initialValues={
