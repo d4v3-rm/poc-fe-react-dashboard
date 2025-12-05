@@ -153,7 +153,9 @@ export const TaskEditorDrawer = ({
               />
             </Tooltip>
             <Tooltip
-              title={mode === "create" ? t("actions.create") : t("actions.save")}
+              title={
+                mode === "create" ? t("actions.create") : t("actions.save")
+              }
             >
               <Button
                 aria-label={
@@ -167,7 +169,9 @@ export const TaskEditorDrawer = ({
                     content: values.content,
                     tags: normalizeTags(values.tags),
                     statusId: values.statusId,
-                    dueDate: values.dueDate ? values.dueDate.toISOString() : null,
+                    dueDate: values.dueDate
+                      ? values.dueDate.toISOString()
+                      : null,
                   });
                 })}
                 type="primary"
@@ -222,13 +226,17 @@ export const TaskEditorDrawer = ({
           }}
         >
           <Flex align="center" gap={8} justify="space-between" wrap>
-            <Typography.Text type="secondary">{t("task.preview")}</Typography.Text>
+            <Typography.Text type="secondary">
+              {t("task.preview")}
+            </Typography.Text>
             <Flex gap={6} wrap>
               <Tag bordered={false} style={statusPreviewStyle}>
                 {previewStatus?.name ?? t("task.form.status")}
               </Tag>
               <Tag bordered={false}>
-                {previewDueDate.length > 0 ? previewDueDate : t("task.form.dueDate")}
+                {previewDueDate.length > 0
+                  ? previewDueDate
+                  : t("task.form.dueDate")}
               </Tag>
             </Flex>
           </Flex>
@@ -244,7 +252,14 @@ export const TaskEditorDrawer = ({
             overflow: "hidden",
           }}
         >
-          <div style={{ flex: 1, minWidth: 0, minHeight: 0, marginBottom: screens.lg ? 0 : 12 }}>
+          <div
+            style={{
+              flex: 1,
+              minWidth: 0,
+              minHeight: 0,
+              marginBottom: screens.lg ? 0 : 12,
+            }}
+          >
             <Card size="small" style={{ height: "100%", overflow: "hidden" }}>
               <Form layout="vertical">
                 <Form.Item

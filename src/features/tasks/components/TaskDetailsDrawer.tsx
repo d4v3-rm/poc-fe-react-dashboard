@@ -111,7 +111,9 @@ export const TaskDetailsDrawer = ({
           }}
         >
           <Flex vertical gap={4}>
-            <Typography.Text type="secondary">{t("task.form.title")}</Typography.Text>
+            <Typography.Text type="secondary">
+              {t("task.form.title")}
+            </Typography.Text>
             <Typography.Title level={4} style={{ margin: 0 }}>
               {task.title}
             </Typography.Title>

@@ -63,7 +63,9 @@ export const TaskListView = ({
           title={
             <Flex align="center" gap={10} justify="space-between">
               <Flex align="center" gap={8}>
-                <Tag style={statusTagStyle(status.color, token.colorBgContainer)}>
+                <Tag
+                  style={statusTagStyle(status.color, token.colorBgContainer)}
+                >
                   {status.name}
                 </Tag>
                 <Typography.Text type="secondary">

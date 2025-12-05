@@ -212,7 +212,9 @@ export const TaskCard = ({
               </Tag>
             ))}
             {hasExtraTags ? (
-              <Tag style={taskTagStyle}>{`+${task.tags.length - visibleTags.length}`}</Tag>
+              <Tag
+                style={taskTagStyle}
+              >{`+${task.tags.length - visibleTags.length}`}</Tag>
             ) : null}
           </Flex>
         ) : null}

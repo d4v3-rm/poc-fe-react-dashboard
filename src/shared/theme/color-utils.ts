@@ -93,9 +93,15 @@ const blendColor = (
   const clampedAlpha = Math.max(0, Math.min(1, alpha));
 
   return [
-    Math.round(foreground[0] * clampedAlpha + background[0] * (1 - clampedAlpha)),
-    Math.round(foreground[1] * clampedAlpha + background[1] * (1 - clampedAlpha)),
-    Math.round(foreground[2] * clampedAlpha + background[2] * (1 - clampedAlpha)),
+    Math.round(
+      foreground[0] * clampedAlpha + background[0] * (1 - clampedAlpha),
+    ),
+    Math.round(
+      foreground[1] * clampedAlpha + background[1] * (1 - clampedAlpha),
+    ),
+    Math.round(
+      foreground[2] * clampedAlpha + background[2] * (1 - clampedAlpha),
+    ),
   ];
 };
 

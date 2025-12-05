@@ -29,7 +29,7 @@ export const resources = {
         edit: "Edit Project",
         delete: "Delete Project",
         empty: "Create your first project to start managing tasks.",
-      form: {
+        form: {
           name: "Project name",
           description: "Description",
           tags: "Project tags",
@@ -158,7 +158,7 @@ export const resources = {
         edit: "Modifica Progetto",
         delete: "Elimina Progetto",
         empty: "Crea il primo progetto per iniziare a gestire task.",
-      form: {
+        form: {
           name: "Nome progetto",
           description: "Descrizione",
           tags: "Tag progetto",

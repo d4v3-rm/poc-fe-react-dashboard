@@ -63,7 +63,13 @@ export const ProjectFormModal = ({
       description: initialValues?.description ?? "",
       tags: initialValues?.tags ?? [],
     });
-  }, [initialValues?.description, initialValues?.name, initialValues?.tags, open, reset]);
+  }, [
+    initialValues?.description,
+    initialValues?.name,
+    initialValues?.tags,
+    open,
+    reset,
+  ]);
 
   return (
     <Modal

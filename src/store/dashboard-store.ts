@@ -152,10 +152,10 @@ const normalizeProject = (
     project.statuses.length > 0
       ? project.statuses
       : createStatuses(fallbackLanguage).map((status) => ({
-        ...status,
-        createdAt: project.createdAt || timestamp,
-        updatedAt: project.updatedAt || timestamp,
-      }));
+          ...status,
+          createdAt: project.createdAt || timestamp,
+          updatedAt: project.updatedAt || timestamp,
+        }));
   const normalizedTasks = normalizeTaskOrdering(
     project.tasks.map((task) => ({
       ...task,
@@ -240,7 +240,9 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
   const activeStatuses =
     projects.find((project) => project.id === activeProjectId)?.statuses ?? [];
   const validStatusIds = new Set(activeStatuses.map((status) => status.id));
-  const activeProject = projects.find((project) => project.id === activeProjectId);
+  const activeProject = projects.find(
+    (project) => project.id === activeProjectId,
+  );
   const validTagIds = new Set(activeProject?.tags ?? []);
 
   return {
@@ -405,10 +407,7 @@ const updateTaskDetails = (
     ...baseProject,
     updatedAt: timestamp,
     tasks: updatedTasks,
-    tags: mergeProjectTags(
-      baseProject.tags,
-      updatedTasks,
-    ),
+    tags: mergeProjectTags(baseProject.tags, updatedTasks),
   };
 };
 
