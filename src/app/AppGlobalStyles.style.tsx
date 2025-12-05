@@ -1,6 +1,20 @@
 export const AppGlobalStyles = () => (
   <style>
     {`
+      :root,
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+
+      body {
+        overflow: hidden;
+      }
+
       :root {
         scrollbar-width: thin;
         scrollbar-color: var(--app-scrollbar-thumb) var(--app-scrollbar-track);

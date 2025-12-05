@@ -270,7 +270,7 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div style={{ minHeight: '100vh', padding: 14 }}>
+    <div style={{ height: '100vh', minHeight: '100vh', padding: 14, boxSizing: 'border-box' }}>
       <input
         accept="application/json"
         style={{ display: 'none' }}
@@ -285,7 +285,8 @@ export const DashboardPage = () => {
         hasSider
         style={{
           background: 'transparent',
-          minHeight: 'calc(100vh - 28px)',
+          minHeight: 0,
+          height: '100%',
         }}
       >
         <Layout.Sider
@@ -405,8 +406,8 @@ export const DashboardPage = () => {
             </Flex>
           </Flex>
         </Layout.Sider>
-        <Layout.Content style={{ minWidth: 0 }}>
-          <Space orientation="vertical" size={12} style={{ width: '100%' }}>
+        <Layout.Content style={{ display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
+          <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
             <Card>
               <DashboardToolbar
                 filters={filters}
@@ -427,17 +428,17 @@ export const DashboardPage = () => {
               />
             </Card>
 
-            <Card style={{ minHeight: 400 }}>
+            <Card style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', marginBottom: 2 }}>
               {!activeProject && (
                 <Empty
                   description={t('project.empty')}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  style={{ paddingTop: 36 }}
+                  style={{ marginTop: 36, marginBottom: 0 }}
                 />
               )}
 
               {activeProject && viewMode === 'list' && (
-                <Flex gap={12} vertical>
+                <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
                   <Flex gap={2} vertical>
                     <Typography.Title level={4} style={{ margin: 0 }}>
                       {activeProject.name}
@@ -447,19 +448,21 @@ export const DashboardPage = () => {
                     </Typography.Text>
                   </Flex>
 
-                  <TaskListView
-                    language={language}
-                    onDeleteTask={handleTaskDelete}
-                    onEditTask={openTaskEdit}
-                    onStatusChange={handleTaskStatusChange}
-                    statuses={activeProject.statuses}
-                    tasks={filteredTasks}
-                  />
+                  <Flex style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} vertical>
+                    <TaskListView
+                      language={language}
+                      onDeleteTask={handleTaskDelete}
+                      onEditTask={openTaskEdit}
+                      onStatusChange={handleTaskStatusChange}
+                      statuses={activeProject.statuses}
+                      tasks={filteredTasks}
+                    />
+                  </Flex>
                 </Flex>
               )}
 
               {activeProject && viewMode === 'kanban' && (
-                <Flex gap={12} vertical>
+                <Flex gap={12} style={{ height: '100%', minHeight: 0, flexDirection: 'column' }} vertical>
                   <Flex gap={2} vertical>
                     <Typography.Title level={4} style={{ margin: 0 }}>
                       {activeProject.name}
@@ -469,23 +472,25 @@ export const DashboardPage = () => {
                     </Typography.Text>
                   </Flex>
 
-                  <KanbanBoard
-                    language={language}
-                    onDeleteStatus={handleStatusDelete}
-                    onDeleteTask={handleTaskDelete}
-                    onEditStatus={openStatusEdit}
-                    onEditTask={openTaskEdit}
-                    onMoveTask={(taskId, targetStatusId, targetIndex) => {
-                      moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
-                    }}
-                    onStatusChange={handleTaskStatusChange}
-                    statuses={activeProject.statuses}
-                    tasks={filteredTasks}
-                  />
+                  <Flex style={{ flex: 1, minHeight: 0, overflowY: 'auto' }} vertical>
+                    <KanbanBoard
+                      language={language}
+                      onDeleteStatus={handleStatusDelete}
+                      onDeleteTask={handleTaskDelete}
+                      onEditStatus={openStatusEdit}
+                      onEditTask={openTaskEdit}
+                      onMoveTask={(taskId, targetStatusId, targetIndex) => {
+                        moveTask(activeProject.id, taskId, targetStatusId, targetIndex);
+                      }}
+                      onStatusChange={handleTaskStatusChange}
+                      statuses={activeProject.statuses}
+                      tasks={filteredTasks}
+                    />
+                  </Flex>
                 </Flex>
               )}
             </Card>
-          </Space>
+          </Flex>
         </Layout.Content>
       </Layout>
 
