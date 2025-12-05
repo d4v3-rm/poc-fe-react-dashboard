@@ -33,6 +33,9 @@ type ProjectPanelProps = {
   onDeleteProject: (project: ProjectItem) => void;
 };
 
+const COLLAPSED_PANEL_WIDTH = 64;
+const COLLAPSED_PANEL_MARGIN = 8;
+
 export const ProjectPanel = ({
   isCompactLayout,
   isCollapsed,
@@ -53,12 +56,12 @@ export const ProjectPanel = ({
   const projectIconList = (
     <Flex
       align="center"
-      gap={8}
+      gap={6}
       style={{
         flex: 1,
         minHeight: 0,
         overflowY: "auto",
-        paddingBottom: 8,
+        paddingBottom: 6,
       }}
       vertical
     >
@@ -81,17 +84,17 @@ export const ProjectPanel = ({
       <>
         <Layout.Sider
           collapsed
-          collapsedWidth={84}
+          collapsedWidth={COLLAPSED_PANEL_WIDTH}
           style={{
             background: "transparent",
-            marginRight: 12,
+            marginRight: COLLAPSED_PANEL_MARGIN,
           }}
           trigger={null}
-          width={84}
+          width={COLLAPSED_PANEL_WIDTH}
         >
           <Flex style={{ height: "100%" }} vertical>
-            <Flex gap={8} style={{ flex: 1, minHeight: 0 }} vertical>
-              <Flex align="center" gap={8} vertical>
+            <Flex gap={6} style={{ flex: 1, minHeight: 0 }} vertical>
+              <Flex align="center" gap={6} vertical>
                 <Tooltip title={t("theme.openSettings")}>
                   <Button
                     aria-label={t("theme.openSettings")}
@@ -201,10 +204,10 @@ export const ProjectPanel = ({
   return (
     <Layout.Sider
       collapsed={isCollapsed}
-      collapsedWidth={84}
+      collapsedWidth={COLLAPSED_PANEL_WIDTH}
       style={{
         background: "transparent",
-        marginRight: 14,
+        marginRight: isCollapsed ? COLLAPSED_PANEL_MARGIN : 14,
       }}
       trigger={null}
       width={320}
@@ -251,7 +254,7 @@ export const ProjectPanel = ({
           )}
 
           {isCollapsed && (
-            <Flex align="center" gap={8} vertical>
+            <Flex align="center" gap={6} vertical>
               <Tooltip title={t("theme.openSettings")}>
                 <Button
                   aria-label={t("theme.openSettings")}
