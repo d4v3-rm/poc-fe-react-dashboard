@@ -1,28 +1,34 @@
-import type { TaskItem } from '../tasks/task.types';
-import type { TaskFilters } from '../../store/dashboard-store.types';
-import { isOverdue, isToday, isWithinNextWeek } from '../../shared/utils/date';
+import type { TaskItem } from "../tasks/task.types";
+import type { TaskFilters } from "../../store/dashboard-store.types";
+import { isOverdue, isToday, isWithinNextWeek } from "../../shared/utils/date";
 
-const matchesDueFilter = (task: TaskItem, dueFilter: TaskFilters['due']): boolean => {
-  if (dueFilter === 'all') {
+const matchesDueFilter = (
+  task: TaskItem,
+  dueFilter: TaskFilters["due"],
+): boolean => {
+  if (dueFilter === "all") {
     return true;
   }
 
-  if (dueFilter === 'no_due') {
+  if (dueFilter === "no_due") {
     return task.dueDate === null;
   }
 
-  if (dueFilter === 'overdue') {
+  if (dueFilter === "overdue") {
     return isOverdue(task.dueDate);
   }
 
-  if (dueFilter === 'today') {
+  if (dueFilter === "today") {
     return isToday(task.dueDate);
   }
 
   return isWithinNextWeek(task.dueDate);
 };
 
-export const filterTasks = (tasks: TaskItem[], filters: TaskFilters): TaskItem[] => {
+export const filterTasks = (
+  tasks: TaskItem[],
+  filters: TaskFilters,
+): TaskItem[] => {
   const query = filters.query.trim().toLowerCase();
 
   return tasks.filter((task) => {
@@ -32,10 +38,15 @@ export const filterTasks = (tasks: TaskItem[], filters: TaskFilters): TaskItem[]
       task.content.toLowerCase().includes(query);
 
     const matchesStatus =
-      filters.statusIds.length === 0 || filters.statusIds.includes(task.statusId);
+      filters.statusIds.length === 0 ||
+      filters.statusIds.includes(task.statusId);
+
+    const matchesTag =
+      filters.tagIds.length === 0 ||
+      filters.tagIds.every((tagId) => task.tags.includes(tagId));
 
     const matchesDue = matchesDueFilter(task, filters.due);
 
-    return matchesQuery && matchesStatus && matchesDue;
+    return matchesQuery && matchesStatus && matchesTag && matchesDue;
   });
 };

@@ -1,12 +1,13 @@
-import dayjs, { type Dayjs } from 'dayjs';
-import { z } from 'zod';
+import dayjs, { type Dayjs } from "dayjs";
+import { z } from "zod";
 
 const dayjsSchema = z.custom<Dayjs>((value) => dayjs.isDayjs(value), {
-  message: 'Invalid date',
+  message: "Invalid date",
 });
 
 export const taskFormSchema = z.object({
   title: z.string().trim().min(2).max(120),
+  tags: z.array(z.string().trim().min(1).max(36)).default([]),
   content: z.string().trim().max(12000),
   statusId: z.string().trim().min(1),
   dueDate: z.union([dayjsSchema, z.null()]),

@@ -4,12 +4,23 @@ import {
   FolderAddOutlined,
   FolderOpenOutlined,
   MoreOutlined,
-} from '@ant-design/icons';
-import { Button, Card, Dropdown, Empty, Flex, Space, Tag, theme, Tooltip, Typography } from 'antd';
-import type { MenuProps } from 'antd';
-import { useTranslation } from 'react-i18next';
-import type { ProjectItem } from '../project.types';
-import { semanticTagStyle } from '../../../shared/theme/color-utils';
+} from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Dropdown,
+  Empty,
+  Flex,
+  Space,
+  Tag,
+  theme,
+  Tooltip,
+  Typography,
+} from "antd";
+import type { MenuProps } from "antd";
+import { useTranslation } from "react-i18next";
+import type { ProjectItem } from "../project.types";
+import { semanticTagStyle } from "../../../shared/theme/color-utils";
 
 type ProjectSidebarProps = {
   projects: ProjectItem[];
@@ -37,34 +48,45 @@ export const ProjectSidebar = ({
     <Flex gap={16} vertical>
       {showHeader && (
         <Flex align="center" justify="space-between">
-          <Typography.Title level={4} style={{ letterSpacing: '-0.015em', margin: 0 }}>
-            {t('project.sectionTitle')}
+          <Typography.Title
+            level={4}
+            style={{ letterSpacing: "-0.015em", margin: 0 }}
+          >
+            {t("project.sectionTitle")}
           </Typography.Title>
-          <Tooltip title={t('project.create')}>
-            <Button aria-label={t('project.create')} icon={<FolderAddOutlined />} onClick={onCreateProject} type="primary" />
+          <Tooltip title={t("project.create")}>
+            <Button
+              aria-label={t("project.create")}
+              icon={<FolderAddOutlined />}
+              onClick={onCreateProject}
+              type="primary"
+            />
           </Tooltip>
         </Flex>
       )}
 
       {projects.length === 0 && (
         <Card>
-          <Empty description={t('project.empty')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          <Empty
+            description={t("project.empty")}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
         </Card>
       )}
 
       <Flex gap={10} vertical>
         {projects.map((project) => {
-          const menuItems: MenuProps['items'] = [
+          const menuItems: MenuProps["items"] = [
             {
-              key: 'edit',
+              key: "edit",
               icon: <EditOutlined />,
-              label: t('actions.edit'),
+              label: t("actions.edit"),
             },
             {
-              key: 'delete',
+              key: "delete",
               icon: <DeleteOutlined />,
               danger: true,
-              label: t('actions.delete'),
+              label: t("actions.delete"),
             },
           ];
 
@@ -76,7 +98,7 @@ export const ProjectSidebar = ({
               key={project.id}
               onClick={() => onSelectProject(project.id)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
+                if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
                   onSelectProject(project.id);
                 }
@@ -84,21 +106,29 @@ export const ProjectSidebar = ({
               role="button"
               size="small"
               style={{
-                borderColor: isActive ? token.colorPrimary : token.colorBorderSecondary,
+                borderColor: isActive
+                  ? token.colorPrimary
+                  : token.colorBorderSecondary,
                 borderWidth: isActive ? 2 : 1,
-                borderStyle: 'solid',
-                width: '100%',
+                borderStyle: "solid",
+                width: "100%",
               }}
               tabIndex={0}
             >
-              <Flex align="center" justify="space-between" style={{ marginBottom: 8 }}>
+              <Flex
+                align="center"
+                justify="space-between"
+                style={{ marginBottom: 8 }}
+              >
                 <Space size={8}>
                   <FolderOpenOutlined />
                   <Typography.Text ellipsis strong style={{ maxWidth: 180 }}>
                     {project.name}
                   </Typography.Text>
                 </Space>
-                <Tag style={semanticTagStyle(token.colorSuccess, 0.2, 0.5)}>{project.tasks.length}</Tag>
+                <Tag style={semanticTagStyle(token.colorSuccess, 0.2, 0.5)}>
+                  {project.tasks.length}
+                </Tag>
               </Flex>
 
               <Flex align="start" justify="space-between">
@@ -107,7 +137,7 @@ export const ProjectSidebar = ({
                   style={{ marginBottom: 0, maxWidth: 190 }}
                   type="secondary"
                 >
-                  {project.description || '-'}
+                  {project.description || "-"}
                 </Typography.Paragraph>
 
                 <Dropdown
@@ -116,7 +146,7 @@ export const ProjectSidebar = ({
                     onClick: ({ key, domEvent }) => {
                       domEvent.stopPropagation();
 
-                      if (key === 'edit') {
+                      if (key === "edit") {
                         onEditProject(project);
                         return;
                       }
@@ -124,11 +154,11 @@ export const ProjectSidebar = ({
                       onDeleteProject(project);
                     },
                   }}
-                  trigger={['click']}
+                  trigger={["click"]}
                 >
-                  <Tooltip title={t('actions.more')}>
+                  <Tooltip title={t("actions.more")}>
                     <Button
-                      aria-label={t('actions.more')}
+                      aria-label={t("actions.more")}
                       icon={<MoreOutlined />}
                       onClick={(event) => event.stopPropagation()}
                       shape="circle"

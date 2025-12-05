@@ -1,4 +1,4 @@
-import type { TaskItem, TaskStatus } from '../tasks/task.types';
+import type { TaskItem, TaskStatus } from "../tasks/task.types";
 
 export type ProjectItem = {
   id: string;

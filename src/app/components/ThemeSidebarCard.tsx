@@ -1,10 +1,25 @@
-import { BgColorsOutlined, HighlightOutlined, MoonOutlined, ReloadOutlined, SunOutlined } from '@ant-design/icons';
-import { Button, Divider, Flex, Segmented, Space, Tooltip, Typography, theme } from 'antd';
-import { useTranslation } from 'react-i18next';
-import { getFallbackColor, textColorFor } from '../../shared/theme/color-utils';
-import { DEFAULT_THEME_COLORS } from '../../shared/utils/defaults';
-import { THEME_COLOR_PRESETS } from '../../shared/utils/defaults';
-import type { ThemeColors, ThemeMode } from '../../store/dashboard-store.types';
+import {
+  BgColorsOutlined,
+  HighlightOutlined,
+  MoonOutlined,
+  ReloadOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
+import {
+  Button,
+  Divider,
+  Flex,
+  Segmented,
+  Space,
+  Tooltip,
+  Typography,
+  theme,
+} from "antd";
+import { useTranslation } from "react-i18next";
+import { getFallbackColor, textColorFor } from "../../shared/theme/color-utils";
+import { DEFAULT_THEME_COLORS } from "../../shared/utils/defaults";
+import { THEME_COLOR_PRESETS } from "../../shared/utils/defaults";
+import type { ThemeColors, ThemeMode } from "../../store/dashboard-store.types";
 
 type ThemeSidebarCardProps = {
   themeMode: ThemeMode;
@@ -22,7 +37,7 @@ export const ThemeSidebarCard = ({
   const { token } = theme.useToken();
   const { t } = useTranslation();
 
-  const applyColor = (target: 'primary' | 'secondary', color: string) => {
+  const applyColor = (target: "primary" | "secondary", color: string) => {
     onThemeColorsChange({
       ...themeColors,
       [target]: color,
@@ -36,39 +51,47 @@ export const ThemeSidebarCard = ({
     });
   };
 
-  const renderPalette = (target: 'primary' | 'secondary') => (
+  const renderPalette = (target: "primary" | "secondary") => (
     <Flex gap={7} vertical>
       <Space size={6} align="center">
-        {target === 'primary' ? <BgColorsOutlined /> : <HighlightOutlined />}
-        <Typography.Text style={{ color: token.colorTextSecondary, fontSize: 12 }}>
-          {target === 'primary' ? t('theme.primary') : t('theme.secondary')}
+        {target === "primary" ? <BgColorsOutlined /> : <HighlightOutlined />}
+        <Typography.Text
+          style={{ color: token.colorTextSecondary, fontSize: 12 }}
+        >
+          {target === "primary" ? t("theme.primary") : t("theme.secondary")}
         </Typography.Text>
       </Space>
 
       <Space size={8} wrap>
         {THEME_COLOR_PRESETS.map((color) => {
-          const isSelected = themeColors[target].toLowerCase() === color.toLowerCase();
+          const isSelected =
+            themeColors[target].toLowerCase() === color.toLowerCase();
           const safeColor = getFallbackColor(color);
 
           return (
-            <Tooltip key={`${target}-${color}`} title={`${target === 'primary' ? t('theme.primary') : t('theme.secondary')}: ${color}`}>
+            <Tooltip
+              key={`${target}-${color}`}
+              title={`${target === "primary" ? t("theme.primary") : t("theme.secondary")}: ${color}`}
+            >
               <Button
-                aria-label={`${target === 'primary' ? t('theme.primary') : t('theme.secondary')}: ${safeColor}`}
+                aria-label={`${target === "primary" ? t("theme.primary") : t("theme.secondary")}: ${safeColor}`}
                 onClick={() => applyColor(target, safeColor)}
                 shape="circle"
                 size="small"
                 style={{
-                  alignItems: 'center',
+                  alignItems: "center",
                   backgroundColor: safeColor,
-                  borderColor: isSelected ? token.colorPrimary : token.colorBorder,
+                  borderColor: isSelected
+                    ? token.colorPrimary
+                    : token.colorBorder,
                   boxShadow: isSelected
                     ? `0 0 0 2px ${token.colorBgContainer}, 0 2px 12px ${token.colorBgMask}`
-                    : 'none',
+                    : "none",
                   color: textColorFor(safeColor),
                   height: 24,
                   minWidth: 24,
                   padding: 0,
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
                   width: 24,
                 }}
                 onMouseDown={(event) => event.preventDefault()}
@@ -81,20 +104,20 @@ export const ThemeSidebarCard = ({
   );
 
   return (
-    <Flex gap={12} vertical style={{ width: '100%' }}>
+    <Flex gap={12} vertical style={{ width: "100%" }}>
       <Flex align="center" justify="space-between">
         <Flex gap={6} align="center" style={{ minWidth: 0 }}>
-          <Typography.Text strong>{t('theme.mode.label')}</Typography.Text>
+          <Typography.Text strong>{t("theme.mode.label")}</Typography.Text>
           <Segmented
             onChange={(value) => onThemeModeChange(value as ThemeMode)}
             options={[
               {
                 icon: <SunOutlined />,
-                value: 'light',
+                value: "light",
               },
               {
                 icon: <MoonOutlined />,
-                value: 'dark',
+                value: "dark",
               },
             ]}
             value={themeMode}
@@ -102,9 +125,9 @@ export const ThemeSidebarCard = ({
           />
         </Flex>
 
-        <Tooltip title={t('theme.reset')}>
+        <Tooltip title={t("theme.reset")}>
           <Button
-            aria-label={t('theme.reset')}
+            aria-label={t("theme.reset")}
             icon={<ReloadOutlined />}
             onClick={resetColors}
             size="small"
@@ -113,18 +136,22 @@ export const ThemeSidebarCard = ({
         </Tooltip>
       </Flex>
 
-      <Divider style={{ margin: '2px 0' }} />
-      {renderPalette('primary')}
-      <Divider style={{ margin: '2px 0' }} />
-      {renderPalette('secondary')}
+      <Divider style={{ margin: "2px 0" }} />
+      {renderPalette("primary")}
+      <Divider style={{ margin: "2px 0" }} />
+      {renderPalette("secondary")}
 
-      <Divider style={{ margin: '2px 0' }} />
+      <Divider style={{ margin: "2px 0" }} />
 
       <Flex gap={10} vertical>
-        <Typography.Text style={{ color: token.colorTextSecondary, fontSize: 12 }}>{t('theme.preview')}</Typography.Text>
+        <Typography.Text
+          style={{ color: token.colorTextSecondary, fontSize: 12 }}
+        >
+          {t("theme.preview")}
+        </Typography.Text>
         <Flex align="center" gap={8}>
           <Button
-            aria-label={`${t('theme.primary')}: ${getFallbackColor(themeColors.primary)}`}
+            aria-label={`${t("theme.primary")}: ${getFallbackColor(themeColors.primary)}`}
             shape="circle"
             size="small"
             style={{
@@ -139,7 +166,7 @@ export const ThemeSidebarCard = ({
           />
           <Typography.Text type="secondary">/</Typography.Text>
           <Button
-            aria-label={`${t('theme.secondary')}: ${getFallbackColor(themeColors.secondary)}`}
+            aria-label={`${t("theme.secondary")}: ${getFallbackColor(themeColors.secondary)}`}
             shape="circle"
             size="small"
             style={{
@@ -154,10 +181,10 @@ export const ThemeSidebarCard = ({
           />
           <Flex style={{ marginLeft: 6 }} vertical>
             <Typography.Text strong style={{ fontSize: 12 }}>
-              {t('theme.previewName')}
+              {t("theme.previewName")}
             </Typography.Text>
             <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-              {t('theme.previewHint')}
+              {t("theme.previewHint")}
             </Typography.Text>
           </Flex>
         </Flex>
