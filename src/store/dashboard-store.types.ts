@@ -7,12 +7,21 @@ export type TaskFilters = {
   due: DueFilter;
 };
 
+export type ThemeMode = 'light' | 'dark';
+
+export type ThemeColors = {
+  primary: string;
+  secondary: string;
+};
+
 export type DashboardSnapshot = {
   projects: ProjectItem[];
   activeProjectId: string | null;
   viewMode: ViewMode;
   filters: TaskFilters;
   language: LanguageCode;
+  themeMode: ThemeMode;
+  themeColors: ThemeColors;
 };
 
 export type CreateProjectInput = {
@@ -58,6 +67,8 @@ export type DashboardStore = DashboardSnapshot & {
   setDueFilter: (due: DueFilter) => void;
   clearFilters: () => void;
   setLanguage: (language: LanguageCode) => void;
+  setThemeMode: (mode: ThemeMode) => void;
+  setThemeColors: (colors: ThemeColors) => void;
   createProject: (input: CreateProjectInput) => string;
   updateProject: (projectId: string, input: UpdateProjectInput) => void;
   removeProject: (projectId: string) => void;

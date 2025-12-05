@@ -2,17 +2,20 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type { ProjectItem } from '../features/projects/project.types';
 import type { LanguageCode, TaskItem, TaskStatus } from '../features/tasks/task.types';
-import { DEFAULT_PROJECT_NAME, DEFAULT_STATUS_TEMPLATES } from '../shared/utils/defaults';
+import { DEFAULT_PROJECT_NAME, DEFAULT_STATUS_TEMPLATES, DEFAULT_THEME_COLORS } from '../shared/utils/defaults';
 import { createId } from '../shared/utils/id';
+import { buildMockProjects } from '../shared/utils/mock-data';
 import { dashboardSnapshotSchema } from './dashboard.schema';
 import type {
   CreateProjectInput,
   DashboardSnapshot,
   DashboardStore,
+  ThemeColors,
   UpdateTaskInput,
 } from './dashboard-store.types';
 
 const STORAGE_KEY = 'task-dashboard-v1';
+const HEX_COLOR_PATTERN = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 const nowIso = (): string => new Date().toISOString();
 
@@ -22,6 +25,22 @@ const detectLanguage = (): LanguageCode => {
   }
 
   return 'en';
+};
+
+const normalizeThemeColors = (colors: Partial<ThemeColors> | undefined): ThemeColors => {
+  const primary =
+    colors?.primary && HEX_COLOR_PATTERN.test(colors.primary)
+      ? colors.primary
+      : DEFAULT_THEME_COLORS.primary;
+  const secondary =
+    colors?.secondary && HEX_COLOR_PATTERN.test(colors.secondary)
+      ? colors.secondary
+      : DEFAULT_THEME_COLORS.secondary;
+
+  return {
+    primary,
+    secondary,
+  };
 };
 
 const createStatuses = (
@@ -123,13 +142,16 @@ const createProjectEntity = (
 
 const createInitialSnapshot = (): DashboardSnapshot => {
   const language = detectLanguage();
-  const project = createProjectEntity(language, {
-    name: DEFAULT_PROJECT_NAME[language],
-    description: '',
-  });
+  const projects = buildMockProjects(language);
+  const project =
+    projects[0] ??
+    createProjectEntity(language, {
+      name: DEFAULT_PROJECT_NAME[language],
+      description: '',
+    });
 
   return {
-    projects: [project],
+    projects: projects.length > 0 ? projects : [project],
     activeProjectId: project.id,
     viewMode: 'kanban',
     filters: {
@@ -138,6 +160,8 @@ const createInitialSnapshot = (): DashboardSnapshot => {
       due: 'all',
     },
     language,
+    themeMode: 'light',
+    themeColors: DEFAULT_THEME_COLORS,
   };
 };
 
@@ -172,6 +196,8 @@ const normalizeSnapshot = (snapshot: DashboardSnapshot): DashboardSnapshot => {
       due: snapshot.filters.due,
     },
     language,
+    themeMode: snapshot.themeMode ?? 'light',
+    themeColors: normalizeThemeColors(snapshot.themeColors),
   };
 };
 
@@ -363,6 +389,14 @@ export const useDashboardStore = create<DashboardStore>()(
       },
       setLanguage: (language) => {
         set({ language });
+      },
+      setThemeMode: (themeMode) => {
+        set({ themeMode });
+      },
+      setThemeColors: (themeColors) => {
+        set({
+          themeColors: normalizeThemeColors(themeColors),
+        });
       },
       createProject: (input) => {
         const trimmedName = input.name.trim();
@@ -612,6 +646,8 @@ export const useDashboardStore = create<DashboardStore>()(
           viewMode: state.viewMode,
           filters: state.filters,
           language: state.language,
+          themeMode: state.themeMode,
+          themeColors: state.themeColors,
         };
       },
       getActiveProject: () => {
@@ -641,6 +677,8 @@ export const useDashboardStore = create<DashboardStore>()(
         viewMode: state.viewMode,
         filters: state.filters,
         language: state.language,
+        themeMode: state.themeMode,
+        themeColors: state.themeColors,
       }),
       merge: (persistedState, currentState) => {
         const parsed = dashboardSnapshotSchema.safeParse(persistedState);

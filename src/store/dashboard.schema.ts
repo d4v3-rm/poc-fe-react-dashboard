@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+const hexColorSchema = z.string().regex(/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/);
+
 export const statusSnapshotSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
@@ -39,6 +41,16 @@ export const dashboardSnapshotSchema = z.object({
     due: z.enum(['all', 'overdue', 'today', 'week', 'no_due']),
   }),
   language: z.enum(['en', 'it']),
+  themeMode: z.enum(['light', 'dark']).default('light'),
+  themeColors: z
+    .object({
+      primary: hexColorSchema,
+      secondary: hexColorSchema,
+    })
+    .default({
+      primary: '#0D8BFF',
+      secondary: '#1FA77A',
+    }),
 });
 
 export type DashboardSnapshotSchema = z.infer<typeof dashboardSnapshotSchema>;
