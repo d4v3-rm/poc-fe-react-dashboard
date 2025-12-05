@@ -78,14 +78,20 @@ export const resources = {
         },
       },
       theme: {
+        settings: 'Theme settings',
+        openSettings: 'Open settings',
         mode: {
+          label: 'Theme mode',
           light: 'Light',
           dark: 'Dark',
         },
-        reset: 'Reset colors',
         primary: 'Primary',
         secondary: 'Secondary',
         palette: 'Palette',
+        preview: 'Theme preview',
+        previewName: 'App theme',
+        previewHint: 'Preview is updated in real time.',
+        reset: 'Reset colors',
       },
       kanban: {
         addStatus: 'Add status',
@@ -192,7 +198,10 @@ export const resources = {
         },
       },
       theme: {
+        settings: 'Impostazioni tema',
+        openSettings: 'Apri impostazioni',
         mode: {
+          label: 'Modalita tema',
           light: 'Chiaro',
           dark: 'Scuro',
         },
@@ -200,6 +209,9 @@ export const resources = {
         primary: 'Primario',
         secondary: 'Secondario',
         palette: 'Palette',
+        preview: 'Anteprima',
+        previewName: 'Tema applicazione',
+        previewHint: 'L\'anteprima si aggiorna in tempo reale.',
       },
       kanban: {
         addStatus: 'Aggiungi stato',

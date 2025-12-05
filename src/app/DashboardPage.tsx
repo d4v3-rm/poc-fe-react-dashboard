@@ -1,5 +1,13 @@
-import { CloseOutlined, DeleteOutlined, FolderOpenOutlined, LeftOutlined, PlusOutlined, RightOutlined } from '@ant-design/icons';
-import { App as AntdApp, Button, Card, Empty, Flex, Layout, Space, Tooltip, Typography } from 'antd';
+import {
+  CloseOutlined,
+  DeleteOutlined,
+  FolderOpenOutlined,
+  LeftOutlined,
+  PlusOutlined,
+  RightOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
+import { App as AntdApp, Button, Card, Empty, Flex, Layout, Modal, Space, Tooltip, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useMemo, useRef, useState, type ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -114,6 +122,7 @@ export const DashboardPage = () => {
   const [statusEditorMode, setStatusEditorMode] = useState<StatusEditorMode>('create');
   const [isStatusModalOpen, setStatusModalOpen] = useState(false);
   const [statusDraft, setStatusDraft] = useState<TaskStatus | null>(null);
+  const [isThemeModalOpen, setThemeModalOpen] = useState(false);
 
   const importInputRef = useRef<HTMLInputElement>(null);
 
@@ -292,10 +301,22 @@ export const DashboardPage = () => {
           <Flex style={{ height: '100%' }} vertical>
             <Flex gap={12} style={{ flex: 1, minHeight: 0 }} vertical>
               {!isProjectPanelCollapsed && (
-                <Flex align="center" justify="space-between">
-                  <Typography.Title level={4} style={{ margin: 0 }}>
-                    {t('project.sectionTitle')}
-                  </Typography.Title>
+                <Flex align="center" gap={10} justify="space-between">
+                  <Flex align="center" gap={8}>
+                    <Tooltip title={t('theme.openSettings')}>
+                      <Button
+                        aria-label={t('theme.openSettings')}
+                        icon={<SettingOutlined />}
+                        onClick={() => setThemeModalOpen(true)}
+                        type="text"
+                      />
+                    </Tooltip>
+
+                    <Typography.Title level={4} style={{ margin: 0 }}>
+                      {t('project.sectionTitle')}
+                    </Typography.Title>
+                  </Flex>
+
                   <Space size={8}>
                     <Tooltip title={t('project.create')}>
                       <Button
@@ -321,6 +342,16 @@ export const DashboardPage = () => {
 
               {isProjectPanelCollapsed && (
                 <Flex align="center" gap={8} vertical>
+                  <Tooltip title={t('theme.openSettings')}>
+                    <Button
+                      aria-label={t('theme.openSettings')}
+                      icon={<SettingOutlined />}
+                      onClick={() => setThemeModalOpen(true)}
+                      shape="circle"
+                      type="text"
+                    />
+                  </Tooltip>
+
                   <Tooltip title={t('project.create')}>
                     <Button
                       aria-label={t('project.create')}
@@ -372,14 +403,6 @@ export const DashboardPage = () => {
                 </div>
               )}
             </Flex>
-
-            <ThemeSidebarCard
-              compact={isProjectPanelCollapsed}
-              onThemeColorsChange={setThemeColors}
-              onThemeModeChange={setThemeMode}
-              themeColors={themeColors}
-              themeMode={themeMode}
-            />
           </Flex>
         </Layout.Sider>
         <Layout.Content style={{ minWidth: 0 }}>
@@ -564,6 +587,27 @@ export const DashboardPage = () => {
         open={isTaskDrawerOpen}
         statuses={activeProject?.statuses ?? []}
       />
+
+      <Modal
+        centered
+        onCancel={() => setThemeModalOpen(false)}
+        open={isThemeModalOpen}
+        footer={null}
+        style={{ maxWidth: 520 }}
+        title={(
+          <Space size={8}>
+            <SettingOutlined />
+            <span>{t('theme.settings')}</span>
+          </Space>
+        )}
+      >
+        <ThemeSidebarCard
+          onThemeColorsChange={setThemeColors}
+          onThemeModeChange={setThemeMode}
+          themeColors={themeColors}
+          themeMode={themeMode}
+        />
+      </Modal>
     </div>
   );
 };
