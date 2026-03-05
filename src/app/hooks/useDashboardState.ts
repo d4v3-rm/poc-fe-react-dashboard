@@ -1,0 +1,120 @@
+import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { filterTasks } from "../../features/tasks/task-filters";
+import { useDashboardStore } from "../../store/dashboard-store";
+
+export const useDashboardState = () => {
+  const {
+    projects,
+    activeProjectId,
+    viewMode,
+    filters,
+    language,
+    themeMode,
+    themeColors,
+    setActiveProject,
+    setViewMode,
+    setFilterQuery,
+    setFilterStatusIds,
+    setFilterTagIds,
+    setDueFilter,
+    clearFilters,
+    setLanguage,
+    setThemeMode,
+    setThemeColors,
+    createProject,
+    updateProject,
+    removeProject,
+    createTask,
+    updateTask,
+    removeTask,
+    moveTask,
+    addStatus,
+    updateStatus,
+    removeStatus,
+    importSnapshot,
+    getSnapshot,
+  } = useDashboardStore(
+    useShallow((state) => ({
+      projects: state.projects,
+      activeProjectId: state.activeProjectId,
+      viewMode: state.viewMode,
+      filters: state.filters,
+      language: state.language,
+      themeMode: state.themeMode,
+      themeColors: state.themeColors,
+      setActiveProject: state.setActiveProject,
+      setViewMode: state.setViewMode,
+      setFilterQuery: state.setFilterQuery,
+      setFilterStatusIds: state.setFilterStatusIds,
+      setFilterTagIds: state.setFilterTagIds,
+      setDueFilter: state.setDueFilter,
+      clearFilters: state.clearFilters,
+      setLanguage: state.setLanguage,
+      setThemeMode: state.setThemeMode,
+      setThemeColors: state.setThemeColors,
+      createProject: state.createProject,
+      updateProject: state.updateProject,
+      removeProject: state.removeProject,
+      createTask: state.createTask,
+      updateTask: state.updateTask,
+      removeTask: state.removeTask,
+      moveTask: state.moveTask,
+      addStatus: state.addStatus,
+      updateStatus: state.updateStatus,
+      removeStatus: state.removeStatus,
+      importSnapshot: state.importSnapshot,
+      getSnapshot: state.getSnapshot,
+    })),
+  );
+
+  const activeProject = useMemo(
+    () => projects.find((project) => project.id === activeProjectId) ?? null,
+    [activeProjectId, projects],
+  );
+
+  const activeTaskTags = useMemo<string[]>(
+    () => activeProject?.tags ?? [],
+    [activeProject],
+  );
+
+  const filteredTasks = useMemo(
+    () => (activeProject ? filterTasks(activeProject.tasks, filters) : []),
+    [activeProject, filters],
+  );
+
+  return {
+    projects,
+    activeProject,
+    activeProjectId,
+    viewMode,
+    filters,
+    language,
+    themeMode,
+    themeColors,
+    setActiveProject,
+    setViewMode,
+    setFilterQuery,
+    setFilterStatusIds,
+    setFilterTagIds,
+    setDueFilter,
+    clearFilters,
+    setLanguage,
+    setThemeMode,
+    setThemeColors,
+    createProject,
+    updateProject,
+    removeProject,
+    createTask,
+    updateTask,
+    removeTask,
+    moveTask,
+    addStatus,
+    updateStatus,
+    removeStatus,
+    importSnapshot,
+    getSnapshot,
+    activeTaskTags,
+    filteredTasks,
+  } as const;
+};

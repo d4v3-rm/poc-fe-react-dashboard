@@ -1,13 +1,30 @@
 {
   "name": "poc-fe-react-dashboard",
   "private": true,
-  "version": "0.0.0",
+  "description": "Local-first React dashboard for project, task and kanban management.",
+  "version": "0.22.16",
+  "author": "d4v3-rm",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "dashboard",
+    "kanban",
+    "task-management",
+    "project-management",
+    "antd",
+    "vite",
+    "zustand",
+    "typescript"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "set:version": "node scripts/set-version.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
@@ -16,7 +33,6 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.2.2",
     "antd": "^6.3.0",
-    "clsx": "^2.1.1",
     "dayjs": "^1.11.19",
     "i18next": "^25.8.5",
     "react": "^19.2.0",
@@ -40,6 +56,7 @@
     "globals": "^16.5.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
+    "prettier": "^3.5.3",
     "vite": "^7.3.1"
   }
 }

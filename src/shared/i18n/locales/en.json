@@ -1,0 +1,125 @@
+{
+  "app": {
+    "title": "Task Operations Board",
+    "subtitle": "Local-first productivity dashboard"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "it": "Italian"
+  },
+  "actions": {
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "more": "More actions",
+    "close": "Close",
+    "export": "Export",
+    "import": "Import",
+    "clearFilters": "Clear filters",
+    "toggleLanguage": "Switch language"
+  },
+  "project": {
+    "sectionTitle": "Projects",
+    "create": "New Project",
+    "edit": "Edit Project",
+    "delete": "Delete Project",
+    "empty": "Create your first project to start managing tasks.",
+    "form": {
+      "name": "Project name",
+      "description": "Description",
+      "tags": "Project tags"
+    },
+    "deleteConfirm": {
+      "title": "Delete project?",
+      "description": "This action permanently deletes all tasks in the project."
+    },
+    "collapsePanel": "Collapse projects panel",
+    "expandPanel": "Expand projects panel"
+  },
+  "task": {
+    "create": "New Task",
+    "edit": "Edit Task",
+    "delete": "Delete Task",
+    "drag": "Move task",
+    "dragHint": "Drag to reorder or move between columns",
+    "form": {
+      "title": "Title",
+      "status": "Status",
+      "dueDate": "Due date",
+      "tags": "Tags",
+      "content": "Markdown details",
+      "markdownHint": "Use markdown syntax for rich notes.",
+      "noDueDate": "No due date"
+    },
+    "deleteConfirm": {
+      "title": "Delete task?",
+      "description": "The task will be removed from this project."
+    },
+    "preview": "Preview",
+    "editor": "Editor",
+    "quickStatus": "Change status",
+    "empty": "No tasks match the current filters.",
+    "noTags": "No tags"
+  },
+  "view": {
+    "list": "List",
+    "kanban": "Kanban"
+  },
+  "filters": {
+    "search": "Search by title or markdown...",
+    "status": "Status",
+    "due": "Due date",
+    "tag": "Tag",
+    "dueOptions": {
+      "all": "Any date",
+      "overdue": "Overdue",
+      "today": "Today",
+      "week": "Next 7 days",
+      "noDue": "No due date"
+    }
+  },
+  "theme": {
+    "settings": "Theme settings",
+    "openSettings": "Open settings",
+    "sectionDescription": "Customize the app appearance with light or dark mode and a single accent color.",
+    "mode": {
+      "label": "Theme mode",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "accent": "Accent color",
+    "palette": "Palette",
+    "preview": "Theme preview",
+    "previewName": "App theme",
+    "previewHint": "Preview is updated in real time.",
+    "reset": "Reset accent"
+  },
+  "kanban": {
+    "addStatus": "Add status",
+    "editStatus": "Edit status",
+    "deleteStatus": "Delete status",
+    "emptyColumn": "Drop tasks here",
+    "statusForm": {
+      "name": "Status name",
+      "color": "Color"
+    },
+    "deleteStatusConfirm": {
+      "title": "Delete status?",
+      "description": "Tasks in this status will move to the first column."
+    }
+  },
+  "messages": {
+    "importSuccess": "Projects imported successfully.",
+    "importError": "Import failed: invalid file structure.",
+    "exportReady": "Export file generated."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "minName": "Use at least 2 characters.",
+    "color": "Use a valid hex color, e.g. #1677ff.",
+    "invalidDate": "Use a valid date."
+  }
+}

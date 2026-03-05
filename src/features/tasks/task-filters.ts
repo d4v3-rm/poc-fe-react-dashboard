@@ -1,0 +1,52 @@
+import type { TaskItem } from "../tasks/task.types";
+import type { DashboardFilters } from "../../store/dashboard-store.types";
+import { isOverdue, isToday, isWithinNextWeek } from "../../shared/utils/date";
+
+const matchesDueFilter = (
+  task: TaskItem,
+  dueFilter: DashboardFilters["due"],
+): boolean => {
+  if (dueFilter === "all") {
+    return true;
+  }
+
+  if (dueFilter === "no_due") {
+    return task.dueDate === null;
+  }
+
+  if (dueFilter === "overdue") {
+    return isOverdue(task.dueDate);
+  }
+
+  if (dueFilter === "today") {
+    return isToday(task.dueDate);
+  }
+
+  return isWithinNextWeek(task.dueDate);
+};
+
+export const filterTasks = (
+  tasks: TaskItem[],
+  filters: DashboardFilters,
+): TaskItem[] => {
+  const query = filters.query.trim().toLowerCase();
+
+  return tasks.filter((task) => {
+    const matchesQuery =
+      query.length === 0 ||
+      task.title.toLowerCase().includes(query) ||
+      task.content.toLowerCase().includes(query);
+
+    const matchesStatus =
+      filters.statusIds.length === 0 ||
+      filters.statusIds.includes(task.statusId);
+
+    const matchesTag =
+      filters.tagIds.length === 0 ||
+      filters.tagIds.every((tagId) => task.tags.includes(tagId));
+
+    const matchesDue = matchesDueFilter(task, filters.due);
+
+    return matchesQuery && matchesStatus && matchesTag && matchesDue;
+  });
+};
