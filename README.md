@@ -1,7 +1,7 @@
 # 📋 Task Operations Board
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-0.0.0-blue.svg" alt="Version" />
+  <img src="https://img.shields.io/badge/version-0.22.16-blue.svg" alt="Version" />
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License" />
   <img src="https://img.shields.io/badge/status-active-1f8b4c.svg" alt="Project status" />
   <img src="https://img.shields.io/badge/react-19-20232a?logo=react&logoColor=61dafb" alt="React 19" />

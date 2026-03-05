@@ -2,7 +2,7 @@
   "name": "poc-fe-react-dashboard",
   "private": true,
   "description": "Local-first React dashboard for project, task and kanban management.",
-  "version": "0.0.0",
+  "version": "0.22.16",
   "author": "d4v3-rm",
   "license": "MIT",
   "keywords": [
